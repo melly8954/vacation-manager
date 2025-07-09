@@ -1,10 +1,14 @@
 server:
-  port: 8081
   servlet:
     encoding:
       charset: UTF-8
       enabled: true
       force: true
+
+logging:
+  level:
+    p6spy: DEBUG
+    com.p6spy.engine.spy: DEBUG
 
 decorator:
   datasource:
@@ -16,4 +20,19 @@ spring:
     name: vacation-manager
   profiles:
     active: local
-
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        # 명백하게 명시만 해두면 안전하지만, 없어도 기본값이 SpringPhysicalNamingStrategy
+        spring.jpa.hibernate.naming.physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+        jdbc:
+          time-zone: Asia/Seoul
+  jackson:
+    time-zone: Asia/Seoul   # Jackson (JSON 직렬화/역직렬화)
+  mustache:
+    enabled: true
+    charset: UTF-8
+    suffix: .html
+    check-template-location: true
