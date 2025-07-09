@@ -1,0 +1,32 @@
+spring:
+  mustache:
+    enabled: true
+    charset: UTF-8
+    suffix: .html
+    check-template-location: true
+  servlet:
+    multipart:
+      max-file-size: 10MB     # 단일 파일 최대 업로드 크기
+      max-request-size: 20MB  # 전체 요청(여러 파일 합산) 최대 크기
+  datasource:
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    url: jdbc:p6spy:mysql://localhost:3306/vacation_manager?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: vm1234
+    password: 1q2w3e4r!
+  jpa:
+    hibernate:
+      ddl-auto: update  # 개발 중에는 update 또는 create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    time-zone: Asia/Seoul   # Jackson은 LocalDateTime을 역직렬화할 때 jackson.time-zone을 기준으로 해석
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace
+
+
+
+

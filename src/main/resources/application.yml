@@ -1,0 +1,19 @@
+server:
+  port: 8081
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+
+spring:
+  application:
+    name: vacation-manager
+  profiles:
+    active: local
+
