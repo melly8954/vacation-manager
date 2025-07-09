@@ -1,0 +1,51 @@
+package com.melly.vacationmanager.domain.user.entity;
+
+import com.melly.vacationmanager.global.common.enums.UserRole;
+import com.melly.vacationmanager.global.common.enums.UserStatus;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name="user_tbl")
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="user_id")
+    private Long userId;
+
+    private String username;
+    private String password;
+    private String name;
+    private String email;
+
+    @Column(name="hire_date")
+    private String hireDate;
+
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
+    @Column(name="created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name="updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+ }
