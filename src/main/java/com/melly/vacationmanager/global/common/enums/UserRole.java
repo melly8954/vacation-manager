@@ -1,6 +1,15 @@
 package com.melly.vacationmanager.global.common.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum UserRole {
-    USER,
-    ADMIN
+    USER("사용자"),
+    ADMIN("관리자");
+
+    private final String description;
+
+    UserRole(String description) {
+        this.description = description;
+    }
 }
