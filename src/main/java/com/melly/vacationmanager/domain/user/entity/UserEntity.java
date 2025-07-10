@@ -1,5 +1,6 @@
 package com.melly.vacationmanager.domain.user.entity;
 
+import com.melly.vacationmanager.global.common.enums.UserPosition;
 import com.melly.vacationmanager.global.common.enums.UserRole;
 import com.melly.vacationmanager.global.common.enums.UserStatus;
 import jakarta.persistence.*;
@@ -26,6 +27,9 @@ public class UserEntity {
 
     @Column(name="hire_date")
     private String hireDate;
+
+    @Enumerated(EnumType.STRING)
+    private UserPosition position;
 
     @Enumerated(EnumType.STRING)
     private UserStatus status;
