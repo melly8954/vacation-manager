@@ -7,11 +7,11 @@ import org.springframework.http.ResponseEntity;
 
 // JSON API 공통응답
 public interface ResponseController {
-    default ResponseEntity<ResponseDto> makeResponseEntity(HttpStatus httpStatus, ErrorCode errorCode, String message, Object data) {
+    default ResponseEntity<ResponseDto> makeResponseEntity(HttpStatus httpStatus, String errorCode, String message, Object data) {
         // JSON 응답 바디 구조
         ResponseDto responseDto = ResponseDto.builder()
                 .code(httpStatus.value())
-                .errorCode(errorCode.getErrorCode())
+                .errorCode(errorCode)
                 .message(message)
                 .data(data)
                 .build();
