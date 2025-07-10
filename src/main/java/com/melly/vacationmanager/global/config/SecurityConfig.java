@@ -21,7 +21,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable);     // 람다식을 메서드 레퍼런스로 치환
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/","/signup").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();

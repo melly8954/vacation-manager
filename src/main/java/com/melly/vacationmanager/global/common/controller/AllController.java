@@ -9,4 +9,9 @@ public class AllController {
     public String index() {
         return "index";
     }
+
+    @GetMapping("/signup")
+    public String signup() {
+        return "user/signup";
+    }
 }
