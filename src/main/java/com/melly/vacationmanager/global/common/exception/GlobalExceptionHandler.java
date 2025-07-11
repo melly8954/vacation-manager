@@ -4,7 +4,6 @@ import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
 import com.melly.vacationmanager.global.common.enums.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -83,5 +82,19 @@ public class GlobalExceptionHandler implements ResponseController {
         }
 
         return ErrorCode.DEFAULT_BAD_REQUEST;
+    }
+
+    // 커스텀 비즈니스 예외 처리
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ResponseDto> handleCustomException(CustomException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        log.error("비즈니스 로직 예외 발생 - Code: {}, Message: {}", errorCode.getErrorCode(), errorCode.getMessage());
+
+        return makeResponseEntity(
+                errorCode.getStatus(),
+                errorCode.getErrorCode(),
+                errorCode.getMessage(),
+                null
+        );
     }
 }
