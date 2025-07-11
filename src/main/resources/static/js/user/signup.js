@@ -36,30 +36,37 @@ function signup() {
 function validateForm(username, password, confirmPassword, name, email, hireDate, position){
     if (!username) {
         alert("아이디를 입력하세요.");
+        $("#username").focus();
         return false;
     }
     if (!password) {
         alert("비밀번호를 입력하세요.");
+        $("#password").focus();
         return false;
     }
     if (!confirmPassword) {
         alert("비밀번호 확인을 입력하세요.");
+        $("#confirmPassword").focus();
         return false;
     }
     if (!name) {
         alert("이름을 입력하세요.");
+        $("#name").focus();
         return false;
     }
     if (!email) {
         alert("이메일을 입력하세요.");
+        $("#email").focus();
         return false;
     }
     if (!hireDate) {
         alert("입사일을 선택하세요.");
+        $("#hireDate").focus();
         return false;
     }
     if (!position) {
         alert("직급을 선택하세요.");
+        $("#position").focus();
         return false;
     }
     return true;
@@ -71,5 +78,4 @@ function handleServerError(jqXHR) {
     if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
         alert(jqXHR.responseJSON.message);
     }
-
 }
