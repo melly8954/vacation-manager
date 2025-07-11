@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Slf4j
@@ -29,7 +30,7 @@ public class UserService {
             throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
         }
 
-        if (request.getHiredate().isAfter(LocalDate.now())) {
+        if (request.getHireDate().isAfter(LocalDate.now())) {
             log.error("입사일은 오늘 이후 날짜일 수 없습니다.");
             throw new CustomException(ErrorCode.INVALID_FORMAT_HIREDATE);
         }
@@ -39,7 +40,7 @@ public class UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .name(request.getName())
                 .email(request.getEmail())
-                .hireDate(request.getHiredate())
+                .hireDate(request.getHireDate())
                 .position(request.getPosition())
                 .status(UserStatus.PENDING)
                 .role(UserRole.USER)

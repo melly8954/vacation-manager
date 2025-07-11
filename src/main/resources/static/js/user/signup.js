@@ -17,6 +17,7 @@ function signup() {
         data: JSON.stringify({
             username: username,
             password: password,
+            confirmPassword: confirmPassword,
             name: name,
             email: email,
             hireDate: hireDate,
@@ -26,9 +27,9 @@ function signup() {
         console.log(response.data);
             alert("사용자 가입에 성공했습니다.");
             window.location.href = "/";
-    }).fail(function (jqXHR) {
+    }).fail(function (jqXHR, textStatus, errorThrown) {
         // jqXHR: jQuery XHR 객체 (응답 전체)
-        handleServerError(jqXHR);
+        handleServerError(jqXHR, textStatus, errorThrown);
     });
 }
 
@@ -65,48 +66,10 @@ function validateForm(username, password, confirmPassword, name, email, hireDate
 }
 
 function handleServerError(jqXHR) {
-    if (jqXHR.responseJSON) {
-        console.log(jqXHR.responseJSON.code);
-        console.log(jqXHR.responseJSON.error_code);
-        console.log(jqXHR.responseJSON.message);
-        console.log(jqXHR.responseJSON.data);
-    //     const { error_code, message } = jqXHR.responseJSON;
-    //     alert("회원가입 실패: " + message);
-    //
-    //     switch (error_code) {
-    //         case "missing_username":
-    //         case "invalid_length_username":
-    //         case "invalid_format_username":
-    //         case "duplicate_username":
-    //             $("#username").focus();
-    //             break;
-    //         case "missing_password":
-    //         case "invalid_length_password":
-    //         case "invalid_format_password":
-    //             $("#password").focus();
-    //             break;
-    //         case "missing_name":
-    //         case "invalid_length_name":
-    //             $("#name").focus();
-    //             break;
-    //         case "missing_email":
-    //         case "invalid_length_email":
-    //         case "invalid_format_email":
-    //         case "duplicate_email":
-    //             $("#email").focus();
-    //             break;
-    //         case "missing_hiredate":
-    //         case "invalid_format_hiredate":
-    //             $("#hireDate").focus();
-    //             break;
-    //         case "missing_position":
-    //             $("#position").focus();
-    //             break;
-    //         default:
-    //             // 기타 처리, 포커스 필요없으면 그냥 무시 가능
-    //             break;
-    //     }
-    // } else {
-    //     alert("회원가입 실패: 알 수 없는 오류가 발생했습니다.");
+    console.log(jqXHR);
+    // 서버에서 내려준 메시지 활용 (JSON 응답인 경우)
+    if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+        alert(jqXHR.responseJSON.message);
     }
+
 }

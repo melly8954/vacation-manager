@@ -54,7 +54,6 @@ public class GlobalExceptionHandler implements ResponseController {
         // confirmPassword
         if ("confirmPassword".equals(field)) {
             if ("NotBlank".equals(code)) return ErrorCode.MISSING_CONFIRM_PASSWORD;
-            // confirmPassword 불일치는 커스텀 validator로 따로 처리해야 하므로 여기선 없음
         }
 
         // name
@@ -72,8 +71,7 @@ public class GlobalExceptionHandler implements ResponseController {
 
         // hiredate
         if ("hiredate".equals(field)) {
-            if ("NotBlank".equals(code)) return ErrorCode.MISSING_HIREDATE;
-            // hiredate가 미래일 경우는 커스텀 validator에서 따로 처리해야 함
+            if ("NotNull".equals(code)) return ErrorCode.MISSING_HIREDATE;
         }
 
         // position (Enum)
