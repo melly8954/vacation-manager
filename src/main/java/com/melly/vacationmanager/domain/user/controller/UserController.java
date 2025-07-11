@@ -5,6 +5,7 @@ import com.melly.vacationmanager.domain.user.service.UserService;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,8 +21,8 @@ public class UserController implements ResponseController {
 
     @PostMapping("")
     public ResponseEntity<ResponseDto> createUser(@Validated @RequestBody SignUpRequest request) {
-
-        return null;
+        userService.signUp(request);
+        return makeResponseEntity(HttpStatus.CREATED,null,"사용자 가입에 성공했습니다.",null);
     }
 
 
