@@ -5,6 +5,8 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 public class SignUpRequest {
@@ -35,7 +37,7 @@ public class SignUpRequest {
     private String email;
 
     @NotBlank(message = "입사일은 필수 입력 항목입니다.")
-    private String hiredate; // LocalDate로 받을 수도 있으나, 문자열로 받아서 파싱 처리 가능
+    private LocalDate hiredate; // LocalDate로 받을 수도 있으나, 문자열로 받아서 파싱 처리 가능
 
     @NotNull(message = "직급은 필수 선택 항목입니다.")
     private UserPosition position;

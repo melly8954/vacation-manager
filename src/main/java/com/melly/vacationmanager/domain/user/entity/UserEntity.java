@@ -6,6 +6,7 @@ import com.melly.vacationmanager.global.common.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,7 +27,7 @@ public class UserEntity {
     private String email;
 
     @Column(name="hire_date")
-    private String hireDate;
+    private LocalDate hireDate;
 
     @Enumerated(EnumType.STRING)
     private UserPosition position;
