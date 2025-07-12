@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+// enum 상수 선언부는 클래스 내 가장 앞에 위치해야 컴파일 오류가 발생하지 않는다.
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {

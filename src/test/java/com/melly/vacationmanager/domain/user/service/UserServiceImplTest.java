@@ -3,9 +3,11 @@ package com.melly.vacationmanager.domain.user.service;
 import com.melly.vacationmanager.domain.user.dto.request.SignUpRequest;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.repository.UserRepository;
+import com.melly.vacationmanager.global.common.enums.ErrorCode;
 import com.melly.vacationmanager.global.common.enums.UserPosition;
 import com.melly.vacationmanager.global.common.enums.UserRole;
 import com.melly.vacationmanager.global.common.enums.UserStatus;
+import com.melly.vacationmanager.global.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -37,20 +41,11 @@ class UserServiceImplTest {
     @Nested
     @DisplayName("사용자 가입 테스트")
     class SignUpTest {
-
         @Test
         @DisplayName("사용자 가입 정상 흐름")
         void success() {
             // given
-            SignUpRequest request = SignUpRequest.builder()
-                    .username("testUser")
-                    .password("1q2w3e4r!")
-                    .confirmPassword("1q2w3e4r!")
-                    .name("testUser")
-                    .email("testUser@example.com")
-                    .hireDate(LocalDate.of(2025,1,1))
-                    .position(UserPosition.STAFF)
-                    .build();
+            SignUpRequest request = createSignUpRequest("1q2w3e4r!", "1q2w3e4r!");
             given(passwordEncoder.encode(anyString())).willReturn("encodedPw");
 
             // when
@@ -66,7 +61,7 @@ class UserServiceImplTest {
             assertThat(savedUser.getPassword()).isEqualTo("encodedPw");
             assertThat(savedUser.getName()).isEqualTo("testUser");
             assertThat(savedUser.getEmail()).isEqualTo("testUser@example.com");
-            assertThat(savedUser.getHireDate()).isEqualTo(LocalDate.of(2025, 1, 1));
+            assertThat(savedUser.getHireDate()).isEqualTo(LocalDate.now().minusDays(1));
             assertThat(savedUser.getPosition()).isEqualTo(UserPosition.STAFF);
             assertThat(savedUser.getStatus()).isEqualTo(UserStatus.PENDING);
             assertThat(savedUser.getRole()).isEqualTo(UserRole.USER);
@@ -75,8 +70,30 @@ class UserServiceImplTest {
         @Test
         @DisplayName("사용자 가입 실패 흐름 - 비밀번호 불일치")
         void passwordMismatchException() {
+            // given
+            SignUpRequest request = createSignUpRequest("1q2w3e4r!!", "1q2w3e4r!@");
+            // 예외는 암호화 전에 발생하여 PasswordEncoder는 호출되지도 않음
 
+            // when & then
+//            // 기본 Junit5 예외처리 + AssertJ
+//            CustomException e = assertThrows(CustomException.class, () -> userService.signUp(request));
+//            assertThat(e.getErrorCode()).isEqualTo(ErrorCode.PASSWORD_MISMATCH);
+            assertThatThrownBy(() -> userService.signUp(request))
+                    .isInstanceOf(CustomException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.PASSWORD_MISMATCH);
         }
     }
 
+    private SignUpRequest createSignUpRequest(String password, String confirmPassword) {
+        return SignUpRequest.builder()
+                .username("testUser")
+                .password(password)
+                .confirmPassword(confirmPassword)
+                .name("testUser")
+                .email("testUser@example.com")
+                .hireDate(LocalDate.now().minusDays(1))
+                .position(UserPosition.STAFF)
+                .build();
+    }
 }
