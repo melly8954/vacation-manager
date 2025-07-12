@@ -65,7 +65,7 @@ public class GlobalExceptionHandler implements ResponseController {
         // email
         if ("email".equals(field)) {
             if ("NotBlank".equals(code)) return ErrorCode.MISSING_EMAIL;
-            if ("Email".equals(code)) return ErrorCode.INVALID_FORMAT_EMAIL;
+            if ("Pattern".equals(code)) return ErrorCode.INVALID_FORMAT_EMAIL;
             if ("Size".equals(code)) return ErrorCode.INVALID_LENGTH_EMAIL;
         }
 
