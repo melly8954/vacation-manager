@@ -1,7 +1,7 @@
 package com.melly.vacationmanager.domain.user.controller;
 
 import com.melly.vacationmanager.domain.user.dto.request.SignUpRequest;
-import com.melly.vacationmanager.domain.user.service.UserService;
+import com.melly.vacationmanager.domain.user.service.IUserService;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
 public class UserController implements ResponseController {
-    private final UserService userService;
+    private final IUserService userService;
 
     // 사용자 가입 API
     @PostMapping("")
