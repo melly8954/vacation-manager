@@ -25,7 +25,7 @@ function signup() {
     // 아이디 중복 검사 통과 여부
     if (!isUsernameAvailable) {
         alert("아이디 중복 확인이 필요합니다.");
-        $("#username").focus();
+        username.focus();
         return;
     }
     
