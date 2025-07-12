@@ -19,9 +19,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -121,4 +121,81 @@ class UserServiceImplTest {
                 .position(UserPosition.STAFF)
                 .build();
     }
+
+    @Nested
+    @DisplayName("사용자 중복 검사 테스트")
+    class duplicateCheckTest {
+        @Test
+        @DisplayName("사용자 중복 검사 정상 흐름 - 아이디")     // 정상 흐름은 중복이 존재하지 않는 상황이므로, 예외가 발생하지 않아야 하는 흐름이다.
+        void duplicateCheck_noDuplicate_username() {
+            // given
+            String type = "username";
+            String value = "testUser";
+            given(userRepository.findByUsername(value)).willReturn(Optional.empty());
+
+            // when & then (예외 발생하지 않아야 통과)
+            assertThatCode(() -> userService.duplicateCheck(type, value))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        @DisplayName("사용자 중복 검사 정상 흐름 - 이메일")
+        void duplicateCheck_noDuplicate_email() {
+            // given
+            String type = "email";
+            String value = "testUser@example.com";
+            given(userRepository.findByEmail(value)).willReturn(Optional.empty());
+
+            // when & then (예외 발생하지 않아야 통과)
+            assertThatCode(() -> userService.duplicateCheck(type, value))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        @DisplayName("사용자 중복 검사 실패 흐름 - 아이디 중복")
+        void duplicateCheck_duplicate_username() {
+            // given
+            String type = "username";
+            String value = "testUser";
+            UserEntity dummyUser = UserEntity.builder()
+                    .username(value)
+                    .password("encodedPw")
+                    .name("testUser")
+                    .email("testUser@example.com")
+                    .hireDate(LocalDate.now().minusDays(1))
+                    .position(UserPosition.STAFF)
+                    .build();
+            given(userRepository.findByUsername(value)).willReturn(Optional.of(dummyUser));  // 존재한다고 가정 -> 예외 발생 유도
+
+            // when & then
+            assertThatThrownBy(() -> userService.duplicateCheck(type, value))
+                    .isInstanceOf(CustomException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.DUPLICATE_USERNAME);
+        }
+
+        @Test
+        @DisplayName("사용자 중복 검사 실패 흐름 - 이메일 중복")
+        void duplicateCheck_duplicate_email() {
+            // given
+            String type = "email";
+            String value = "testUser@example.com";
+            UserEntity dummyUser = UserEntity.builder()
+                    .username("testUser")
+                    .password("encodedPw")
+                    .name("testUser")
+                    .email(value)
+                    .hireDate(LocalDate.now().minusDays(1))
+                    .position(UserPosition.STAFF)
+                    .build();
+            given(userRepository.findByEmail(value)).willReturn(Optional.of(dummyUser));  // 존재한다고 가정 -> 예외 발생 유도
+
+            // when & then
+            assertThatThrownBy(() -> userService.duplicateCheck(type, value))
+                    .isInstanceOf(CustomException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.DUPLICATE_EMAIL);
+        }
+    }
+
 }
