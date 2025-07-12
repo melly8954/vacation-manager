@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -21,6 +22,8 @@ import java.util.Objects;
 public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private static final Pattern EMAIL_PATTERN =
+            Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
 
     // 사용자 가입
     public void signUp(SignUpRequest request) {
@@ -52,8 +55,13 @@ public class UserServiceImpl implements IUserService {
         switch (type) {
             case "username" -> userRepository.findByUsername(value)
                     .ifPresent(user -> { throw new CustomException(ErrorCode.DUPLICATE_USERNAME); });
-            case "email" -> userRepository.findByEmail(value)
-                    .ifPresent(user -> { throw new CustomException(ErrorCode.DUPLICATE_EMAIL); });
+            case "email" -> {
+                if (!EMAIL_PATTERN.matcher(value).matches()) {
+                    throw new CustomException(ErrorCode.INVALID_FORMAT_EMAIL);
+                }
+                userRepository.findByEmail(value)
+                        .ifPresent(user -> { throw new CustomException(ErrorCode.DUPLICATE_EMAIL); });
+            }
             default -> throw new CustomException(ErrorCode.INVALID_TYPE_VALUE);
         }
     }

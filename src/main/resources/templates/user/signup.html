@@ -40,7 +40,9 @@
 
         <div class="mb-3">
             <label for="email" class="form-label">이메일</label>
+            <span id="email-check-msg"></span> <!-- 결과 메시지 표시용 -->
             <input type="email" id="email" class="form-control" required />
+            <button class="btn btn-outline-secondary" data-type="email" data-target="#email" onclick="duplicateCheck(this)">중복 검사</button>
         </div>
         <!-- 입사일 -->
         <div class="mb-3">

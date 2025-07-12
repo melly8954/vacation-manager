@@ -1,5 +1,6 @@
-// 아이디 중복 검사 통과 여부 상태
+// 중복 검사 통과 여부 상태
 let isUsernameAvailable = false;
+let isEmailAvailable = false;
 
 // DOM 완전히 로드되고 나서 JavaScript 코드를 실행하도록 보장하는 jQuery 구문
 $(document).ready(function() {
@@ -7,6 +8,11 @@ $(document).ready(function() {
     $("#username").on("input", function() {
         isUsernameAvailable = false;
         $("#username-check-msg").removeClass("msg-success msg-error").text("");
+    });
+    // 이메일 이하 동일
+    $("#email").on("input", function () {
+        isEmailAvailable = false;
+        $("#email-check-msg").removeClass("msg-success msg-error").text("");
     });
 });
 
@@ -22,10 +28,16 @@ function signup() {
 
     // 필드 유효성 검사
     if (!validateForm(username, password, confirmPassword, name, email, hireDate, position)) return;
-    // 아이디 중복 검사 통과 여부
+
+    // 중복 검사 통과 여부
     if (!isUsernameAvailable) {
         alert("아이디 중복 확인이 필요합니다.");
         username.focus();
+        return;
+    }
+    if (!isEmailAvailable) {
+        alert("이메일 중복 확인이 필요합니다.");
+        email.focus();
         return;
     }
     
@@ -105,12 +117,12 @@ function duplicateCheck(e){   // 버튼 자신을 인자로 넘김
     const type = $(e).data("type");
     const targetSelector = $(e).data("target");  // 해당 버튼이 참조할 태그의 id 값을 암시
     const value = $(targetSelector).val().trim();
-    const messageSpan = $("#username-check-msg");
+    const messageSpan = $(`${targetSelector}-check-msg`);
 
     if (!value) {
-        alert("아이디를 입력하세요.")
-        $("#username").focus();
-        return false;
+        alert(type === "username" ? "아이디를 입력하세요." : "이메일을 입력하세요.");
+        $(targetSelector).focus();
+        return;
     }
 
     $.ajax({
@@ -118,10 +130,14 @@ function duplicateCheck(e){   // 버튼 자신을 인자로 넘김
         method: "GET",
     }).done(function (response) {
         console.log(response.data);
-        isUsernameAvailable = true;
+        if (type === "username") {
+            isUsernameAvailable = true;
+        } else if (type === "email") {
+            isEmailAvailable = true;
+        }
         messageSpan.removeClass("msg-error")
             .addClass("msg-success")
-            .text("사용 가능한 아이디입니다.");
+            .text(`사용 가능한 ${type === "username" ? "아이디" : "이메일"}입니다.`);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         // jqXHR: jQuery XHR 객체 (응답 전체)
         handleServerError(jqXHR);
