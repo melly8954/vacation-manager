@@ -83,6 +83,19 @@ class UserServiceImplTest {
                     .extracting("errorCode")
                     .isEqualTo(ErrorCode.PASSWORD_MISMATCH);
         }
+
+        @Test
+        @DisplayName("사용자 가입 실패 흐름 - 입사일 유효성 검사 실패")
+        void invalidHireDate() {
+            // given
+            SignUpRequest request = createSignUpRequest("1q2w3e4r!","1q2w3e4r!",LocalDate.now().plusDays(1));
+
+            // when & then
+            assertThatThrownBy(() -> userService.signUp(request))
+                    .isInstanceOf(CustomException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.INVALID_FORMAT_HIREDATE);
+        }
     }
 
     private SignUpRequest createSignUpRequest(String password, String confirmPassword) {
@@ -93,6 +106,18 @@ class UserServiceImplTest {
                 .name("testUser")
                 .email("testUser@example.com")
                 .hireDate(LocalDate.now().minusDays(1))
+                .position(UserPosition.STAFF)
+                .build();
+    }
+    // 오버로딩
+    private SignUpRequest createSignUpRequest(String password, String confirmPassword, LocalDate hireDate) {
+        return SignUpRequest.builder()
+                .username("testUser")
+                .password(password)
+                .confirmPassword(confirmPassword)
+                .name("testUser")
+                .email("testUser@example.com")
+                .hireDate(hireDate)
                 .position(UserPosition.STAFF)
                 .build();
     }
