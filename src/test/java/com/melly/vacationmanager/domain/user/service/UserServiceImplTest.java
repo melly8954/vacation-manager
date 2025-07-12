@@ -175,6 +175,20 @@ class UserServiceImplTest {
         }
 
         @Test
+        @DisplayName("사용자 중복 검사 실패 흐름 - 이메일 형식 오류")
+        void duplicateCheck_invalid_email_format() {
+            // given
+            String type = "email";
+            String value = "invalid-email-format";  // '@' 없음
+
+            // when & then
+            assertThatThrownBy(() -> userService.duplicateCheck(type, value))
+                    .isInstanceOf(CustomException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.INVALID_FORMAT_EMAIL);
+        }
+
+        @Test
         @DisplayName("사용자 중복 검사 실패 흐름 - 이메일 중복")
         void duplicateCheck_duplicate_email() {
             // given
@@ -195,6 +209,20 @@ class UserServiceImplTest {
                     .isInstanceOf(CustomException.class)
                     .extracting("errorCode")
                     .isEqualTo(ErrorCode.DUPLICATE_EMAIL);
+        }
+
+        @Test
+        @DisplayName("사용자 중복 검사 실패 흐름 - 지원하지 않는 검사 타입 요청")
+        void duplicateCheck_invalid_type() {
+            // given
+            String type = "nickname";  // 잘못된 타입
+            String value = "someValue";
+
+            // when & then
+            assertThatThrownBy(() -> userService.duplicateCheck(type, value))
+                    .isInstanceOf(CustomException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.INVALID_TYPE_VALUE);
         }
     }
 
