@@ -1,6 +1,7 @@
 package com.melly.vacationmanager.domain.user.service;
 
 import com.melly.vacationmanager.domain.user.dto.request.SignUpRequest;
+import com.melly.vacationmanager.domain.user.dto.response.UserInfoResponse;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.repository.UserRepository;
 import com.melly.vacationmanager.global.common.enums.ErrorCode;
@@ -26,6 +27,7 @@ public class UserServiceImpl implements IUserService {
             Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
 
     // 사용자 가입
+    @Override
     public void signUp(SignUpRequest request) {
         if(!Objects.equals(request.getPassword(), request.getConfirmPassword())) {
             log.error("비밀번호와 비밀번호 확인이 일치하지 않습니다");
@@ -51,6 +53,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     // 사용자 중복체크
+    @Override
     public void duplicateCheck(String type, String value) {
         switch (type) {
             case "username" -> userRepository.findByUsername(value)
@@ -65,5 +68,10 @@ public class UserServiceImpl implements IUserService {
             default -> throw new CustomException(ErrorCode.INVALID_TYPE_VALUE);
         }
     }
-    
+
+    @Override
+    public UserInfoResponse getUserInfo(Long userId) {
+        return null;
+    }
+
 }
