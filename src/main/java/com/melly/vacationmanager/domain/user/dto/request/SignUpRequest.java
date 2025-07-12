@@ -3,13 +3,16 @@ package com.melly.vacationmanager.domain.user.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.melly.vacationmanager.global.common.enums.UserPosition;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Getter
-@Setter
+@Builder
+@AllArgsConstructor
 public class SignUpRequest {
 
     @NotBlank(message = "아이디는 필수 입력 항목입니다.")
