@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,5 +22,9 @@ public class UserController implements ResponseController {
         return makeResponseEntity(HttpStatus.CREATED,null,"사용자 가입에 성공했습니다.",null);
     }
 
-
+    @GetMapping("/duplicate-check")
+    public ResponseEntity<ResponseDto> duplicateCheck(@RequestParam String type, @RequestParam String value) {
+        userService.duplicateCheck(type,value);
+        return makeResponseEntity(HttpStatus.OK,null,"중복 검사 통과",null);
+    }
 }

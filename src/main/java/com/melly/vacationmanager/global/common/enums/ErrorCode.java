@@ -37,6 +37,9 @@ public enum ErrorCode {
     // position
     MISSING_POSITION("missing_position", "position은 필수 선택 항목입니다.", HttpStatus.BAD_REQUEST),
 
+    // 중복 체크 유형
+    INVALID_TYPE_VALUE("invalid_type_value", "지원하지 않는 중복 검사 타입입니다.", HttpStatus.BAD_REQUEST),
+
     // 공통
     INTERNAL_ERROR("internal_error", "서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     DEFAULT_BAD_REQUEST("bad_request", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST);

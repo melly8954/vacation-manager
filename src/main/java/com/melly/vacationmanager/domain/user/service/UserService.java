@@ -48,5 +48,15 @@ public class UserService {
         userRepository.save(userEntity);
     }
 
-    // 아이디 중복체크
+    // 사용자 중복체크
+    public void duplicateCheck(String type, String value) {
+        switch (type) {
+            case "username" -> userRepository.findByUsername(value)
+                    .ifPresent(user -> { throw new CustomException(ErrorCode.DUPLICATE_USERNAME); });
+            case "email" -> userRepository.findByEmail(value)
+                    .ifPresent(user -> { throw new CustomException(ErrorCode.DUPLICATE_EMAIL); });
+            default -> throw new CustomException(ErrorCode.INVALID_TYPE_VALUE);
+        }
+    }
+    
 }
