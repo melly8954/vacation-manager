@@ -1,0 +1,9 @@
+.msg-success {
+    color: green; /* 연두색은 #32CD32 (limegreen) 등도 가능 */
+    font-size: 0.9em;
+}
+
+.msg-error {
+    color: red;
+    font-size: 0.9em;
+}
