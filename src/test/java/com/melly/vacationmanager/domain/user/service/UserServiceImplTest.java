@@ -18,8 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -63,14 +62,14 @@ class UserServiceImplTest {
             then(userRepository).should().save(captor.capture());       // userRepository.save()가 호출되었는지 확인하고, 호출 때 넘겨준 인자를 captor가 잡아냄
 
             UserEntity savedUser = captor.getValue();       // captor가 잡아낸 실제 저장 인스턴스를 변수에 저장
-            assertEquals("testUser", savedUser.getUsername());
-            assertEquals("encodedPw", savedUser.getPassword());
-            assertEquals("testUser", savedUser.getName());
-            assertEquals("testUser@example.com", savedUser.getEmail());
-            assertEquals(LocalDate.of(2025,1,1), savedUser.getHireDate());
-            assertEquals(UserPosition.STAFF, savedUser.getPosition());
-            assertEquals(UserStatus.PENDING, savedUser.getStatus());
-            assertEquals(UserRole.USER, savedUser.getRole());
+            assertThat(savedUser.getUsername()).isEqualTo("testUser");
+            assertThat(savedUser.getPassword()).isEqualTo("encodedPw");
+            assertThat(savedUser.getName()).isEqualTo("testUser");
+            assertThat(savedUser.getEmail()).isEqualTo("testUser@example.com");
+            assertThat(savedUser.getHireDate()).isEqualTo(LocalDate.of(2025, 1, 1));
+            assertThat(savedUser.getPosition()).isEqualTo(UserPosition.STAFF);
+            assertThat(savedUser.getStatus()).isEqualTo(UserStatus.PENDING);
+            assertThat(savedUser.getRole()).isEqualTo(UserRole.USER);
         }
 
         @Test
