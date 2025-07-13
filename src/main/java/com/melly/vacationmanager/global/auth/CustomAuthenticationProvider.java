@@ -27,16 +27,16 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String rawPassword = authentication.getCredentials().toString();
 
-        // 1. 사용자 조회
+        // 사용자 조회
         UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        // 2. 비밀번호 검증
+        // 비밀번호 검증
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
         }
 
-        // 3. 계정 상태 체크 (예: PENDING, REJECTED 등)
+        // 계정 상태 체크 (예: PENDING, REJECTED 등)
         if (user.getStatus() == UserStatus.PENDING) {
             throw new DisabledException("PENDING");
         }
@@ -44,7 +44,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             throw new DisabledException("REJECTED");
         }
 
-        // 4. 인증 토큰 생성 (권한 정보 등 추가 가능)
+        // 인증 토큰 생성 (권한 정보 등 추가 가능)
         List<GrantedAuthority> authorities = List.of(/* 권한 추가 */);
 
         return new UsernamePasswordAuthenticationToken(user, null, authorities);
