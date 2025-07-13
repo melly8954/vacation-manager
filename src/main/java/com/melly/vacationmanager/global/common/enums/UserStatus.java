@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum UserStatus {
     PENDING("승인 대기"),
     ACTIVE("승인 완료"),
-    REJECTION("승인 반려");
+    REJECTED("승인 반려");
 
     private final String description;
 

@@ -71,7 +71,17 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserInfoResponse getUserInfo(Long userId) {
-        return null;
-    }
+        UserEntity user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        return UserInfoResponse.builder()
+                .userId(userId)
+                .username(user.getUsername())
+                .name(user.getName())
+                .email(user.getEmail())
+                .hireDate(user.getHireDate())
+                .position(user.getPosition())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
 }
