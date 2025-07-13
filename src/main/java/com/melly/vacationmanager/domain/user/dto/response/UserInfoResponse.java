@@ -1,6 +1,7 @@
 package com.melly.vacationmanager.domain.user.dto.response;
 
 import com.melly.vacationmanager.global.common.enums.UserPosition;
+import com.melly.vacationmanager.global.common.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,5 +19,10 @@ public class UserInfoResponse {
     private String email;
     private LocalDate hireDate;
     private UserPosition position;
+    private UserRole role;
     private LocalDateTime createdAt;
+
+    public boolean isAdmin() {
+        return role == UserRole.ADMIN;
+    }
 }

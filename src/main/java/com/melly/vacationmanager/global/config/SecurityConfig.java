@@ -37,10 +37,16 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)     // 람다식을 메서드 레퍼런스로 치환
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/signup").permitAll()
+                        .requestMatchers("/","/signup","/admin/pending").permitAll()
                         .requestMatchers("/api/v1/users","/api/v1/users/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            // 로그인 안 되어 있는 경우 리다이렉트
+                            response.sendRedirect("/");
+                        })
                 )
                 .authenticationProvider(customAuthenticationProvider())
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)

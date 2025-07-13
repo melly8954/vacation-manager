@@ -14,4 +14,9 @@ public class AllController {
     public String signup() {
         return "user/signup";
     }
+
+    @GetMapping("/admin/pending")
+    public String pending() {
+        return "admin/pending";
+    }
 }

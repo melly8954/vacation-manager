@@ -81,6 +81,7 @@ public class UserServiceImpl implements IUserService {
                 .email(user.getEmail())
                 .hireDate(user.getHireDate())
                 .position(user.getPosition())
+                .role(user.getRole())
                 .createdAt(user.getCreatedAt())
                 .build();
     }
