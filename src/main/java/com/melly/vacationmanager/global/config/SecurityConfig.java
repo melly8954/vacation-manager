@@ -37,7 +37,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)     // 람다식을 메서드 레퍼런스로 치환
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/signup","/admin/pending").permitAll()
+                        .requestMatchers("/","/signup").permitAll()
                         .requestMatchers("/api/v1/users","/api/v1/users/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/admin/**","/admin","/admin/**").hasRole("ADMIN")

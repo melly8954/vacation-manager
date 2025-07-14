@@ -46,12 +46,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         }
 
         // 인증 토큰 생성 (권한 정보 등 추가 가능)
+        PrincipalDetails principalDetails = new PrincipalDetails(user);
+
         String roleName = user.getRole().name(); // 예: ADMIN
         List<GrantedAuthority> authorities = List.of(
                 new SimpleGrantedAuthority("ROLE_" + roleName)
         );
 
-        return new UsernamePasswordAuthenticationToken(user, null, authorities);
+        return new UsernamePasswordAuthenticationToken(principalDetails, null, authorities);
     }
 
     @Override

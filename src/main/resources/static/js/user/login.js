@@ -12,7 +12,9 @@ function login(){
         })
     }).done(function (response) {
         alert(response.message);
-        window.location.href = "/";  // 홈으로 리디렉션
+        setTimeout(() => {
+            window.location.href = "/";
+        }, 100);  // 쿠키 반영 시간 확보
     }).fail(function (jqXHR, textStatus, errorThrown) {
         handleServerError(jqXHR);
     });

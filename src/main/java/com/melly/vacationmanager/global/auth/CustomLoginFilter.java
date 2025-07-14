@@ -17,8 +17,10 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
 import java.io.IOException;
 
@@ -38,7 +40,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             String username = loginRequest.getUsername();
             String password = loginRequest.getPassword();
 
-            log.debug("로그인 시도 - 아이디: {}", username);
+            log.info("로그인 시도 - 아이디: {}", username);
 
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(username, password);
@@ -57,13 +59,23 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         // 인증된 Authentication 객체를 SecurityContext에 수동으로 등록 --> 직접 JSON 응답을 커스터마이징하고 있다면, 수동 등록
         SecurityContextHolder.getContext().setAuthentication(authResult);
 
+        // 인증 객체가 제대로 등록됐는지 로그로 확인
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("SecurityContext에 등록된 Authentication: {}", authentication);
+        log.info("Authentication principal: {}", authentication.getPrincipal());
+        log.info("Authentication authenticated: {}", authentication.isAuthenticated());
+
         // 세션에 사용자 ID 저장
         HttpSession session = request.getSession(true);
         Object principal = authResult.getPrincipal();
 
-        if (principal instanceof UserEntity user) {
-            session.setAttribute("LOGIN_USER_ID", user.getUserId());
+        if (principal instanceof PrincipalDetails principalDetails) {
+            session.setAttribute("LOGIN_USER_ID", principalDetails.getUserEntity().getUserId());
         }
+
+        // SecurityContext 세션 저장
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
 
         // 응답 데이터 준비
         response.setStatus(HttpServletResponse.SC_OK);
