@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -45,7 +46,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         }
 
         // 인증 토큰 생성 (권한 정보 등 추가 가능)
-        List<GrantedAuthority> authorities = List.of(/* 권한 추가 */);
+        String roleName = user.getRole().name(); // 예: ADMIN
+        List<GrantedAuthority> authorities = List.of(
+                new SimpleGrantedAuthority("ROLE_" + roleName)
+        );
 
         return new UsernamePasswordAuthenticationToken(user, null, authorities);
     }

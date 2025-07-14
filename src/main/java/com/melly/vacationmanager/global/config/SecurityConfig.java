@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/","/signup","/admin/pending").permitAll()
                         .requestMatchers("/api/v1/users","/api/v1/users/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/admin/**","/admin","/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
