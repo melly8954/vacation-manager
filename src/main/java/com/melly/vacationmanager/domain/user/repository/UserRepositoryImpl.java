@@ -10,6 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -24,8 +27,18 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(user.status.eq(UserStatus.PENDING));
         if (name != null && !name.isEmpty()) builder.and(user.name.containsIgnoreCase(name));
-        if (year != null) builder.and(user.createdAt.year().eq(year));
-        if (month != null) builder.and(user.createdAt.month().eq(month));
+
+        if (year != null && month != null) {
+            LocalDateTime startDate = LocalDate.of(year, month, 1).atStartOfDay();
+            LocalDateTime endDate = startDate.withDayOfMonth(startDate.toLocalDate().lengthOfMonth())
+                    .with(LocalTime.MAX);
+            builder.and(user.createdAt.between(startDate, endDate));
+        } else {
+            if (year != null)
+                builder.and(user.createdAt.year().eq(year));
+            if (month != null)
+                builder.and(user.createdAt.month().eq(month));
+        }
 
         List<UserEntity> content = queryFactory
                 .selectFrom(user)
