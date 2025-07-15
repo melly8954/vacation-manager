@@ -1,6 +1,7 @@
 package com.melly.vacationmanager.domain.user.service;
 
 import com.melly.vacationmanager.domain.user.dto.request.SignUpRequest;
+import com.melly.vacationmanager.domain.user.dto.response.UserInfoResponse;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.repository.UserRepository;
 import com.melly.vacationmanager.global.common.enums.ErrorCode;
@@ -226,4 +227,52 @@ class UserServiceImplTest {
         }
     }
 
+    @Nested
+    @DisplayName("사용자 정보 조회 테스트")
+    class getUserInfoTest {
+        @Test
+        @DisplayName("사용자 정보 조회 성공 흐름")
+        void getUserInfo_success(){
+            // given
+            Long userId = 1L;
+            UserEntity user = UserEntity.builder()
+                    .userId(userId)
+                    .username("testUser")
+                    .password("encodedPw")
+                    .name("testUser")
+                    .email("testUser@example.com")
+                    .hireDate(LocalDate.now().minusDays(1))
+                    .position(UserPosition.STAFF)
+                    .role(UserRole.USER)
+                    .status(UserStatus.ACTIVE)
+                    .build();
+            given(userRepository.findByUserId(userId)).willReturn(Optional.of(user));
+
+            // when
+            UserInfoResponse response = userService.getUserInfo(userId);
+
+            // then
+            assertThat(response.getUserId()).isEqualTo(userId);
+            assertThat(response.getUsername()).isEqualTo(user.getUsername());
+            assertThat(response.getName()).isEqualTo(user.getName());
+            assertThat(response.getEmail()).isEqualTo(user.getEmail());
+            assertThat(response.getHireDate()).isEqualTo(user.getHireDate());
+            assertThat(response.getPosition()).isEqualTo(user.getPosition());
+            assertThat(response.getRole()).isEqualTo(user.getRole());
+        }
+
+        @Test
+        @DisplayName("사용자 정보 조회 실패 - 존재하지 않는 사용자")
+        void getUserInfo_userNotFound() {
+            // given
+            Long userId = 1L;
+            given(userRepository.findByUserId(userId)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> userService.getUserInfo(userId))
+                    .isInstanceOf(CustomException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.USER_NOT_FOUND);
+        }
+    }
 }
