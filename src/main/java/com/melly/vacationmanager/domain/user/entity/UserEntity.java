@@ -46,7 +46,9 @@ public class UserEntity {
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = LocalDateTime.now();
+        if (this.createdAt == null) {  // null 체크 꼭 하기
+            this.createdAt = LocalDateTime.now();
+        }
     }
 
     @PreUpdate
