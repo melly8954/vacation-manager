@@ -1,6 +1,7 @@
 package com.melly.vacationmanager.domain.admin.dto.response;
 
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
+import com.melly.vacationmanager.global.common.enums.UserPosition;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class PendingUserDto {
     private Long userId;
     private String name;
     private String email;
+    private UserPosition position;
     private LocalDateTime createdAt;
     private String status;
 
@@ -24,6 +26,7 @@ public class PendingUserDto {
                 user.getUserId(),
                 user.getName(),
                 user.getEmail(),
+                user.getPosition(),
                 user.getCreatedAt(),
                 user.getStatus().name()
         );

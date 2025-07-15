@@ -93,12 +93,12 @@ function renderPendingUsers(data) {
 
     data.forEach(user => {
         const item = `
-            <li class="list-group-item d-flex justify-content-between align-items-center flex-column flex-md-row gap-2">
-                <div class="text-start">
-                    <strong>${user.name} (${user.username})</strong><br />
-                    <small class="text-muted">${user.email} · 가입일: ${user.createdAt.slice(0,10)} · 역할: ${user.role}</small>
-                </div>
-                <div>
+            <li class="list-group-item user-list-item">
+                <div class="user-name">${user.name}</div>
+                <div class="user-email">${user.email}</div>
+                <div class="user-position">${user.position}</div>
+                <div class="user-createdAt">${user.createdAt.slice(0,10)}</div>
+                <div class="user-actions">
                     <button class="btn btn-success btn-sm approve-btn" data-user-id="${user.userId}">승인</button>
                     <button class="btn btn-danger btn-sm reject-btn" data-user-id="${user.userId}">반려</button>
                 </div>
