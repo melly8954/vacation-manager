@@ -4,5 +4,5 @@ import com.melly.vacationmanager.domain.admin.dto.response.AdminUserManagePendin
 import org.springframework.data.domain.Pageable;
 
 public interface IAdminUserManageService {
-    AdminUserManagePendingPageResponse findPendingUsers(int year, int month, String name, Pageable pageable);
+    AdminUserManagePendingPageResponse findPendingUsers(Integer year, Integer month, String name, Pageable pageable);
 }

@@ -4,6 +4,7 @@ import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
 import com.melly.vacationmanager.global.common.enums.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -94,5 +95,11 @@ public class GlobalExceptionHandler implements ResponseController {
                 errorCode.getMessage(),
                 null
         );
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ResponseDto> handleException(Exception e) {
+        log.error("500 Error : " + e.getMessage());
+        return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR,ErrorCode.INTERNAL_ERROR.getErrorCode(),"서버 내부 오류가 발생했습니다.", null);
     }
 }

@@ -15,7 +15,7 @@ public class AdminUserManageServiceImpl implements IAdminUserManageService {
     private final UserRepository userRepository;
 
     @Override
-    public AdminUserManagePendingPageResponse findPendingUsers(int year, int month, String name, Pageable pageable) {
+    public AdminUserManagePendingPageResponse findPendingUsers(Integer year, Integer month, String name, Pageable pageable) {
         // Repository 호출해서 쿼리 DSL 결과 받아옴
         Page<UserEntity> pendingUsers = userRepository.findPendingUsers(name, year, month, pageable);
 

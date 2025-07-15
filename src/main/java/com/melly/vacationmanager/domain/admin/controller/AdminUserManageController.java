@@ -25,8 +25,8 @@ public class AdminUserManageController implements ResponseController {
     @GetMapping("/pending")
     public ResponseEntity<ResponseDto> findPendingUsers(@RequestParam(defaultValue = "1") int page,
                                                         @RequestParam(defaultValue = "10") int size,
-                                                        @RequestParam(required = false) int year,
-                                                        @RequestParam(required = false) int month,
+                                                        @RequestParam(required = false) Integer year,
+                                                        @RequestParam(required = false) Integer month,
                                                         @RequestParam(defaultValue = "") String name,
                                                         @RequestParam(defaultValue = "desc") String order){
         // 음수 혹은 0 페이지 방지 (최소 1 페이지부터 시작, 음수를 넣어도 1부터 시작)
