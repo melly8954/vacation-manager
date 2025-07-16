@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
@@ -139,5 +140,18 @@ class UserRepositoryImplTest {
         Pageable secondPageable = PageRequest.of(1, 2);
         Page<UserEntity> secondPage = userRepository.findPendingUsers(null, null, null, secondPageable);
         assertThat(secondPage.getContent()).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("정렬 방향 테스트 - 오름차순/내림차순")
+    void testFindPendingUsers_sortOrder() {
+        Pageable ascPageable = PageRequest.of(0, 10, Sort.by("userId").ascending());
+        Pageable descPageable = PageRequest.of(0, 10, Sort.by("userId").descending());
+
+        Page<UserEntity> ascResult = userRepository.findPendingUsers(null, null, null, ascPageable);
+        Page<UserEntity> descResult = userRepository.findPendingUsers(null, null, null, descPageable);
+
+        assertThat(ascResult.getContent()).isSortedAccordingTo((u1, u2) -> u1.getUserId().compareTo(u2.getUserId()));
+        assertThat(descResult.getContent()).isSortedAccordingTo((u1, u2) -> u2.getUserId().compareTo(u1.getUserId()));
     }
 }
