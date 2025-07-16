@@ -19,39 +19,37 @@
             <div class="container-fluid mt-5">
                 <h2>사용자 가입 승인대기 목록</h2>
 
-                <!-- 필터 UI-->
+                <!-- 필터 UI -->
                 <div class="card p-3 mb-4">
-                    <div class="row g-3 align-items-end">
-                        <div class="col-md-3">
+                    <!-- 이름 검색: 첫 번째 행 -->
+                    <div class="row g-3 align-items-end mb-2">
+                        <div class="col-md-6 col-lg-4">
                             <label for="name" class="form-label">이름 검색</label>
                             <input type="text" class="form-control" id="name" placeholder="신청자 이름">
                         </div>
+                        <div class="col-md-3 col-lg-2">
+                            <label class="form-label invisible">버튼 그룹</label>
+                            <div class="d-flex gap-2">
+                                <button id="search-btn" class="btn btn-primary w-50">검색</button>
+                                <button id="reset-btn" class="btn btn-outline-secondary w-50">초기화</button>
+                            </div>
+                        </div>
+                    </div>
 
-                        <div class="col-md-2">
+                    <!-- 연도/월/정렬: 두 번째 행 -->
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3 col-lg-2">
                             <label for="year" class="form-label">가입 연도</label>
                             <select class="form-select" id="year">
                                 <!-- 동적 처리 -->
                             </select>
                         </div>
 
-                        <div class="col-md-2">
+                        <div class="col-md-3 col-lg-2">
                             <label for="month" class="form-label">가입 월</label>
                             <select class="form-select" id="month">
                                 <!-- 동적 처리 -->
                             </select>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label for="order" class="form-label">정렬</label>
-                            <select class="form-select" id="order">
-                                <option value="desc" selected>최신순</option>
-                                <option value="asc">오래된 순</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label invisible">검색 버튼</label>
-                            <button id="search-btn" class="btn btn-primary w-100">검색</button>
                         </div>
                     </div>
                 </div>
@@ -59,6 +57,9 @@
                 <!-- 사용자 가입신청 목록 -->
                 <!-- 제목행 -->
                 <div class="pending-user-list-header d-none d-md-grid mb-2">
+                    <div class="sortable" id="sort-userId" data-order="desc" role="button">
+                        ID <span class="sort-icon">▼</span>
+                    </div>
                     <div>이름</div>
                     <div>이메일</div>
                     <div>직급</div>

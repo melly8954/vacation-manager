@@ -1,7 +1,7 @@
 .pending-user-list-header,
 #pending-user-list > li.user-list-item {
     display: grid;
-    grid-template-columns: 2fr 3fr 1.5fr 2fr 1.5fr; /* 제목행과 동일한 그리드 */
+    grid-template-columns: 1fr 2fr 2fr 1.5fr 1.5fr 1.2fr; /* 제목행과 동일한 그리드 */
     align-items: center;
     gap: 10px;
 }

@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    let currentOrder = 'desc'; // 전역 정렬 상태
+
     populateYearOptions();
     populateMonthOptions();
 
@@ -10,6 +12,44 @@ $(document).ready(function() {
         fetchPendingUsers(getFilterParams());
     });
 
+    // 초기화 버튼 클릭 이벤트
+    $('#reset-btn').on('click', function () {
+        // 입력값 초기화
+        $('#name').val('');
+        $('#year').val('');
+        $('#month').val('');
+        // 정렬 순서 초기화 (필요 시)
+        currentOrder = 'desc'; // 전역 정렬 변수 초기화
+        $('#sort-userId .sort-icon').text('▼');
+
+        // 목록 다시 불러오기
+        fetchPendingUsers(getFilterParams());
+    });
+
+    // 정렬 헤더 클릭 이벤트
+    $('#sort-userId').on('click', function () {
+        currentOrder = currentOrder === 'desc' ? 'asc' : 'desc';
+
+        const icon = currentOrder === 'asc' ? '▲' : '▼';
+        $(this).find('.sort-icon').text(icon);
+
+        const params = getFilterParams();
+        params.order = currentOrder;
+        fetchPendingUsers(params);
+    });
+
+    // getFilterParams() 수정
+    function getFilterParams() {
+        return {
+            name: $('#name').val(),
+            year: Number($('#year').val()),
+            month: Number($('#month').val()),
+            order: currentOrder, // ← 여기 반영
+            page: 1,
+            size: 10
+        };
+    }
+
     // 페이지네이션 클릭 이벤트 (이벤트 위임)
     $('#pagination').on('click', 'a.page-link', function (e) {
         e.preventDefault();
@@ -20,18 +60,6 @@ $(document).ready(function() {
             fetchPendingUsers(params);
         }
     });
-
-    // 필터에서 값 가져오는 함수
-    function getFilterParams() {
-        return {
-            name: $('#name').val(),
-            year: Number($('#year').val()),
-            month: Number($('#month').val()),
-            order: $('#order').val(),
-            page: 1,
-            size: 10
-        };
-    }
 });
 
 // 연도 필터링 동적 처리
@@ -94,6 +122,7 @@ function renderPendingUsers(data) {
     data.forEach(user => {
         const item = `
             <li class="list-group-item user-list-item">
+                <div class="user-name">${user.userId}</div>
                 <div class="user-name">${user.name}</div>
                 <div class="user-email">${user.email}</div>
                 <div class="user-position">${user.position}</div>
