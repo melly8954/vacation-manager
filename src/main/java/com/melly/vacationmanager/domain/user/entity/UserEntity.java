@@ -32,6 +32,7 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private UserPosition position;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 

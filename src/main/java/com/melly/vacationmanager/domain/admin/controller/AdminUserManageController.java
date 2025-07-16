@@ -1,5 +1,6 @@
 package com.melly.vacationmanager.domain.admin.controller;
 
+import com.melly.vacationmanager.domain.admin.dto.request.ProcessStatusRequest;
 import com.melly.vacationmanager.domain.admin.dto.response.AdminUserManagePendingPageResponse;
 import com.melly.vacationmanager.domain.admin.service.IAdminUserManageService;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
@@ -11,9 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/api/v1/admin/users")
@@ -43,5 +42,12 @@ public class AdminUserManageController implements ResponseController {
         AdminUserManagePendingPageResponse response = adminUserManageService.findPendingUsers(year, month, name, pageable);
 
         return makeResponseEntity(HttpStatus.OK,"null","승인 대기 사용자 목록 조회 성공",response);
+    }
+
+    @PatchMapping("{userId}/status")
+    public ResponseEntity<ResponseDto> processPendingUsers(@PathVariable Long userId,
+                                                           @RequestBody ProcessStatusRequest request){
+        adminUserManageService.processPendingUsers(userId,request);
+        return makeResponseEntity(HttpStatus.OK, null, "사용자 상태가 성공적으로 변경되었습니다.", null);
     }
 }

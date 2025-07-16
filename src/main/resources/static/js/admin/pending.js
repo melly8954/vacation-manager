@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    let currentOrder = 'desc'; // 전역 정렬 상태
     let nameTimer;
 
     populateYearOptions();
@@ -47,18 +46,6 @@ $(document).ready(function() {
         fetchPendingUsers(params);
     });
 
-    // getFilterParams() 수정
-    function getFilterParams() {
-        return {
-            name: $('#name').val(),
-            year: Number($('#year').val()),
-            month: Number($('#month').val()),
-            order: currentOrder, // ← 여기 반영
-            page: 1,
-            size: 10
-        };
-    }
-
     // 페이지네이션 클릭 이벤트 (이벤트 위임)
     $('#pagination').on('click', 'a.page-link', function (e) {
         e.preventDefault();
@@ -70,6 +57,9 @@ $(document).ready(function() {
         }
     });
 });
+
+// 전역 변수
+let currentOrder = 'desc'; // 전역 정렬 상태
 
 // 연도 필터링 동적 처리
 function populateYearOptions() {
@@ -92,6 +82,18 @@ function populateMonthOptions() {
     }
 }
 
+// getFilterParams() 수정
+function getFilterParams() {
+    return {
+        name: $('#name').val(),
+        year: Number($('#year').val()),
+        month: Number($('#month').val()),
+        order: currentOrder, // ← 여기 반영
+        page: 1,
+        size: 10
+    };
+}
+
 // 대기 목록 유저 필터링 조회
 function fetchPendingUsers(params = {}) {
     // 기본 파라미터 세팅
@@ -107,7 +109,6 @@ function fetchPendingUsers(params = {}) {
     $.ajax({
         url: "/api/v1/admin/users/pending",
         method: "GET",
-        dataType: "json",
         data: queryParams
     }).done(function (response) {
        console.log(response);
@@ -137,12 +138,29 @@ function renderPendingUsers(data) {
                 <div class="user-position">${user.position}</div>
                 <div class="user-createdAt">${user.createdAt.slice(0,10)}</div>
                 <div class="user-actions">
-                    <button class="btn btn-success btn-sm approve-btn" data-user-id="${user.userId}">승인</button>
-                    <button class="btn btn-danger btn-sm reject-btn" data-user-id="${user.userId}">반려</button>
+                    <button class="btn btn-success btn-sm" data-user-id="${user.userId}" onclick="processUserStatus(this, 'approved')">승인</button>
+                    <button class="btn btn-danger btn-sm" data-user-id="${user.userId}" onclick="processUserStatus(this, 'rejected')">반려</button>
                 </div>
             </li>
         `;
         list.append(item);
+    });
+}
+
+// 승인 대기 처리
+function processUserStatus(button, status){
+    const userId = button.getAttribute('data-user-id');
+    $.ajax({
+        url: `/api/v1/admin/users/${userId}/status`,
+        method: "PATCH",
+        contentType: "application/json",
+        data: JSON.stringify({ status: status })
+    }).done(function (response) {
+        console.log(response);
+        alert("변경 완료");
+        fetchPendingUsers(getFilterParams());
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR, textStatus, errorThrown);
     });
 }
 

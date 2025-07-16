@@ -44,6 +44,12 @@ public enum ErrorCode {
     // 존재하지 않는 유저
     USER_NOT_FOUND("user_not_found", "해당 정보로 등록된 사용자가 없습니다.", HttpStatus.NOT_FOUND),
 
+    // 유효하지 않은 상태 요청
+    INVALID_STATUS("invalid_status","유효하지 않은 상태입니다.", HttpStatus.BAD_REQUEST),
+
+    // 존재하지 않는 휴가타입
+    VACATION_TYPE_NOT_FOUND("vacation_type_not_found","존재하지 않는 휴가 타입입니다.",HttpStatus.NOT_FOUND),
+
     // 공통
     INTERNAL_ERROR("internal_error", "서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     DEFAULT_BAD_REQUEST("bad_request", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
