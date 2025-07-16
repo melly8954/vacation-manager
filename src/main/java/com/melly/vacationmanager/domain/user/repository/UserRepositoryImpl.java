@@ -55,11 +55,14 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .orderBy(orderSpecifier)
                 .fetch();
 
-        long total = queryFactory
-                .selectFrom(user)
+        Long total = queryFactory
+                .select(user.count())
+                .from(user)
                 .where(builder)
-                .fetch()
-                .size(); // fetchCount() 대신
+                .fetchOne();
+        if (total == null) {
+            total = 0L;
+        }
 
         return new PageImpl<>(content, pageable, total);
     }
