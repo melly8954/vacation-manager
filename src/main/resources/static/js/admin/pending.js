@@ -1,5 +1,6 @@
 $(document).ready(function() {
     let currentOrder = 'desc'; // 전역 정렬 상태
+    let nameTimer;
 
     populateYearOptions();
     populateMonthOptions();
@@ -7,8 +8,16 @@ $(document).ready(function() {
     // 최초 목록 로딩
     fetchPendingUsers();
 
-    // 검색 버튼 클릭 이벤트
-    $('#search-btn').on('click', function () {
+    // 실시간 이름 검색
+    $('#name').on('input', function () {
+        clearTimeout(nameTimer);
+        nameTimer = setTimeout(() => {
+            fetchPendingUsers(getFilterParams());
+        }, 300); // 300ms debounce
+    });
+
+    // 실시간 연도/월 필터링
+    $('#year, #month').on('change', function () {
         fetchPendingUsers(getFilterParams());
     });
 
