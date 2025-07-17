@@ -6,6 +6,18 @@ $(document).ready(function() {
     const endDate = $('#endDate');
     const daysCount = $('#daysCount');
 
+    // 오늘 날짜를 yyyy-MM-dd로 포맷
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    // 시작일, 종료일의 최소 날짜를 오늘로 제한 (과거 선택 방지)
+    startDate.attr('min', todayStr);
+    endDate.attr('min', todayStr);
+
     // 휴가 타입 목록 조회
     $.getJSON('/api/v1/vacation-types')
         .done(function(response) {
@@ -62,29 +74,47 @@ $(document).ready(function() {
         }
     });
 
-    // 휴가 일수 계산 함수
+    // 휴가 일수 계산
     function updateDaysCount() {
         const start = startDate.val();
         const end = endDate.val();
         const isHalfDayChecked = isHalfDay.is(':checked');
+
         if (!start || !end) {
             daysCount.val('');
             return;
         }
 
-        if (isHalfDayChecked) {
-            daysCount.val('0.5');
-        } else {
-            const startDt = new Date(start);
-            const endDt = new Date(end);
-            const diffTime = endDt - startDt;
-            const diffDays = diffTime / (1000 * 60 * 60 * 24) + 1;
+        const startDt = new Date(start);
+        const endDt = new Date(end);
 
-            if (diffDays > 0) {
-                daysCount.val(diffDays);
-            } else {
-                daysCount.val('');
-            }
+        // 유효성 체크
+        if (isNaN(startDt.getTime()) || isNaN(endDt.getTime())) {
+            alert('날짜 형식이 잘못되었습니다.');
+            daysCount.val('');
+            return;
         }
+
+        // 반차 처리
+        if (isHalfDayChecked) {
+            if (start !== end) {
+                alert('반차는 시작일과 종료일이 같아야 합니다.');
+                endDate.val(start);
+            }
+            daysCount.val('0.5');
+            return;
+        }
+
+        // 일반 휴가 처리
+        const diffTime = endDt - startDt;
+        const diffDays = diffTime / (1000 * 60 * 60 * 24) + 1;
+
+        if (diffDays <= 0) {
+            alert('종료일은 시작일보다 같거나 이후여야 합니다.');
+            daysCount.val('');
+            return;
+        }
+
+        daysCount.val(diffDays);
     }
 });
