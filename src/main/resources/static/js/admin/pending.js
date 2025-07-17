@@ -150,6 +150,22 @@ function renderPendingUsers(data) {
 // 승인 대기 처리
 function processUserStatus(button, status){
     const userId = button.getAttribute('data-user-id');
+
+    // 상태에 따라 확인 메시지 설정
+    let message = '';
+    switch (status) {
+        case 'approved':
+            message = '정말로 이 사용자를 승인하시겠습니까?';
+            break;
+        case 'rejected':
+            message = '정말로 이 사용자를 반려하시겠습니까?';
+            break;
+    }
+    // 확인창
+    if (!confirm(message)) {
+        return; // 사용자가 취소하면 아무것도 하지 않음
+    }
+
     $.ajax({
         url: `/api/v1/admin/users/${userId}/status`,
         method: "PATCH",
