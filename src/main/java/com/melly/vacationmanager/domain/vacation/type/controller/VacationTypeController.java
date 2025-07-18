@@ -1,6 +1,7 @@
 package com.melly.vacationmanager.domain.vacation.type.controller;
 
 import com.melly.vacationmanager.domain.vacation.type.dto.VacationTypeDto;
+import com.melly.vacationmanager.domain.vacation.type.dto.VacationTypeListResponse;
 import com.melly.vacationmanager.domain.vacation.type.service.IVacationTypeService;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
@@ -21,7 +22,7 @@ public class VacationTypeController implements ResponseController {
 
     @GetMapping("")
     public ResponseEntity<ResponseDto> getAllVacationTypes() {
-        List<VacationTypeDto> allTypes = vacationTypeService.getAllTypes();
+        VacationTypeListResponse allTypes = vacationTypeService.getAllTypes();
         return makeResponseEntity(HttpStatus.OK,null,"모든 휴가 타입을 조회했습니다.",allTypes);
     }
 }

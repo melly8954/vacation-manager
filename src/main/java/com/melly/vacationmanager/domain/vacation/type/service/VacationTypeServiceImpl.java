@@ -1,6 +1,7 @@
 package com.melly.vacationmanager.domain.vacation.type.service;
 
 import com.melly.vacationmanager.domain.vacation.type.dto.VacationTypeDto;
+import com.melly.vacationmanager.domain.vacation.type.dto.VacationTypeListResponse;
 import com.melly.vacationmanager.domain.vacation.type.entity.VacationTypeEntity;
 import com.melly.vacationmanager.domain.vacation.type.repository.VacationTypeRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +16,11 @@ public class VacationTypeServiceImpl implements IVacationTypeService {
     private final VacationTypeRepository vacationTypeRepository;
 
     @Override
-    public List<VacationTypeDto> getAllTypes() {
+    public VacationTypeListResponse getAllTypes() {
         List<VacationTypeEntity> entities = vacationTypeRepository.findAll();
-        return entities.stream()
+        List<VacationTypeDto> dtoList = entities.stream()
                 .map(e -> new VacationTypeDto(e.getTypeCode(), e.getTypeName()))
                 .collect(Collectors.toList());
+        return new VacationTypeListResponse(dtoList);
     }
 }

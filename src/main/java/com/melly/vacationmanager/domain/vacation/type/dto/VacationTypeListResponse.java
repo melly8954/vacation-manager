@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
-public class VacationTypeDto {
-    @JsonProperty("type_code")
-    private String typeCode;
-    @JsonProperty("type_name")
-    private String typeName;
+public class VacationTypeListResponse {
+    @JsonProperty("types")
+    private List<VacationTypeDto> types;
 }
