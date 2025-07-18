@@ -6,5 +6,5 @@ import com.melly.vacationmanager.domain.vacation.type.entity.VacationTypeEntity;
 import java.math.BigDecimal;
 
 public interface IVacationBalanceService {
-    void initializeVacationBalance(UserEntity user, VacationTypeEntity type, BigDecimal days);
+    void initializeVacationBalance(UserEntity user, VacationTypeEntity type, Integer days);
 }

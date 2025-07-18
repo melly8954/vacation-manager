@@ -6,8 +6,11 @@ import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.repository.UserRepository;
 import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanceService;
 import com.melly.vacationmanager.domain.vacation.grant.service.IVacationGrantService;
+import com.melly.vacationmanager.domain.vacation.type.dto.VacationTypeDto;
+import com.melly.vacationmanager.domain.vacation.type.dto.VacationTypeListResponse;
 import com.melly.vacationmanager.domain.vacation.type.entity.VacationTypeEntity;
 import com.melly.vacationmanager.domain.vacation.type.repository.VacationTypeRepository;
+import com.melly.vacationmanager.domain.vacation.type.service.IVacationTypeService;
 import com.melly.vacationmanager.global.common.enums.ErrorCode;
 import com.melly.vacationmanager.global.common.enums.UserStatus;
 import com.melly.vacationmanager.global.common.exception.CustomException;
@@ -26,7 +29,7 @@ public class AdminUserManageServiceImpl implements IAdminUserManageService {
     private final UserRepository userRepository;
     private final IVacationBalanceService vacationBalanceService;
     private final IVacationGrantService vacationGrantService;
-    private final VacationTypeRepository vacationTypeRepository;
+    private final IVacationTypeService vacationTypeService;
 
     @Override
     public AdminUserManagePendingPageResponse findPendingUsers(Integer year, Integer month, String name, Pageable pageable) {
@@ -59,23 +62,33 @@ public class AdminUserManageServiceImpl implements IAdminUserManageService {
             }
         }
     }
+
     // 휴가 지급 로직
     private void grantInitialVacations(UserEntity user) {
-        grantVacation(user, "ANNUAL", BigDecimal.ZERO, false);
-        grantVacation(user, "SICK", BigDecimal.valueOf(10), true);
-        grantVacation(user, "FAMILY_EVENT", BigDecimal.valueOf(3), true);
-        grantVacation(user, "SPECIAL", BigDecimal.valueOf(5), true);
+        VacationTypeListResponse vacationTypes = vacationTypeService.getAllTypes();
+
+        for (VacationTypeDto typeDto : vacationTypes.getTypes()) {
+            String typeCode = typeDto.getTypeCode();
+
+            VacationTypeEntity typeEntity = vacationTypeService.findByTypeCode(typeCode)
+                    .orElseThrow(() -> new CustomException(ErrorCode.VACATION_TYPE_NOT_FOUND));
+
+            Integer defaultDays = typeEntity.getDefaultDays() != null ? typeEntity.getDefaultDays() : 0;
+
+            boolean recordGrant = !typeCode.equals("ANNUAL");
+
+            grantVacation(user, typeCode, defaultDays, recordGrant);
+        }
     }
 
-    private void grantVacation(UserEntity user, String typeCode, BigDecimal days, boolean recordGrant) {
-        VacationTypeEntity type = vacationTypeRepository.findByTypeCode(typeCode)
+    private void grantVacation(UserEntity user, String typeCode, Integer days, boolean recordGrant) {
+        VacationTypeEntity type = vacationTypeService.findByTypeCode(typeCode)
                 .orElseThrow(() -> new CustomException(ErrorCode.VACATION_TYPE_NOT_FOUND));
 
         vacationBalanceService.initializeVacationBalance(user, type, days);
 
         if (recordGrant) {
-            Integer grantDays = days.intValue();
-            vacationGrantService.recordGrant(user, type, grantDays);
+            vacationGrantService.recordGrant(user, type, days);
         }
     }
 }

@@ -17,15 +17,17 @@ public class VacationBalanceServiceImpl implements IVacationBalanceService {
     private final VacationBalanceRepository vacationBalanceRepository;
 
     @Override
-    public void initializeVacationBalance(UserEntity user, VacationTypeEntity type, BigDecimal days) {
+    public void initializeVacationBalance(UserEntity user, VacationTypeEntity type, Integer days) {
         VacationBalanceId id = new VacationBalanceId(user.getUserId(), type.getTypeCode());
+
+        BigDecimal bd_days = BigDecimal.valueOf(days);
 
         VacationBalanceEntity balance = vacationBalanceRepository.findById(id)
                 .orElseGet(() -> VacationBalanceEntity.builder()
                         .id(id)
                         .user(user)
                         .type(type)
-                        .remainingDays(days)
+                        .remainingDays(bd_days)
                         .build());
 
         vacationBalanceRepository.save(balance);
