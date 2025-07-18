@@ -5,6 +5,7 @@ import com.melly.vacationmanager.domain.user.dto.response.UserInfoResponse;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.repository.UserRepository;
 import com.melly.vacationmanager.global.common.enums.ErrorCode;
+import com.melly.vacationmanager.global.common.enums.UserPosition;
 import com.melly.vacationmanager.global.common.enums.UserRole;
 import com.melly.vacationmanager.global.common.enums.UserStatus;
 import com.melly.vacationmanager.global.common.exception.CustomException;
@@ -46,7 +47,7 @@ public class UserServiceImpl implements IUserService {
                 .name(request.getName())
                 .email(request.getEmail())
                 .hireDate(request.getHireDate())
-                .position(request.getPosition())
+                .position(UserPosition.fromString(request.getPosition()))
                 .status(UserStatus.PENDING)
                 .role(UserRole.USER)
                 .build();

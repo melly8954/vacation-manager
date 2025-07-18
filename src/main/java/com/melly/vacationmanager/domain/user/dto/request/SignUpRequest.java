@@ -48,5 +48,5 @@ public class SignUpRequest {
     private LocalDate hireDate; // LocalDate로 받을 수도 있으나, 문자열로 받아서 파싱 처리 가능
 
     @NotNull(message = "직급은 필수 선택 항목입니다.")
-    private UserPosition position;
+    private String position;
 }

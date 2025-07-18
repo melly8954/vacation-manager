@@ -107,7 +107,7 @@ class UserServiceImplTest {
                 .name("testUser")
                 .email("testUser@example.com")
                 .hireDate(LocalDate.now().minusDays(1))
-                .position(UserPosition.STAFF)
+                .position("STAFF")
                 .build();
     }
     // 오버로딩
@@ -119,7 +119,7 @@ class UserServiceImplTest {
                 .name("testUser")
                 .email("testUser@example.com")
                 .hireDate(hireDate)
-                .position(UserPosition.STAFF)
+                .position("STAFF")
                 .build();
     }
 
