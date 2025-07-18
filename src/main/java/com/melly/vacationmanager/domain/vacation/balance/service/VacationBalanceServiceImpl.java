@@ -9,12 +9,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class VacationBalanceServiceImpl implements IVacationBalanceService {
 
     private final VacationBalanceRepository vacationBalanceRepository;
+
+    @Override
+    public Optional<VacationBalanceEntity> findById(VacationBalanceId id) {
+        return vacationBalanceRepository.findById(id);
+    }
 
     @Override
     public void initializeVacationBalance(UserEntity user, VacationTypeEntity type, Integer days) {

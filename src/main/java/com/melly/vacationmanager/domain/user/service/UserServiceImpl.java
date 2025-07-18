@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -89,5 +90,10 @@ public class UserServiceImpl implements IUserService {
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
                 .build();
+    }
+
+    @Override
+    public Optional<UserEntity> findByUserId(Long userId) {
+        return userRepository.findByUserId(userId);
     }
 }

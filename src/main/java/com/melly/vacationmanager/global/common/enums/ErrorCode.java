@@ -50,6 +50,13 @@ public enum ErrorCode {
     // 존재하지 않는 휴가타입
     VACATION_TYPE_NOT_FOUND("vacation_type_not_found","존재하지 않는 휴가 타입입니다.",HttpStatus.NOT_FOUND),
 
+    // 휴가 신청 시 에러코드
+    INVALID_DATE_RANGE("invalid_date_range", "시작일은 종료일보다 이전이어야 합니다.", HttpStatus.BAD_REQUEST),
+    INVALID_DAYS_COUNT("invalid_days_count", "휴가 일수는 0일 이상이어야 합니다.", HttpStatus.BAD_REQUEST),
+    VACATION_BALANCE_NOT_FOUND("vacation_balance_not_found","휴가 잔여일이 존재하지 않습니다.",HttpStatus.NOT_FOUND),
+    INSUFFICIENT_BALANCE("insufficient_balance", "해당 유형의 잔여 휴가 일수가 부족합니다.", HttpStatus.BAD_REQUEST),
+    OVERLAPPING_APPROVED_VACATION("overlapping_approved_vacation", "이미 승인된 휴가 일정과 중복됩니다.", HttpStatus.CONFLICT),
+
     // 공통
     INTERNAL_ERROR("internal_error", "서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     DEFAULT_BAD_REQUEST("bad_request", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST);

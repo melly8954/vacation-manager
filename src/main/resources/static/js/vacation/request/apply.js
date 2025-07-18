@@ -1,11 +1,11 @@
-$(document).ready(function() {
-    const vacationType = $('#vacationType');
-    const halfDayOption = $('#halfDayOption');
-    const isHalfDay = $('#isHalfDay');
-    const startDate = $('#startDate');
-    const endDate = $('#endDate');
-    const daysCount = $('#daysCount');
+const vacationType = $('#vacationType');
+const halfDayOption = $('#halfDayOption');
+const isHalfDay = $('#isHalfDay');
+const startDate = $('#startDate');
+const endDate = $('#endDate');
+const daysCount = $('#daysCount');
 
+$(document).ready(function() {
     // 오늘 날짜를 yyyy-MM-dd로 포맷
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -118,3 +118,62 @@ $(document).ready(function() {
         daysCount.val(diffDays);
     }
 });
+
+function applyVacationRequest() {
+    const requestForm = {
+        typeCode: vacationType.val(),
+        startDate: startDate.val(),
+        endDate: endDate.val(),
+        daysCount: daysCount.val() ? Number(daysCount.val()) : null,
+        reason: $('#reason').val() || ''
+    };
+
+    // 간단 유효성 검사
+    if (!requestForm.typeCode) {
+        alert('휴가 유형을 선택하세요.');
+        return;
+    }
+    if (!requestForm.startDate || !requestForm.endDate) {
+        alert('시작일과 종료일을 입력하세요.');
+        return;
+    }
+    if (!requestForm.daysCount || requestForm.daysCount <= 0) {
+        alert('유효한 휴가 일수를 입력하세요.');
+        return;
+    }
+    if (!requestForm.reason.trim()) {
+        alert('휴가 사유를 입력하세요.');
+        return;
+    }
+
+    // 2. FormData 생성
+    const formData = new FormData();
+
+    // JSON을 Blob으로 변환하여 추가
+    const requestBlob = new Blob([JSON.stringify(requestForm)], { type: "application/json" });
+    formData.append("request_data", requestBlob);
+
+    // 3. 파일 첨부
+    const files = $('#evidenceFiles')[0].files;
+    if (files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+            formData.append("evidence_files", files[i]);
+        }
+    }
+
+    // 4. Ajax 요청
+    $.ajax({
+        url: "/api/v1/vacation-requests",
+        type: "POST",
+        data: formData,
+        processData: false,  // FormData 전송 시 필수
+        contentType: false,  // FormData 전송 시 필수
+        enctype: "multipart/form-data",
+    }).done(function (response) {
+        console.log(response);
+        alert("휴가 신청 성공");
+        window.location.href = "/";
+    }).fail(function () {
+
+    })
+}
