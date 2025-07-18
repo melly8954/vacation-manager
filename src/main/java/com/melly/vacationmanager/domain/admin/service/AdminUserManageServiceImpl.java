@@ -73,7 +73,13 @@ public class AdminUserManageServiceImpl implements IAdminUserManageService {
             VacationTypeEntity typeEntity = vacationTypeService.findByTypeCode(typeCode)
                     .orElseThrow(() -> new CustomException(ErrorCode.VACATION_TYPE_NOT_FOUND));
 
-            Integer defaultDays = typeEntity.getDefaultDays() != null ? typeEntity.getDefaultDays() : 0;
+            Integer defaultDays;
+
+            if ("ANNUAL".equals(typeCode)) {
+                defaultDays = 0;  // 가입 시 연차는 0일로 지급
+            } else {
+                defaultDays = typeEntity.getDefaultDays() != null ? typeEntity.getDefaultDays() : 0;
+            }
 
             boolean recordGrant = !typeCode.equals("ANNUAL");
 
