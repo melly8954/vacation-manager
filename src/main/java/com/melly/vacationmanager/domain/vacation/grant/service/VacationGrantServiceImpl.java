@@ -1,14 +1,12 @@
 package com.melly.vacationmanager.domain.vacation.grant.service;
 
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
-import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceEntity;
 import com.melly.vacationmanager.domain.vacation.grant.entity.VacationGrantEntity;
 import com.melly.vacationmanager.domain.vacation.grant.repository.VacationGrantRepository;
 import com.melly.vacationmanager.domain.vacation.type.entity.VacationTypeEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Service
