@@ -27,14 +27,11 @@ public class VacationBalanceServiceImplTest {
     private VacationBalanceServiceImpl vacationBalanceService;
 
     @Test
-    @DisplayName("휴가 잔여 일수 초기화 - 신규 잔여 일수 생성 및 저장")
+    @DisplayName("정상 흐름 - 휴가 잔여 일수 초기화 (신규 잔여 일수 생성 및 저장)")
     void InitializeVacationBalance_whenNotExist_thenCreateAndSave() {
         // given
-        Long userId = 1L;
-        Integer days = 5;
-
         UserEntity user = UserEntity.builder()
-                .userId(userId)
+                .userId(1L)
                 .build();
 
         VacationTypeEntity type = VacationTypeEntity.builder()
@@ -46,7 +43,7 @@ public class VacationBalanceServiceImplTest {
         when(vacationBalanceRepository.existsById(expectedId)).thenReturn(false);
 
         // when
-        vacationBalanceService.initializeVacationBalance(user, type, days);
+        vacationBalanceService.initializeVacationBalance(user, type, 5);
 
         // then
         verify(vacationBalanceRepository).existsById(expectedId);
@@ -54,7 +51,7 @@ public class VacationBalanceServiceImplTest {
                 balance.getId().equals(expectedId) &&
                         balance.getUser().equals(user) &&
                         balance.getType().equals(type) &&
-                        balance.getRemainingDays().compareTo(BigDecimal.valueOf(days)) == 0     // compareTo(다른값) 이 반환하는 값이 0이면 두 값이 동일
+                        balance.getRemainingDays().compareTo(BigDecimal.valueOf(5)) == 0     // compareTo(다른값) 이 반환하는 값이 0이면 두 값이 동일
         ));
     }
 }
