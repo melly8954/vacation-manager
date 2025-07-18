@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,7 +27,7 @@ public class GlobalExceptionHandler implements ResponseController {
 
         // 전체 필드 에러를 로깅
         ex.getBindingResult().getFieldErrors().forEach(error ->
-                log.warn("유효성 검증 에러 - field: {}, message: {}", error.getField(), error.getDefaultMessage())
+                log.warn("유효성 검증 에러 - field: {}, message: {}", error.getField(), errorMessage)
         );
 
         // 응답 생성
