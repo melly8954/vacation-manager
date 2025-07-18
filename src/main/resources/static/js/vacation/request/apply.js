@@ -130,18 +130,20 @@ function applyVacationRequest() {
 
     // 간단 유효성 검사
     if (!requestForm.typeCode) {
+        vacationType.focus();
         alert('휴가 유형을 선택하세요.');
         return;
     }
     if (!requestForm.startDate || !requestForm.endDate) {
-        alert('시작일과 종료일을 입력하세요.');
+        alert('시작일과 종료일을 선택하세요');
         return;
     }
     if (!requestForm.daysCount || requestForm.daysCount <= 0) {
-        alert('유효한 휴가 일수를 입력하세요.');
+        alert('휴가 일수가 지정되지 않았습니다.');
         return;
     }
     if (!requestForm.reason.trim()) {
+        $('#reason').focus();
         alert('휴가 사유를 입력하세요.');
         return;
     }
@@ -173,7 +175,15 @@ function applyVacationRequest() {
         console.log(response);
         alert("휴가 신청 성공");
         window.location.href = "/";
-    }).fail(function () {
-
+    }).fail(function (jqXHR) {
+        handleServerError(jqXHR)
     })
+}
+
+function handleServerError(jqXHR) {
+    console.log(jqXHR);
+    // 서버에서 내려준 메시지 활용 (JSON 응답인 경우)
+    if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+        alert(jqXHR.responseJSON.message);
+    }
 }
