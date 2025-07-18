@@ -56,8 +56,13 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void duplicateCheck(String type, String value) {
         switch (type) {
-            case "username" -> userRepository.findByUsername(value)
-                    .ifPresent(user -> { throw new CustomException(ErrorCode.DUPLICATE_USERNAME); });
+            case "username" -> {
+                if (value.length() < 8 || value.length() > 20) {
+                    throw new CustomException(ErrorCode.INVALID_LENGTH_USERNAME);
+                }
+                userRepository.findByUsername(value)
+                        .ifPresent(user -> { throw new CustomException(ErrorCode.DUPLICATE_USERNAME); });
+            }
             case "email" -> {
                 if (!EMAIL_PATTERN.matcher(value).matches()) {
                     throw new CustomException(ErrorCode.INVALID_FORMAT_EMAIL);
