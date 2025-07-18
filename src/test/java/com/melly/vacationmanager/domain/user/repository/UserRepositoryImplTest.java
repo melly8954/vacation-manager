@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @Import(QueryDslTestConfig.class)
 @ActiveProfiles("test") // application-test.yml 설정을 적용
+@DisplayName("가입 대기 상태(PENDING)의 사용자 조회 쿼리 테스트")
 class UserRepositoryImplTest {
     @Autowired
     private UserRepository userRepository; // JpaRepository + Custom
@@ -55,7 +56,7 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("기본 정상 흐름 - 모든 필터 null, 대기중 사용자 전체 조회")
+    @DisplayName("필터 없이 가입 대기 중인 사용자 전체 조회")
     void testFindPendingUsers_noFilters() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<UserEntity> result = userRepository.findPendingUsers(null, null, null, pageable);
@@ -74,7 +75,7 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("이름 필터 빈 문자열 또는 null - 필터 무시")
+    @DisplayName("이름 검색 필터 - 빈 문자열 또는 null ")
     void testFindPendingUsers_nameFilter_emptyOrNull() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<UserEntity> resultEmpty = userRepository.findPendingUsers("", null, null, pageable);
@@ -122,7 +123,7 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("조건에 맞는 데이터 없을 때 빈 리스트 반환")
+    @DisplayName("필터 조건에 맞는 데이터가 없을 경우 - 빈 결과 반환")
     void testFindPendingUsers_noMatch() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<UserEntity> result = userRepository.findPendingUsers("없는이름", 2020, 1, pageable);
@@ -131,7 +132,7 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("페이지 처리 검증")
+    @DisplayName("페이징 처리(페이지 크기, 페이지 번호) 기능 테스트")
     void testFindPendingUsers_paging() {
         Pageable pageable = PageRequest.of(0, 2); // 한 페이지에 2개씩
         Page<UserEntity> firstPage = userRepository.findPendingUsers(null, null, null, pageable);
