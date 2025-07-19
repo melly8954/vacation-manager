@@ -5,6 +5,12 @@ const startDate = $('#startDate');
 const endDate = $('#endDate');
 const daysCount = $('#daysCount');
 
+const inputFile = $('#evidenceFiles');
+const filePreviewList = $('#filePreviewList');
+const filePreviewArea = $('#filePreviewArea');
+
+let selectedFiles = [];
+
 $(document).ready(function() {
     // 오늘 날짜를 yyyy-MM-dd로 포맷
     const today = new Date();
@@ -117,7 +123,69 @@ $(document).ready(function() {
 
         daysCount.val(diffDays);
     }
+
+    // ?
+    inputFile.on('change', function() {
+        const files = Array.from(this.files);
+        selectedFiles = selectedFiles.concat(files);
+        renderFileList();
+        this.value = ''; // 초기화
+    });
+
+    inputFile.on('change', function() {
+        const files = Array.from(this.files);
+        selectedFiles = selectedFiles.concat(files);
+        renderFileList();
+        this.value = ''; // 같은 파일 재선택 허용을 위해 초기화
+    });
+
+    filePreviewList.on('click', '.remove-file', function() {
+        const index = +$(this).data('index');
+        selectedFiles.splice(index, 1);
+        renderFileList();
+    });
+
+    filePreviewList.on('click', '.move-up', function() {
+        const index = +$(this).data('index');
+        if (index === 0) return;
+        [selectedFiles[index - 1], selectedFiles[index]] = [selectedFiles[index], selectedFiles[index - 1]];
+        renderFileList();
+    });
+
+    filePreviewList.on('click', '.move-down', function() {
+        const index = +$(this).data('index');
+        if (index === selectedFiles.length - 1) return;
+        [selectedFiles[index + 1], selectedFiles[index]] = [selectedFiles[index], selectedFiles[index + 1]];
+        renderFileList();
+    });
 });
+
+function renderFileList() {
+    const $filePreviewList = $('#filePreviewList');
+    const $filePreviewArea = $('#filePreviewArea');
+    $filePreviewList.empty();
+
+    if (selectedFiles.length === 0) {
+        $filePreviewArea.hide();
+        return;
+    }
+
+    $filePreviewArea.show();
+
+    selectedFiles.forEach((file, index) => {
+        const $li = $(`
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>${file.name} (${Math.round(file.size / 1024)} KB)</span>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary me-1 move-up" ${index === 0 ? 'disabled' : ''} data-index="${index}">&uarr;</button>
+                    <button class="btn btn-sm btn-outline-secondary me-1 move-down" ${index === selectedFiles.length -1 ? 'disabled' : ''} data-index="${index}">&darr;</button>
+                    <button class="btn btn-sm btn-outline-danger remove-file" data-index="${index}">삭제</button>
+                </div>
+            </li>
+        `);
+        $filePreviewList.append($li);
+    });
+}
 
 function applyVacationRequest() {
     const requestForm = {
@@ -148,22 +216,19 @@ function applyVacationRequest() {
         return;
     }
 
-    // 2. FormData 생성
+    // FormData 생성
     const formData = new FormData();
 
     // JSON을 Blob으로 변환하여 추가
     const requestBlob = new Blob([JSON.stringify(requestForm)], { type: "application/json" });
     formData.append("request_data", requestBlob);
 
-    // 3. 파일 첨부
-    const files = $('#evidenceFiles')[0].files;
-    if (files.length > 0) {
-        for (let i = 0; i < files.length; i++) {
-            formData.append("evidence_files", files[i]);
-        }
-    }
+    // 파일 첨부
+    selectedFiles.forEach(file => {
+        formData.append("evidence_files", file);
+    });
 
-    // 4. Ajax 요청
+    // Ajax 요청
     $.ajax({
         url: "/api/v1/vacation-requests",
         type: "POST",

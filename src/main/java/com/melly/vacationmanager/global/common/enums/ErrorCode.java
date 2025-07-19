@@ -57,6 +57,10 @@ public enum ErrorCode {
     INSUFFICIENT_BALANCE("insufficient_balance", "해당 유형의 잔여 휴가 일수가 부족합니다.", HttpStatus.BAD_REQUEST),
     OVERLAPPING_APPROVED_VACATION("overlapping_approved_vacation", "이미 승인된 휴가 일정과 중복됩니다.", HttpStatus.CONFLICT),
 
+    // 파일 관련
+    FILE_UPLOAD_FAILED("file_upload_failed", "파일 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    FILE_SIZE_EXCEEDED("file_size_exceeded", "파일 크기가 허용된 범위를 초과했습니다.", HttpStatus.BAD_REQUEST),
+
     // 공통
     INTERNAL_ERROR("internal_error", "서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     DEFAULT_BAD_REQUEST("bad_request", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST);

@@ -1,5 +1,8 @@
 package com.melly.vacationmanager.domain.vacation.request.service;
 
+import com.melly.vacationmanager.domain.filestorage.entity.EvidenceFileEntity;
+import com.melly.vacationmanager.domain.filestorage.repository.EvidenceFileRepository;
+import com.melly.vacationmanager.domain.filestorage.service.IEvidenceFileService;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.service.IUserService;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceEntity;
@@ -17,11 +20,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,8 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
     private final IUserService userService;
     private final IVacationTypeService vacationTypeService;
     private final IVacationBalanceService vacationBalanceService;
+    private final EvidenceFileRepository evidenceFileRepository;
+    private final IEvidenceFileService evidenceFileService;
 
     @Override
     public void requestVacation(VacationRequestDto requestDto, List<MultipartFile> evidenceFiles, Long userId) {
@@ -76,5 +81,32 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
                 .createdAt(LocalDateTime.now())
                 .build();
         vacationRequestRepository.save(vrEntity);
+
+        // 증빙 자료 저장
+        if (evidenceFiles != null && !evidenceFiles.isEmpty()) {
+            int fileOrder = 0;
+            for (MultipartFile file : evidenceFiles) {
+                if (!file.isEmpty()) {
+                    try {
+                        String uniqueName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                        String fileUrl = evidenceFileService.saveEvidenceFile(uniqueName, file.getBytes());
+
+                        EvidenceFileEntity evidence = EvidenceFileEntity.builder()
+                                .vacationRequest(vrEntity)
+                                .isUsed(true)
+                                .originalName(file.getOriginalFilename())
+                                .uniqueName(uniqueName)
+                                .savedPath(fileUrl) // 접근 가능한 URL
+                                .fileSize(file.getSize())
+                                .fileType(file.getContentType())
+                                .fileOrder(fileOrder++)
+                                .build();
+                        evidenceFileRepository.save(evidence);
+                    } catch (IOException e) {
+                        throw new CustomException(ErrorCode.FILE_UPLOAD_FAILED);
+                    }
+                }
+            }
+        }
     }
 }
