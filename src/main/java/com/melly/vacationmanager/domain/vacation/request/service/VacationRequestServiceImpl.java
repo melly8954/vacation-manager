@@ -93,7 +93,7 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
 
                         EvidenceFileEntity evidence = EvidenceFileEntity.builder()
                                 .vacationRequest(vrEntity)
-                                .isUsed(true)
+                                .isUsed(false)
                                 .originalName(file.getOriginalFilename())
                                 .uniqueName(uniqueName)
                                 .savedPath(fileUrl) // 접근 가능한 URL

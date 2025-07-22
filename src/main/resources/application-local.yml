@@ -13,6 +13,8 @@ spring:
     password: 1q2w3e4r!
 
 file:
-  access-url-base: http://localhost:8081/images/
-  evidence-files: C:/vacation_manager/images/evidence_files
+  access-url-base: http://localhost:8081/files/
+  storage-path: C:/vacation_manager/files/
+  directories:
+    evidence: evidence_files
 
