@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.UUID;
 
@@ -36,7 +37,7 @@ public class EvidenceFileSerivceImpl implements IEvidenceFileService{
 
             return fileProperties.getAccessUrlBase() + "evidence_files/" + uniqueName;
 
-        } catch (IOException e) {
+        } catch (IOException | InvalidPathException e) {
             throw new RuntimeException("파일 저장 중 오류 발생", e);
         }
     }
