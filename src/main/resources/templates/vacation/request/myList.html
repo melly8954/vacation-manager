@@ -19,7 +19,7 @@
             <div class="container-fluid mt-5">
                 <h2>내 휴가 신청 목록</h2>
                 <p>신청한 휴가 내역을 확인할 수 있습니다.</p>
-                <!-- 🔍 필터 영역 -->
+                <!-- 필터 영역 -->
                 <div class="card mb-3">
                     <div class="card-body">
                         <form id="filter-form" class="row gx-2 gy-1">
@@ -49,6 +49,7 @@
                                     <option value="ANNUAL">연차</option>
                                     <option value="SICK">병가</option>
                                     <option value="FAMILY_EVENT">경조사</option>
+                                    <option value="SPECIAL">특별휴가</option>
                                 </select>
                             </div>
                             <div class="col-md-2 d-grid">
@@ -58,7 +59,7 @@
                     </div>
                 </div>
 
-                <!-- 📄 리스트 헤더 -->
+                <!-- 리스트 헤더 -->
                 <div class="row fw-bold border-bottom py-2 text-center">
                     <div class="col-md-2">신청일</div>
                     <div class="col-md-2">휴가 기간</div>
@@ -69,12 +70,12 @@
                     <div class="col-md-1">비고</div>
                 </div>
 
-                <!-- 📋 리스트 영역 -->
+                <!-- 리스트 영역 -->
                 <div id="vacation-list">
                     <!-- JS로 렌더링 -->
                 </div>
 
-                <!-- 📄 페이지네이션 -->
+                <!-- 페이지네이션 -->
                 <nav>
                     <ul class="pagination justify-content-center mt-4" id="pagination">
                         <!-- JS로 페이지 버튼 생성 -->

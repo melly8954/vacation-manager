@@ -50,7 +50,7 @@ function getFilterParams() {
         year: $('#year-select').val(),
         month: $('#month-select').val(),
         status: $('#status-select').val(),
-        typeCode: $('#type-select').val(),
+        'type-code': $('#type-select').val(),
         page: 1,
         size: 10,
         order: 'desc' // 또는 필요 시 상태에 따라 동적 처리
