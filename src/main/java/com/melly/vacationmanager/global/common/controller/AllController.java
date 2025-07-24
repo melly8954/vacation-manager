@@ -20,6 +20,11 @@ public class AllController {
         return "vacation/request/apply";
     }
 
+    @GetMapping("/vacation-request/me")
+    public String showVacationMyList() {
+        return "vacation/request/myList";
+    }
+
     @GetMapping("/admin/pending")
     public String pending() {
         return "admin/pending";
