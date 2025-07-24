@@ -9,6 +9,8 @@ import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceE
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceId;
 import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanceService;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
+import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
 import com.melly.vacationmanager.domain.vacation.request.entity.VacationRequestEntity;
 import com.melly.vacationmanager.domain.vacation.request.repository.VacationRequestRepository;
 import com.melly.vacationmanager.domain.vacation.type.entity.VacationTypeEntity;
@@ -17,6 +19,10 @@ import com.melly.vacationmanager.global.common.enums.ErrorCode;
 import com.melly.vacationmanager.global.common.enums.VacationRequestStatus;
 import com.melly.vacationmanager.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -108,5 +114,15 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
                 }
             }
         }
+    }
+
+    @Override
+    public Page<VacationRequestListResponse> getMyRequests(VacationRequestSearchCond cond) {
+        Pageable pageable = PageRequest.of(cond.getPage() - 1, cond.getSize(),
+                "asc".equalsIgnoreCase(cond.getOrder()) ? Sort.by("createdAt").ascending()
+                        : Sort.by("createdAt").descending()
+        );
+
+        return vacationRequestRepository.findMyVacationRequests(cond, pageable);
     }
 }

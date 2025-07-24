@@ -1,11 +1,14 @@
 package com.melly.vacationmanager.domain.vacation.request.controller;
 
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
+import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
 import com.melly.vacationmanager.domain.vacation.request.service.IVacationRequestService;
 import com.melly.vacationmanager.global.auth.PrincipalDetails;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,5 +32,25 @@ public class VacationRequestController implements ResponseController {
         Long userId = userDetails.getUserEntity().getUserId();
         vacationRequestService.requestVacation(request, evidenceFiles, userId);
         return makeResponseEntity(HttpStatus.OK,null,"휴가 신청이 완료되었습니다.",null);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ResponseDto> getMyVacationRequests( @RequestParam(defaultValue = "1") int page,
+                                                              @RequestParam(defaultValue = "10") int size,
+                                                              @RequestParam(name = "type-code", defaultValue = "ALL") String typeCode,
+                                                              @RequestParam(defaultValue = "ALL") String status,
+                                                              @RequestParam(defaultValue = "ALL") String year,
+                                                              @RequestParam(defaultValue = "ALL") String month,
+                                                              @RequestParam(defaultValue = "desc") String order,
+                                                              @AuthenticationPrincipal PrincipalDetails principal) {
+        Long userId = principal.getUserEntity().getUserId(); // 인증 사용자 ID
+
+        VacationRequestSearchCond cond = new VacationRequestSearchCond(
+                userId, typeCode, status, year, month, order, page, size
+        );
+
+        Page<VacationRequestListResponse> result = vacationRequestService.getMyRequests(cond);
+
+        return makeResponseEntity(HttpStatus.OK,null,"내 휴가 신청 내역을 성공적으로 조회했습니다.",result);
     }
 }
