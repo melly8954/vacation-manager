@@ -25,16 +25,16 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
 
     @Override
     public boolean existsApprovedOverlap(Long userId, LocalDate startDate, LocalDate endDate) {
-        QVacationRequestEntity vacation = QVacationRequestEntity.vacationRequestEntity;
+        QVacationRequestEntity q = QVacationRequestEntity.vacationRequestEntity;
 
         return queryFactory
                 .selectOne()
-                .from(vacation)
+                .from(q)
                 .where(
-                        vacation.user.userId.eq(userId),
-                        vacation.status.eq(VacationRequestStatus.APPROVED),
-                        vacation.startDate.loe(endDate),
-                        vacation.endDate.goe(startDate)
+                        q.user.userId.eq(userId),
+                        q.status.eq(VacationRequestStatus.APPROVED),
+                        q.startDate.loe(endDate),
+                        q.endDate.goe(startDate)
                 )
                 .fetchFirst() != null;
     }
@@ -42,16 +42,28 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
     @Override
     public Page<VacationRequestListResponse> findMyVacationRequests(VacationRequestSearchCond cond, Pageable pageable) {
         QVacationRequestEntity q = QVacationRequestEntity.vacationRequestEntity;
+        // 동적 조건을 누적할 BooleanBuilder 생성
+        BooleanBuilder builder = new BooleanBuilder();
 
-        BooleanBuilder builder = new BooleanBuilder()
-                .and(q.user.userId.eq(cond.getUserId()))
-                .and(!"ALL".equals(cond.getTypeCode()) ? q.vacationType.typeCode.eq(cond.getTypeCode()) : null)
-                .and(!"ALL".equals(cond.getStatus()) ? q.status.eq(VacationRequestStatus.valueOf(cond.getStatus())) : null);
+        // 사용자 ID는 무조건 필터링
+        builder.and(q.user.userId.eq(cond.getUserId()));
 
+        // typeCode "ALL"이 아닐 때만 조건 추가
+        if (!"ALL".equals(cond.getTypeCode())) {
+            builder.and(q.vacationType.typeCode.eq(cond.getTypeCode()));
+        }
+
+        // status "ALL"이 아닐 때만 조건 추가
+        if (!"ALL".equals(cond.getStatus())) {
+            builder.and(q.status.eq(VacationRequestStatus.valueOf(cond.getStatus())));
+        }
+
+        // year "ALL"이 아닐 때만 조건 추가 (문자열->정수 변환 포함)
         if (!"ALL".equals(cond.getYear())) {
             builder.and(q.startDate.year().eq(Integer.parseInt(cond.getYear())));
         }
 
+        // month "ALL"이 아닐 때만 조건 추가 (문자열->정수 변환 포함)
         if (!"ALL".equals(cond.getMonth())) {
             builder.and(q.startDate.month().eq(Integer.parseInt(cond.getMonth())));
         }

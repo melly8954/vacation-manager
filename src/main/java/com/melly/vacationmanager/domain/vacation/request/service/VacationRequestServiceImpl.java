@@ -118,10 +118,14 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
 
     @Override
     public Page<VacationRequestListResponse> getMyRequests(VacationRequestSearchCond cond) {
-        Pageable pageable = PageRequest.of(cond.getPage() - 1, cond.getSize(),
-                "asc".equalsIgnoreCase(cond.getOrder()) ? Sort.by("createdAt").ascending()
-                        : Sort.by("createdAt").descending()
-        );
+        Sort sortBy;
+        if ("asc".equalsIgnoreCase(cond.getOrder())) {
+            sortBy = Sort.by("createdAt").ascending();
+        } else {
+            sortBy = Sort.by("createdAt").descending();
+        }
+
+        Pageable pageable = PageRequest.of(cond.getPage() - 1, cond.getSize(), sortBy);
 
         return vacationRequestRepository.findMyVacationRequests(cond, pageable);
     }
