@@ -3,6 +3,7 @@ package com.melly.vacationmanager.domain.vacation.request.controller;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
 import com.melly.vacationmanager.domain.vacation.request.service.IVacationRequestService;
 import com.melly.vacationmanager.global.auth.PrincipalDetails;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
@@ -49,7 +50,7 @@ public class VacationRequestController implements ResponseController {
                 userId, typeCode, status, year, month, order, page, size
         );
 
-        Page<VacationRequestListResponse> result = vacationRequestService.getMyRequests(cond);
+        VacationRequestPageResponse result = vacationRequestService.getMyRequests(cond);
 
         return makeResponseEntity(HttpStatus.OK,null,"내 휴가 신청 내역을 성공적으로 조회했습니다.",result);
     }

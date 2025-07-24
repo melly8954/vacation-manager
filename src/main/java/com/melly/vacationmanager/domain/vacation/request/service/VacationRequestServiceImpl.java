@@ -11,6 +11,7 @@ import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanc
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
 import com.melly.vacationmanager.domain.vacation.request.entity.VacationRequestEntity;
 import com.melly.vacationmanager.domain.vacation.request.repository.VacationRequestRepository;
 import com.melly.vacationmanager.domain.vacation.type.entity.VacationTypeEntity;
@@ -117,7 +118,7 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
     }
 
     @Override
-    public Page<VacationRequestListResponse> getMyRequests(VacationRequestSearchCond cond) {
+    public VacationRequestPageResponse getMyRequests(VacationRequestSearchCond cond) {
         Sort sortBy;
         if ("asc".equalsIgnoreCase(cond.getOrder())) {
             sortBy = Sort.by("createdAt").ascending();
@@ -126,7 +127,7 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
         }
 
         Pageable pageable = PageRequest.of(cond.getPage() - 1, cond.getSize(), sortBy);
-
-        return vacationRequestRepository.findMyVacationRequests(cond, pageable);
+        Page<VacationRequestListResponse> page = vacationRequestRepository.findMyVacationRequests(cond, pageable);
+        return VacationRequestPageResponse.from(page);
     }
 }
