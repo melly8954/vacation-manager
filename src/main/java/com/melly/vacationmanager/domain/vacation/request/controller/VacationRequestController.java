@@ -3,6 +3,7 @@ package com.melly.vacationmanager.domain.vacation.request.controller;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.VRCancelResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
 import com.melly.vacationmanager.domain.vacation.request.service.IVacationRequestService;
 import com.melly.vacationmanager.global.auth.PrincipalDetails;
@@ -51,7 +52,7 @@ public class VacationRequestController implements ResponseController {
 
         VacationRequestPageResponse result = vacationRequestService.getMyRequests(cond);
 
-        return makeResponseEntity(HttpStatus.OK,null,"내 휴가 신청 내역을 성공적으로 조회했습니다.",result);
+        return makeResponseEntity(HttpStatus.OK,null,"내 휴가 신청 내역을 성공적으로 조회했습니다.", result);
     }
 
     @GetMapping("/{requestId}/evidence-files")
@@ -59,5 +60,11 @@ public class VacationRequestController implements ResponseController {
         List<EvidenceFileResponse> evidenceFiles = vacationRequestService.getEvidenceFiles(requestId);
         String message = evidenceFiles.isEmpty() ? "증빙자료가 존재하지 않습니다." : "성공적으로 증빙자료를 조회했습니다.";
         return makeResponseEntity(HttpStatus.OK, null, message, evidenceFiles);
+    }
+
+    @PatchMapping("/{requestId}/status")
+    public ResponseEntity<ResponseDto> cancelVacationRequest(@PathVariable Long requestId) {
+        VRCancelResponse response = vacationRequestService.cancelVacationRequest(requestId);
+        return makeResponseEntity(HttpStatus.OK,null,"휴가 신청이 취소되었습니다.", response);
     }
 }

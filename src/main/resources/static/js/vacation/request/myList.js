@@ -43,20 +43,23 @@ $(document).ready(function () {
 
     // 취소 버튼 클릭 이벤트
     $(document).on('click', '.cancel-btn', function () {
-        const id = $(this).data('id');
+        const requestId = $(this).data('requestId');
         if (confirm('해당 휴가 신청을 정말 취소하시겠습니까?')) {
             $.ajax({
-                url: `/api/v1/vacation-requests/${id}/cancel`,
-                method: 'POST',
-                success: function () {
-                    alert('휴가 신청이 취소되었습니다.');
+                url: `/api/v1/vacation-requests/${requestId}/status`,
+                method: 'PATCH',
+            })
+                .done(function(response) {
+                    // 성공 시
+                    alert(response.message);
                     fetchVacationList(getFilterParams());
-                },
-                error: function (err) {
-                    alert('취소에 실패했습니다.');
-                    console.error(err);
-                }
-            });
+                })
+                .fail(function(jqXHR) {
+                    // 실패 시
+                    console.error(jqXHR);
+                    const res = jqXHR.responseJSON;
+                    alert(res.message);
+                });
         }
     });
 });
@@ -129,7 +132,7 @@ function renderVacationList(items) {
                     </button>
                 </div>
                 <div class="col-md-1">
-                    ${v.status === 'PENDING' ? `<button class="btn btn-sm btn-outline-danger cancel-btn" data-id="${v.requestId}">취소</button>` : '-'}
+                    ${v.status === 'PENDING' ? `<button class="btn btn-sm btn-outline-danger cancel-btn" data-request-id="${v.requestId}">취소</button>` : '-'}
                 </div>
             </div>
         `;

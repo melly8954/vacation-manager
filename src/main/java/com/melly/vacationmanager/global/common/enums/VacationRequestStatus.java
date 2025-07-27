@@ -14,5 +14,9 @@ public enum VacationRequestStatus {
     REJECTED,
 
     /** 사용자가 직접 취소 */
-    CANCELED
+    CANCELED;
+
+    public boolean isCancelable() {
+        return this == PENDING;
+    }
 }

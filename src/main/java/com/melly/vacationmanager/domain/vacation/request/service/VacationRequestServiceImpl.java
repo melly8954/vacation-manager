@@ -11,6 +11,7 @@ import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanc
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.VRCancelResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
 import com.melly.vacationmanager.domain.vacation.request.entity.VacationRequestEntity;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -150,5 +152,16 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
         return files.stream()
                 .map(EvidenceFileResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public VRCancelResponse cancelVacationRequest(Long requestId) {
+        VacationRequestEntity findEntity = vacationRequestRepository.findByRequestId(requestId)
+                .orElseThrow(() -> new CustomException(ErrorCode.VACATION_REQUEST_NOT_FOUND));
+
+        findEntity.cancel();    // Dirty Checking
+
+        return VRCancelResponse.fromEntity(findEntity.getRequestId(), findEntity.getStatus());
     }
 }

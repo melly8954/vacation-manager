@@ -57,6 +57,7 @@ public enum ErrorCode {
     INSUFFICIENT_BALANCE("insufficient_balance", "해당 유형의 잔여 휴가 일수가 부족합니다.", HttpStatus.BAD_REQUEST),
     OVERLAPPING_APPROVED_VACATION("overlapping_approved_vacation", "이미 승인된 휴가 일정과 중복됩니다.", HttpStatus.CONFLICT),
     VACATION_REQUEST_NOT_FOUND("vacation_request_not_found", "해당 휴가 신청을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    CANNOT_CANCEL("cannot_cancel", "현재 상태에서는 취소가 불가능합니다.", HttpStatus.CONFLICT),
 
     // 파일 관련
     FILE_NOT_FOUND("file_not_found", "파일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),

@@ -3,9 +3,8 @@ package com.melly.vacationmanager.domain.vacation.request.service;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.VRCancelResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
-import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -15,4 +14,6 @@ public interface IVacationRequestService {
     VacationRequestPageResponse getMyRequests(VacationRequestSearchCond cond);
 
     List<EvidenceFileResponse> getEvidenceFiles(Long requestId);
+
+    VRCancelResponse cancelVacationRequest(Long requestId);
 }

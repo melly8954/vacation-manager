@@ -2,12 +2,11 @@ package com.melly.vacationmanager.domain.vacation.request.entity;
 
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.vacation.type.entity.VacationTypeEntity;
+import com.melly.vacationmanager.global.common.enums.ErrorCode;
 import com.melly.vacationmanager.global.common.enums.VacationRequestStatus;
+import com.melly.vacationmanager.global.common.exception.CustomException;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -63,5 +62,12 @@ public class VacationRequestEntity {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void cancel() {
+        if (!this.status.isCancelable()) {
+            throw new CustomException(ErrorCode.CANNOT_CANCEL);
+        }
+        this.status = VacationRequestStatus.CANCELED;
     }
 }
