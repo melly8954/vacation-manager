@@ -59,6 +59,7 @@ public enum ErrorCode {
     VACATION_REQUEST_NOT_FOUND("vacation_request_not_found", "해당 휴가 신청을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     // 파일 관련
+    FILE_NOT_FOUND("file_not_found", "파일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     FILE_UPLOAD_FAILED("file_upload_failed", "파일 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     FILE_SIZE_EXCEEDED("file_size_exceeded", "파일 크기가 허용된 범위를 초과했습니다.", HttpStatus.BAD_REQUEST),
 
