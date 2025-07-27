@@ -5,24 +5,28 @@ import com.melly.vacationmanager.domain.filestorage.repository.EvidenceFileRepos
 import com.melly.vacationmanager.domain.filestorage.service.IEvidenceFileService;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.service.IUserService;
+import com.melly.vacationmanager.domain.vacation.auditlog.entity.VacationAuditLogEntity;
+import com.melly.vacationmanager.domain.vacation.auditlog.repository.VacationAuditLogRepository;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceEntity;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceId;
 import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanceService;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.VRCancelResponse;
 import com.melly.vacationmanager.domain.vacation.request.entity.VacationRequestEntity;
 import com.melly.vacationmanager.domain.vacation.request.repository.VacationRequestRepository;
 import com.melly.vacationmanager.domain.vacation.request.service.VacationRequestServiceImpl;
 import com.melly.vacationmanager.domain.vacation.type.entity.VacationTypeEntity;
 import com.melly.vacationmanager.domain.vacation.type.service.IVacationTypeService;
 import com.melly.vacationmanager.global.common.enums.ErrorCode;
+import com.melly.vacationmanager.global.common.enums.VacationRequestStatus;
 import com.melly.vacationmanager.global.common.exception.CustomException;
+import com.melly.vacationmanager.global.common.utils.CurrentUserUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,6 +52,7 @@ public class VacationRequestServiceImplTest {
     @Mock private IVacationBalanceService vacationBalanceService;
     @Mock private EvidenceFileRepository evidenceFileRepository;
     @Mock private IEvidenceFileService evidenceFileService;
+    @Mock private VacationAuditLogRepository vacationAuditLogRepository;
 
     @InjectMocks
     private VacationRequestServiceImpl vacationRequestService;
@@ -316,7 +321,7 @@ public class VacationRequestServiceImplTest {
     }
 
     @Nested
-    @DisplayName("휴가 신청내역 증빙 자료 조회 테스트 ")
+    @DisplayName("getEvidenceFiles 메서드 테스트")
     class GetEvidenceFiles {
         @Test
         @DisplayName("정상 흐름 - 첨부 파일이 존재하는 경우 매핑된 리스트 반환")
@@ -378,6 +383,63 @@ public class VacationRequestServiceImplTest {
                     .fileType("application/pdf")
                     .uploadedAt(LocalDateTime.now())
                     .build();
+        }
+    }
+
+    @Nested
+    @DisplayName("cancelVacationRequest 메서드 테스트")
+    class cancelVacationRequest {
+        @Mock private UserEntity mockUser; // 변경자 유저 객체 모킹
+
+        @Test
+        @DisplayName("정상 흐름 - 상태 변경 및 감사 로그 저장")
+        void success_cancelVacationRequest() {
+            // given
+            Long requestId = 1L;
+            VacationRequestEntity entity = VacationRequestEntity.builder()
+                    .requestId(requestId)
+                    .status(VacationRequestStatus.PENDING)
+                    .build();
+
+            when(vacationRequestRepository.findByRequestId(requestId))
+                    .thenReturn(Optional.of(entity));
+
+            try (MockedStatic<CurrentUserUtils> mockedCurrentUserUtils = Mockito.mockStatic(CurrentUserUtils.class)) {
+                mockedCurrentUserUtils.when(CurrentUserUtils::getUser).thenReturn(mockUser);
+                mockedCurrentUserUtils.when(CurrentUserUtils::getRole).thenReturn("USER");
+
+                // when
+                VRCancelResponse response = vacationRequestService.cancelVacationRequest(requestId);
+
+                // then
+                assertThat(entity.getStatus()).isEqualTo(VacationRequestStatus.CANCELED);
+
+                assertThat(response.getRequestId()).isEqualTo(requestId);
+                assertThat(response.getNewStatus()).isEqualTo(VacationRequestStatus.CANCELED.name());
+
+                ArgumentCaptor<VacationAuditLogEntity> captor = ArgumentCaptor.forClass(VacationAuditLogEntity.class);
+                verify(vacationAuditLogRepository).save(captor.capture());
+
+                VacationAuditLogEntity savedLog = captor.getValue();
+                assertThat(savedLog.getRequest()).isSameAs(entity);
+                assertThat(savedLog.getChangedBy()).isSameAs(mockUser);
+                assertThat(savedLog.getChangedByRole()).isEqualTo("USER");
+                assertThat(savedLog.getOldStatus()).isEqualTo("PENDING");
+                assertThat(savedLog.getNewStatus()).isEqualTo("CANCELED");
+                assertThat(savedLog.getComment()).isEqualTo("사용자 직접 취소");
+            }
+        }
+
+        @Test
+        @DisplayName("예외 흐름 - 존재하지 않는 요청 ID로 예외 발생")
+        void fail_cancelVacationRequest_notFound() {
+            Long invalidRequestId = 999L;
+            when(vacationRequestRepository.findByRequestId(invalidRequestId)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> vacationRequestService.cancelVacationRequest(invalidRequestId))
+                    .isInstanceOf(CustomException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.VACATION_REQUEST_NOT_FOUND);
         }
     }
 }
