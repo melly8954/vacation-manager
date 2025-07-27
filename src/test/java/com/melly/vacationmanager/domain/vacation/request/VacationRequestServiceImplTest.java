@@ -9,6 +9,7 @@ import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceE
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceId;
 import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanceService;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
 import com.melly.vacationmanager.domain.vacation.request.entity.VacationRequestEntity;
 import com.melly.vacationmanager.domain.vacation.request.repository.VacationRequestRepository;
 import com.melly.vacationmanager.domain.vacation.request.service.VacationRequestServiceImpl;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -310,6 +312,72 @@ public class VacationRequestServiceImplTest {
                     .isInstanceOf(CustomException.class)
                     .extracting("errorCode")
                     .isEqualTo(ErrorCode.FILE_UPLOAD_FAILED);
+        }
+    }
+
+    @Nested
+    @DisplayName("휴가 신청내역 증빙 자료 조회 테스트 ")
+    class GetEvidenceFiles {
+        @Test
+        @DisplayName("정상 흐름 - 첨부 파일이 존재하는 경우 매핑된 리스트 반환")
+        void success_filesExist() {
+            // given
+            Long requestId = 1L;
+            when(vacationRequestRepository.existsByRequestId(requestId)).thenReturn(true);
+
+            EvidenceFileEntity file1 = createEvidenceFileEntity("file1.pdf", "uuid1");
+            EvidenceFileEntity file2 = createEvidenceFileEntity("file2.png", "uuid2");
+            when(evidenceFileRepository.findAllByVacationRequest_RequestId(requestId))
+                    .thenReturn(List.of(file1, file2));
+
+            // when
+            List<EvidenceFileResponse> result = vacationRequestService.getEvidenceFiles(requestId);
+
+            // then
+            assertThat(result).hasSize(2);
+            assertThat(result.get(0).getOriginalName()).isEqualTo("file1.pdf");
+            assertThat(result.get(1).getOriginalName()).isEqualTo("file2.png");
+        }
+
+        @Test
+        @DisplayName("정상 흐름 - 첨부 파일이 없는 경우 빈 리스트 반환")
+        void success_noFiles() {
+            // given
+            Long requestId = 2L;
+            when(vacationRequestRepository.existsByRequestId(requestId)).thenReturn(true);
+            when(evidenceFileRepository.findAllByVacationRequest_RequestId(requestId))
+                    .thenReturn(Collections.emptyList());
+
+            // when
+            List<EvidenceFileResponse> result = vacationRequestService.getEvidenceFiles(requestId);
+
+            // then
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("예외 흐름 - 휴가 요청 ID가 존재하지 않으면 예외 발생")
+        void fail_vacationRequestNotFound() {
+            // given
+            Long invalidRequestId = 999L;
+            when(vacationRequestRepository.existsByRequestId(invalidRequestId)).thenReturn(false);
+
+            // expect
+            assertThatThrownBy(() -> vacationRequestService.getEvidenceFiles(invalidRequestId))
+                    .isInstanceOf(CustomException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.VACATION_REQUEST_NOT_FOUND);
+        }
+
+        private EvidenceFileEntity createEvidenceFileEntity(String originalName, String uuid) {
+            return EvidenceFileEntity.builder()
+                    .originalName(originalName)
+                    .uniqueName(uuid)
+                    .savedPath("/upload/" + uuid)
+                    .fileSize(1024L)
+                    .fileType("application/pdf")
+                    .uploadedAt(LocalDateTime.now())
+                    .build();
         }
     }
 }
