@@ -5,6 +5,8 @@ import com.melly.vacationmanager.domain.filestorage.repository.EvidenceFileRepos
 import com.melly.vacationmanager.domain.filestorage.service.IEvidenceFileService;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.service.IUserService;
+import com.melly.vacationmanager.domain.vacation.auditlog.entity.VacationAuditLogEntity;
+import com.melly.vacationmanager.domain.vacation.auditlog.repository.VacationAuditLogRepository;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceEntity;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceId;
 import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanceService;
@@ -21,6 +23,7 @@ import com.melly.vacationmanager.domain.vacation.type.service.IVacationTypeServi
 import com.melly.vacationmanager.global.common.enums.ErrorCode;
 import com.melly.vacationmanager.global.common.enums.VacationRequestStatus;
 import com.melly.vacationmanager.global.common.exception.CustomException;
+import com.melly.vacationmanager.global.common.utils.CurrentUserUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,6 +51,7 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
     private final IVacationBalanceService vacationBalanceService;
     private final EvidenceFileRepository evidenceFileRepository;
     private final IEvidenceFileService evidenceFileService;
+    private final VacationAuditLogRepository vacationAuditLogRepository;
 
     @Override
     public void requestVacation(VacationRequestDto requestDto, List<MultipartFile> evidenceFiles, Long userId) {
@@ -160,7 +164,20 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
         VacationRequestEntity findEntity = vacationRequestRepository.findByRequestId(requestId)
                 .orElseThrow(() -> new CustomException(ErrorCode.VACATION_REQUEST_NOT_FOUND));
 
+        VacationRequestStatus oldStatus = findEntity.getStatus();
+
         findEntity.cancel();    // Dirty Checking
+
+        VacationAuditLogEntity log = VacationAuditLogEntity.builder()
+                .request(findEntity)
+                .changedBy(CurrentUserUtils.getUser()) // 로그인 사용자 ID
+                .changedByRole(CurrentUserUtils.getRole()) // 예: ADMIN, USER
+                .oldStatus(oldStatus.name())
+                .newStatus(findEntity.getStatus().name())
+                .comment("사용자 직접 취소") // 필요 시 외부 입력도 가능
+                .build();
+
+        vacationAuditLogRepository.save(log); // 함께 저장
 
         return VRCancelResponse.fromEntity(findEntity.getRequestId(), findEntity.getStatus());
     }

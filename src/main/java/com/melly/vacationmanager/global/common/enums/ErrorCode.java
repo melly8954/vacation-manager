@@ -65,6 +65,7 @@ public enum ErrorCode {
     FILE_SIZE_EXCEEDED("file_size_exceeded", "파일 크기가 허용된 범위를 초과했습니다.", HttpStatus.BAD_REQUEST),
 
     // 공통
+    UNAUTHORIZED("unauthorized", "인증되지 않은 사용자입니다.", HttpStatus.UNAUTHORIZED),
     INTERNAL_ERROR("internal_error", "서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     DEFAULT_BAD_REQUEST("bad_request", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
 
