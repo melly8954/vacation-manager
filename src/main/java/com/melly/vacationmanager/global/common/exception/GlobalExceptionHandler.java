@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @Slf4j
 @ControllerAdvice   // 컨트롤러 실행 중 발생하는 예외를 잡음, 모든 요청에서 가로챔
@@ -44,6 +45,18 @@ public class GlobalExceptionHandler implements ResponseController {
     public ResponseEntity<ResponseDto> handleCustomException(CustomException e) {
         ErrorCode errorCode = e.getErrorCode();
         log.error("비즈니스 로직 예외 발생 - Code: {}, Message: {}", errorCode.getErrorCode(), errorCode.getMessage());
+
+        return makeResponseEntity(
+                errorCode.getStatus(),
+                errorCode.getErrorCode(),
+                errorCode.getMessage(),
+                null
+        );
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ResponseDto> handleMaxUploadSizeExceeded(MaxUploadSizeExceededException ex) {
+        ErrorCode errorCode = ErrorCode.FILE_SIZE_EXCEEDED;
 
         return makeResponseEntity(
                 errorCode.getStatus(),
