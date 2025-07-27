@@ -26,6 +26,33 @@ $(document).ready(function () {
             fetchVacationList(params);
         }
     });
+
+    // 신청 사유 보기 버튼 클릭 이벤트
+    $(document).on('click', '.reason-btn', function () {
+        const reason = $(this).data('reason') || '사유 없음';
+        $('#reasonModalBody').text(reason);
+        const modal = new bootstrap.Modal(document.getElementById('reasonModal'));
+        modal.show();
+    });
+
+    // 취소 버튼 클릭 이벤트
+    $(document).on('click', '.cancel-btn', function () {
+        const id = $(this).data('id');
+        if (confirm('해당 휴가 신청을 정말 취소하시겠습니까?')) {
+            $.ajax({
+                url: `/api/v1/vacation-requests/${id}/cancel`,
+                method: 'POST',
+                success: function () {
+                    alert('휴가 신청이 취소되었습니다.');
+                    fetchVacationList(getFilterParams());
+                },
+                error: function (err) {
+                    alert('취소에 실패했습니다.');
+                    console.error(err);
+                }
+            });
+        }
+    });
 });
 
 function populateYearOptions() {
@@ -88,8 +115,12 @@ function renderVacationList(items) {
                 <div class="col-md-2">${getVacationTypeText(v.typeCode)}</div>
                 <div class="col-md-2">${v.daysCount}일</div>
                 <div class="col-md-2">${getStatusBadge(v.status)}</div>
-                <div class="col-md-1 text-truncate" title="${v.reason}">${v.reason}</div>
-                <div class="col-md-1">-</div>
+                <div class="col-md-1">
+                    <button class="btn btn-sm btn-outline-secondary reason-btn" data-reason="${v.reason || ''}">보기</button>
+                </div>
+                <div class="col-md-1">
+                    ${v.status === 'PENDING' ? `<button class="btn btn-sm btn-outline-danger cancel-btn" data-id="${v.requestId}">취소</button>` : '-'}
+                </div>
             </div>
         `;
         list.append(row);
