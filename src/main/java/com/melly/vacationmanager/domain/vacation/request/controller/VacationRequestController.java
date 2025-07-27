@@ -3,14 +3,12 @@ package com.melly.vacationmanager.domain.vacation.request.controller;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
 import com.melly.vacationmanager.domain.vacation.request.service.IVacationRequestService;
 import com.melly.vacationmanager.global.auth.PrincipalDetails;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -56,9 +54,9 @@ public class VacationRequestController implements ResponseController {
         return makeResponseEntity(HttpStatus.OK,null,"내 휴가 신청 내역을 성공적으로 조회했습니다.",result);
     }
 
-    @GetMapping("/{vacationRequestId}/evidence-files")
-    public ResponseEntity<ResponseDto> getEvidenceFiles(@PathVariable Long vacationRequestId) {
-        List<EvidenceFileResponse> evidenceFiles = vacationRequestService.getEvidenceFiles(vacationRequestId);
+    @GetMapping("/{requestId}/evidence-files")
+    public ResponseEntity<ResponseDto> getEvidenceFiles(@PathVariable Long requestId) {
+        List<EvidenceFileResponse> evidenceFiles = vacationRequestService.getEvidenceFiles(requestId);
         String message = evidenceFiles.isEmpty() ? "증빙자료가 존재하지 않습니다." : "성공적으로 증빙자료를 조회했습니다.";
         return makeResponseEntity(HttpStatus.OK, null, message, evidenceFiles);
     }

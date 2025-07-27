@@ -136,12 +136,12 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
     }
 
     @Override
-    public List<EvidenceFileResponse> getEvidenceFiles(Long vacationRequestId) {
-        if(!vacationRequestRepository.existsByRequestId(vacationRequestId)){
+    public List<EvidenceFileResponse> getEvidenceFiles(Long requestId) {
+        if(!vacationRequestRepository.existsByRequestId(requestId)){
             throw new CustomException(ErrorCode.VACATION_REQUEST_NOT_FOUND);
         }
 
-        List<EvidenceFileEntity> files = evidenceFileRepository.findAllByVacationRequest_RequestId(vacationRequestId);
+        List<EvidenceFileEntity> files = evidenceFileRepository.findAllByVacationRequest_RequestId(requestId);
         if (files.isEmpty()) {
             // 필요하다면 빈 리스트 반환하거나 별도 처리
             return Collections.emptyList();

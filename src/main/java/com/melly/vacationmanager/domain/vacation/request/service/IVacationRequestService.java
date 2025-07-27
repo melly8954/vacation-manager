@@ -14,5 +14,5 @@ public interface IVacationRequestService {
     void requestVacation(VacationRequestDto requestDto, List<MultipartFile> evidenceFiles, Long userId);
     VacationRequestPageResponse getMyRequests(VacationRequestSearchCond cond);
 
-    List<EvidenceFileResponse> getEvidenceFiles(Long vacationRequestId);
+    List<EvidenceFileResponse> getEvidenceFiles(Long requestId);
 }

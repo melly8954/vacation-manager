@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface EvidenceFileRepository extends JpaRepository<EvidenceFileEntity, Long> {
-    List<EvidenceFileEntity> findAllByVacationRequest_RequestId(Long vacationRequestId);
+    List<EvidenceFileEntity> findAllByVacationRequest_RequestId(Long requestId);
 
     Optional<EvidenceFileEntity> findByFileId(Long fileId);
 }
