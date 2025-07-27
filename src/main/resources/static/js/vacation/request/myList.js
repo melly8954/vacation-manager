@@ -16,6 +16,24 @@ $(document).ready(function () {
         fetchVacationList(getFilterParams());
     });
 
+    // 신청일 정렬 버튼 클릭 이벤트
+    $('#sort-createdAt').on('click keypress', function(e) {
+        // 키보드 접근성 위해 keypress 처리 (Enter or Space)
+        if (e.type === 'click' || e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+
+            const $this = $(this);
+            const currentOrder = $this.data('order');
+            const newOrder = currentOrder === 'desc' ? 'asc' : 'desc';
+
+            $this.data('order', newOrder);
+            $this.find('.sort-icon').text(newOrder === 'desc' ? '▼' : '▲');
+
+            // 정렬 순서 업데이트 후 재조회
+            fetchVacationList(getFilterParams());
+        }
+    });
+
     // 페이지네이션 클릭 이벤트 (위임)
     $('#pagination').on('click', 'a.page-link', function (e) {
         e.preventDefault();
@@ -89,7 +107,7 @@ function getFilterParams() {
         'type-code': $('#type-select').val(),
         page: 1,
         size: 10,
-        order: 'desc' // 또는 필요 시 상태에 따라 동적 처리
+        order: $('#sort-createdAt').data('order')
     };
 }
 
