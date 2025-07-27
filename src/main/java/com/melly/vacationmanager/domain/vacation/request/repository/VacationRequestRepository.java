@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface VacationRequestRepository extends JpaRepository<VacationRequestEntity, Long>, VacationRequestRepositoryCustom {
 
+    boolean existsByRequestId(Long vacationRequestId);
 }

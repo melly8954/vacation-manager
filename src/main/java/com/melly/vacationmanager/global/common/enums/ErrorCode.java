@@ -56,6 +56,7 @@ public enum ErrorCode {
     VACATION_BALANCE_NOT_FOUND("vacation_balance_not_found","휴가 잔여일이 존재하지 않습니다.",HttpStatus.NOT_FOUND),
     INSUFFICIENT_BALANCE("insufficient_balance", "해당 유형의 잔여 휴가 일수가 부족합니다.", HttpStatus.BAD_REQUEST),
     OVERLAPPING_APPROVED_VACATION("overlapping_approved_vacation", "이미 승인된 휴가 일정과 중복됩니다.", HttpStatus.CONFLICT),
+    VACATION_REQUEST_NOT_FOUND("vacation_request_not_found", "해당 휴가 신청을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     // 파일 관련
     FILE_UPLOAD_FAILED("file_upload_failed", "파일 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),

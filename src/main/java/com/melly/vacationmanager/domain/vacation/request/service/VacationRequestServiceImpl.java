@@ -10,6 +10,7 @@ import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceI
 import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanceService;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
 import com.melly.vacationmanager.domain.vacation.request.entity.VacationRequestEntity;
@@ -31,7 +32,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -129,5 +133,22 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
         Pageable pageable = PageRequest.of(cond.getPage() - 1, cond.getSize(), sortBy);
         Page<VacationRequestListResponse> page = vacationRequestRepository.findMyVacationRequests(cond, pageable);
         return VacationRequestPageResponse.from(page);
+    }
+
+    @Override
+    public List<EvidenceFileResponse> getEvidenceFiles(Long vacationRequestId) {
+        if(!vacationRequestRepository.existsByRequestId(vacationRequestId)){
+            throw new CustomException(ErrorCode.VACATION_REQUEST_NOT_FOUND);
+        }
+
+        List<EvidenceFileEntity> files = evidenceFileRepository.findAllByVacationRequest_RequestId(vacationRequestId);
+        if (files.isEmpty()) {
+            // 필요하다면 빈 리스트 반환하거나 별도 처리
+            return Collections.emptyList();
+        }
+
+        return files.stream()
+                .map(EvidenceFileResponse::from)
+                .collect(Collectors.toList());
     }
 }

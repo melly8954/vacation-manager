@@ -2,6 +2,7 @@ package com.melly.vacationmanager.domain.vacation.request.controller;
 
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
 import com.melly.vacationmanager.domain.vacation.request.service.IVacationRequestService;
@@ -53,5 +54,12 @@ public class VacationRequestController implements ResponseController {
         VacationRequestPageResponse result = vacationRequestService.getMyRequests(cond);
 
         return makeResponseEntity(HttpStatus.OK,null,"내 휴가 신청 내역을 성공적으로 조회했습니다.",result);
+    }
+
+    @GetMapping("/{vacationRequestId}/evidence-files")
+    public ResponseEntity<ResponseDto> getEvidenceFiles(@PathVariable Long vacationRequestId) {
+        List<EvidenceFileResponse> evidenceFiles = vacationRequestService.getEvidenceFiles(vacationRequestId);
+        String message = evidenceFiles.isEmpty() ? "증빙파일이 없습니다." : "성공적으로 증빙파일을 조회했습니다.";
+        return makeResponseEntity(HttpStatus.OK, null, message, evidenceFiles);
     }
 }
