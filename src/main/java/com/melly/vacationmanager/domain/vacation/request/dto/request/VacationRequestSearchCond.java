@@ -1,10 +1,12 @@
 package com.melly.vacationmanager.domain.vacation.request.dto.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+@Builder
 public class VacationRequestSearchCond {
     private Long userId;        // 인증된 사용자 ID
 
