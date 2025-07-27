@@ -30,9 +30,15 @@ $(document).ready(function () {
     // 신청 사유 보기 버튼 클릭 이벤트
     $(document).on('click', '.reason-btn', function () {
         const reason = $(this).data('reason') || '사유 없음';
-        $('#reasonModalBody').text(reason);
+        const requestId = $(this).data('requestId');
+
+        const modalBody = $('#reasonModalBody');
+        modalBody.html(`<p><strong>사유:</strong> ${reason}</p>`);
+
         const modal = new bootstrap.Modal(document.getElementById('reasonModal'));
         modal.show();
+
+        fetchEvidenceFiles(requestId, '#reasonModalBody');
     });
 
     // 취소 버튼 클릭 이벤트
@@ -116,7 +122,11 @@ function renderVacationList(items) {
                 <div class="col-md-2">${v.daysCount}일</div>
                 <div class="col-md-2">${getStatusBadge(v.status)}</div>
                 <div class="col-md-1">
-                    <button class="btn btn-sm btn-outline-secondary reason-btn" data-reason="${v.reason || ''}">보기</button>
+                    <button class="btn btn-sm btn-outline-secondary reason-btn" 
+                            data-reason="${v.reason || ''}"
+                            data-request-id="${v.requestId}">
+                        보기
+                    </button>
                 </div>
                 <div class="col-md-1">
                     ${v.status === 'PENDING' ? `<button class="btn btn-sm btn-outline-danger cancel-btn" data-id="${v.requestId}">취소</button>` : '-'}
@@ -147,6 +157,29 @@ function getStatusBadge(status) {
         case 'CANCELED': badgeClass = 'dark'; break;
     }
     return `<span class="badge bg-${badgeClass}">${status}</span>`;
+}
+
+function fetchEvidenceFiles(requestId, containerSelector) {
+    $.ajax({
+        url: `/api/v1/vacation-requests/${requestId}/evidence-files`,
+        method: 'GET',
+        success: function(response) {
+            const files = response.data;
+            if (!files || files.length === 0) {
+                $(containerSelector).append('<p>증빙자료가 없습니다.</p>');
+            } else {
+                let fileListHtml = '<p>증빙 자료</p><ul>';
+                files.forEach(file => {
+                    fileListHtml += `<li><a href="${file.downloadUrl}" target="_blank">${file.originalName}</a></li>`;
+                });
+                fileListHtml += '</ul>';
+                $(containerSelector).append(fileListHtml);
+            }
+        },
+        error: function() {
+            $(containerSelector).append('<p class="text-danger">증빙자료를 불러오는 데 실패했습니다.</p>');
+        }
+    });
 }
 
 function renderPagination(data) {
