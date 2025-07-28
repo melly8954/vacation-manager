@@ -31,7 +31,30 @@ $(document).ready(function () {
         }
     });
 
-    // 페이지네이션 클릭 이벤트 (위임)
+    // 신청 사유 보기 버튼 클릭 이벤트
+    $(document).on('click', '.reason-btn', function () {
+        const reason = $(this).data('reason') || '사유 없음';
+        const requestId = $(this).data('requestId');
+
+        const modalBody = $('#reasonModalBody');
+        modalBody.html(`<p><strong>사유:</strong> ${reason}</p>`);
+
+        const modal = new bootstrap.Modal(document.getElementById('reasonModal'));
+        modal.show();
+
+        fetchEvidenceFiles(requestId, '#reasonModalBody');
+    });
+
+    $(document).on('click', '.process-btn', function () {
+        const requestId = $(this).data('request-id');
+
+        // 요청 ID를 숨은 필드에 저장하거나 모달 내부에 주입
+        $('#modal-request-id').val(requestId); // 예: input[type=hidden]
+        $('#processModal').modal('show');
+        
+    });
+
+    // 페이지네이션 클릭 이벤트
     $('#pagination').on('click', 'a.page-link', function (e) {
         e.preventDefault();
         const page = $(this).data('page');
@@ -144,6 +167,29 @@ function renderVacationList(items) {
             </div>
         `;
         list.append(row);
+    });
+}
+
+function fetchEvidenceFiles(requestId, containerSelector) {
+    $.ajax({
+        url: `/api/v1/vacation-requests/${requestId}/evidence-files`,
+        method: 'GET',
+        success: function(response) {
+            const files = response.data;
+            if (!files || files.length === 0) {
+                $(containerSelector).append('<p>증빙자료가 없습니다.</p>');
+            } else {
+                let fileListHtml = '<p>증빙 자료</p><ul>';
+                files.forEach(file => {
+                    fileListHtml += `<li><a href="${file.downloadUrl}" target="_blank">${file.originalName}</a></li>`;
+                });
+                fileListHtml += '</ul>';
+                $(containerSelector).append(fileListHtml);
+            }
+        },
+        error: function() {
+            $(containerSelector).append('<p class="text-danger">증빙자료를 불러오는 데 실패했습니다.</p>');
+        }
     });
 }
 
