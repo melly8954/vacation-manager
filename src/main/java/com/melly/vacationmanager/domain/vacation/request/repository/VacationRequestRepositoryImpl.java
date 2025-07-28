@@ -1,10 +1,14 @@
 package com.melly.vacationmanager.domain.vacation.request.repository;
 
+import com.melly.vacationmanager.domain.admin.dto.request.AdminVacationRequestSearchCond;
+import com.melly.vacationmanager.domain.admin.dto.response.AdminVacationRequestListResponse;
+import com.melly.vacationmanager.domain.user.entity.QUserEntity;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
 import com.melly.vacationmanager.domain.vacation.request.entity.QVacationRequestEntity;
 import com.melly.vacationmanager.global.common.enums.VacationRequestStatus;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,6 +100,74 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
                         .fetchOne()
         ).orElse(0L);
 
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Page<AdminVacationRequestListResponse> findAllVacationRequestsForAdmin(AdminVacationRequestSearchCond cond, Pageable pageable) {
+        QVacationRequestEntity request = QVacationRequestEntity.vacationRequestEntity;
+        QUserEntity user = QUserEntity.userEntity;
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        // 휴가 유형 필터 조건 추가 (ALL 이면 조건 추가하지 않음)
+        if (cond.getTypeCode() != null && !"ALL".equalsIgnoreCase(cond.getTypeCode())) {
+            builder.and(request.vacationType.typeCode.eq(cond.getTypeCode()));
+        }
+
+        // 휴가 상태 필터 조건 추가 (ALL 이면 조건 추가하지 않음)
+        if (cond.getStatus() != null && !"ALL".equalsIgnoreCase(cond.getStatus())) {
+            builder.and(request.status.eq(VacationRequestStatus.valueOf(cond.getStatus())));
+        }
+
+        // 사용자 이름 포함 검색 조건 추가 (이름이 빈 문자열 또는 null 아닐 경우)
+        if (cond.getName() != null && !cond.getName().isBlank()) {
+            builder.and(user.name.containsIgnoreCase(cond.getName()));
+        }
+
+        // 신청일(createdAt) 연도/월 필터링 (LocalDateTime)
+        if (cond.getYear() != null && !"ALL".equalsIgnoreCase(cond.getYear())) {
+            builder.and(request.createdAt.year().eq(Integer.parseInt(cond.getYear())));
+        }
+
+        if (cond.getMonth() != null && !"ALL".equalsIgnoreCase(cond.getMonth())) {
+            builder.and(request.createdAt.month().eq(Integer.parseInt(cond.getMonth())));
+        }
+
+        OrderSpecifier<?> orderSpecifier = "asc".equalsIgnoreCase(cond.getOrder())
+                ? request.createdAt.asc()
+                : request.createdAt.desc();
+
+        List<AdminVacationRequestListResponse> content = queryFactory
+                .select(Projections.constructor(AdminVacationRequestListResponse.class,
+                        request.requestId,
+                        user.userId,
+                        user.name,
+                        user.username,
+                        request.vacationType.typeCode,
+                        request.status.stringValue(), // 또는 name()
+                        request.startDate,
+                        request.endDate,
+                        request.daysCount,
+                        request.reason,
+                        request.createdAt
+                ))
+                .from(request)
+                .join(request.user, user)
+                .where(builder)
+                .orderBy(orderSpecifier)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long total = Optional.ofNullable(
+                queryFactory
+                        .select(request.count())
+                        .from(request)
+                        .join(request.user, user)
+                        .where(builder)
+                        .fetchOne()
+        ).orElse(0L);
         return new PageImpl<>(content, pageable, total);
     }
 }
