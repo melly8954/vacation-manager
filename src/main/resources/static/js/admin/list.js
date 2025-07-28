@@ -47,11 +47,57 @@ $(document).ready(function () {
 
     $(document).on('click', '.process-btn', function () {
         const requestId = $(this).data('request-id');
+        const currentStatus = $(this).data('current-status');
 
-        // 요청 ID를 숨은 필드에 저장하거나 모달 내부에 주입
-        $('#modal-request-id').val(requestId); // 예: input[type=hidden]
+        $('#process-requestId').val(requestId);
+
+        // 상태 select 초기화
+        const $statusSelect = $('#process-status');
+        $statusSelect.empty();
+        $statusSelect.append('<option value="">-- 상태 선택 --</option>');
+
+        if (currentStatus === 'PENDING') {
+            $statusSelect.append('<option value="APPROVED">승인</option>');
+            $statusSelect.append('<option value="REJECTED">반려</option>');
+            $statusSelect.append('<option value="ON_HOLD">보류</option>');
+        } else if (currentStatus === 'ON_HOLD') {
+            $statusSelect.append('<option value="APPROVED">승인</option>');
+            $statusSelect.append('<option value="REJECTED">반려</option>');
+        }
+
         $('#processModal').modal('show');
-        
+    });
+
+    // 상태 변경 확정 버튼 클릭 시
+    $('#confirm-status-btn').on('click', function (e) {
+        e.preventDefault(); // 폼 제출 막기
+
+        const requestId = $('#process-requestId').val();
+        const newStatus = $('#process-status').val();
+        if (!newStatus) {
+            alert("상태를 선택해주세요.");
+            return;
+        }
+
+        $.ajax({
+            url: `/api/v1/admin/vacation-requests/${requestId}/status`,
+            method: 'PATCH',
+            contentType: 'application/json',
+            data: JSON.stringify({ status: newStatus }),
+        })
+            .done(function(res) {
+                alert(res.message || "상태가 변경되었습니다.");
+                $('#processModal').modal('hide');
+                fetchVacationList(getFilterParams()); // 목록 갱신
+            })
+            .fail(function(xhr) {
+                const err = xhr.responseJSON;
+                if (err && err.message) {
+                    alert(`오류: ${err.message}`);
+                } else {
+                    alert("처리 중 문제가 발생했습니다.");
+                }
+            });
     });
 
     // 페이지네이션 클릭 이벤트
@@ -158,10 +204,11 @@ function renderVacationList(items) {
                         </button>
                     </div>
                     <div class="col-md-1">
-                        <button class="btn btn-sm btn-outline-primary process-btn"
-                                data-request-id="${v.requestId}">
-                            처리
-                        </button>
+                        ${['PENDING', 'ON_HOLD'].includes(v.status)
+                                ? `<button class="btn btn-sm btn-outline-primary process-btn"
+                           data-request-id="${v.requestId}" 
+                           data-current-status="${v.status}">처리</button>`
+                                : ''}
                     </div>
                 </div>
             </div>

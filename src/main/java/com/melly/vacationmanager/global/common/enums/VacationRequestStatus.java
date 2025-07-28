@@ -19,4 +19,15 @@ public enum VacationRequestStatus {
     public boolean isCancelable() {
         return this == PENDING;
     }
+
+    public boolean canTransitionTo(VacationRequestStatus target) {
+        switch (this) {
+            case PENDING:
+                return target == ON_HOLD || target == APPROVED || target == REJECTED;
+            case ON_HOLD:
+                return target == APPROVED || target == REJECTED;
+            default:
+                return false;
+        }
+    }
 }

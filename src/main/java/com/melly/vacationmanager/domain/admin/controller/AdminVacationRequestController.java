@@ -1,17 +1,17 @@
 package com.melly.vacationmanager.domain.admin.controller;
 
 import com.melly.vacationmanager.domain.admin.dto.request.AdminVacationRequestSearchCond;
+import com.melly.vacationmanager.domain.admin.dto.request.ProcessStatusRequest;
+import com.melly.vacationmanager.domain.admin.dto.request.VacationRequestStatusUpdateRequest;
 import com.melly.vacationmanager.domain.admin.dto.response.AdminVacationRequestPageResponse;
+import com.melly.vacationmanager.domain.admin.dto.response.VacationRequestStatusUpdateResponse;
 import com.melly.vacationmanager.domain.admin.service.IAdminVacationRequestService;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,4 +43,10 @@ public class AdminVacationRequestController implements ResponseController {
         return makeResponseEntity(HttpStatus.OK,null,"내 휴가 신청 내역을 성공적으로 조회했습니다.", response);
     }
 
+    @PatchMapping("/{requestId}/status")
+    public ResponseEntity<ResponseDto> updateVacationRequestStatus(@PathVariable String requestId,
+                                                                   @RequestBody VacationRequestStatusUpdateRequest request) {
+        VacationRequestStatusUpdateResponse response = adminVacationRequestService.updateVacationRequestStatus(requestId, request);
+        return makeResponseEntity(HttpStatus.OK,null,"휴가 신청내역의 상태 변경이 완료되었습니다.", response);
+    }
 }

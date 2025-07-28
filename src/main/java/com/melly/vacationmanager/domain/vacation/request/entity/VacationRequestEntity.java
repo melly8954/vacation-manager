@@ -70,4 +70,11 @@ public class VacationRequestEntity {
         }
         this.status = VacationRequestStatus.CANCELED;
     }
+
+    public void updateStatus(VacationRequestStatus newStatus) {
+        if (!this.status.canTransitionTo(newStatus)) {
+            throw new CustomException(ErrorCode.INVALID_STATUS);
+        }
+        this.status = newStatus;
+    }
 }
