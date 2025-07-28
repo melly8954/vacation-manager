@@ -1,16 +1,15 @@
-package com.melly.vacationmanager.domain.admin.service;
+package com.melly.vacationmanager.domain.admin.vacation.request.service;
 
-import com.melly.vacationmanager.domain.admin.dto.request.AdminVacationRequestSearchCond;
-import com.melly.vacationmanager.domain.admin.dto.request.VacationRequestStatusUpdateRequest;
-import com.melly.vacationmanager.domain.admin.dto.response.AdminVacationRequestListResponse;
-import com.melly.vacationmanager.domain.admin.dto.response.AdminVacationRequestPageResponse;
-import com.melly.vacationmanager.domain.admin.dto.response.VacationRequestStatusUpdateResponse;
+import com.melly.vacationmanager.domain.admin.vacation.request.dto.request.AdminVacationRequestSearchCond;
+import com.melly.vacationmanager.domain.admin.vacation.request.dto.request.VacationRequestStatusUpdateRequest;
+import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.AdminVacationRequestListResponse;
+import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.AdminVacationRequestPageResponse;
+import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.VacationRequestStatusUpdateResponse;
 import com.melly.vacationmanager.domain.vacation.auditlog.entity.VacationAuditLogEntity;
 import com.melly.vacationmanager.domain.vacation.auditlog.repository.VacationAuditLogRepository;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceEntity;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceId;
 import com.melly.vacationmanager.domain.vacation.balance.repository.VacationBalanceRepository;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
 import com.melly.vacationmanager.domain.vacation.request.entity.VacationRequestEntity;
 import com.melly.vacationmanager.domain.vacation.request.repository.VacationRequestRepository;
 import com.melly.vacationmanager.global.common.enums.ErrorCode;
@@ -60,6 +59,16 @@ public class AdminVacationRequestServiceImpl implements IAdminVacationRequestSer
         VacationRequestStatus oldStatus = findEntity.getStatus();
 
         if (newStatus == VacationRequestStatus.APPROVED) {
+            boolean hasOverlap = vacationRequestRepository.existsApprovedOverlap(
+                    findEntity.getUser().getUserId(),
+                    findEntity.getStartDate(),
+                    findEntity.getEndDate()
+            );
+
+            if (hasOverlap) {
+                throw new CustomException(ErrorCode.OVERLAPPING_APPROVED_VACATION);
+            }
+
             deductVacationDays(findEntity);
         }
 
