@@ -1,4 +1,4 @@
-package com.melly.vacationmanager.domain.admin.dto.request;
+package com.melly.vacationmanager.domain.admin.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,8 +1,8 @@
-package com.melly.vacationmanager.domain.admin.controller;
+package com.melly.vacationmanager.domain.admin.user.controller;
 
-import com.melly.vacationmanager.domain.admin.dto.request.ProcessStatusRequest;
-import com.melly.vacationmanager.domain.admin.dto.response.AdminUserManagePendingPageResponse;
-import com.melly.vacationmanager.domain.admin.service.IAdminUserManageService;
+import com.melly.vacationmanager.domain.admin.user.dto.ProcessStatusRequest;
+import com.melly.vacationmanager.domain.admin.user.dto.AdminUserManagePendingPageResponse;
+import com.melly.vacationmanager.domain.admin.user.service.IAdminUserManageService;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;

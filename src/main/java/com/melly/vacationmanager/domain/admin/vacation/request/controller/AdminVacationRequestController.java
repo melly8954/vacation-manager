@@ -1,11 +1,10 @@
-package com.melly.vacationmanager.domain.admin.controller;
+package com.melly.vacationmanager.domain.admin.vacation.request.controller;
 
-import com.melly.vacationmanager.domain.admin.dto.request.AdminVacationRequestSearchCond;
-import com.melly.vacationmanager.domain.admin.dto.request.ProcessStatusRequest;
-import com.melly.vacationmanager.domain.admin.dto.request.VacationRequestStatusUpdateRequest;
-import com.melly.vacationmanager.domain.admin.dto.response.AdminVacationRequestPageResponse;
-import com.melly.vacationmanager.domain.admin.dto.response.VacationRequestStatusUpdateResponse;
-import com.melly.vacationmanager.domain.admin.service.IAdminVacationRequestService;
+import com.melly.vacationmanager.domain.admin.vacation.request.dto.request.AdminVacationRequestSearchCond;
+import com.melly.vacationmanager.domain.admin.vacation.request.dto.request.VacationRequestStatusUpdateRequest;
+import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.AdminVacationRequestPageResponse;
+import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.VacationRequestStatusUpdateResponse;
+import com.melly.vacationmanager.domain.admin.vacation.request.service.IAdminVacationRequestService;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;

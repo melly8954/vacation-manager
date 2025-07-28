@@ -1,4 +1,4 @@
-package com.melly.vacationmanager.domain.admin.dto.response;
+package com.melly.vacationmanager.domain.admin.vacation.request.dto.response;
 
 import com.melly.vacationmanager.domain.vacation.request.entity.VacationRequestEntity;
 import lombok.AllArgsConstructor;

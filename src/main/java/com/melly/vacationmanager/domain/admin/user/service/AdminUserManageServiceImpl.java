@@ -1,7 +1,7 @@
-package com.melly.vacationmanager.domain.admin.service;
+package com.melly.vacationmanager.domain.admin.user.service;
 
-import com.melly.vacationmanager.domain.admin.dto.request.ProcessStatusRequest;
-import com.melly.vacationmanager.domain.admin.dto.response.AdminUserManagePendingPageResponse;
+import com.melly.vacationmanager.domain.admin.user.dto.ProcessStatusRequest;
+import com.melly.vacationmanager.domain.admin.user.dto.AdminUserManagePendingPageResponse;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.repository.UserRepository;
 import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanceService;
@@ -9,7 +9,6 @@ import com.melly.vacationmanager.domain.vacation.grant.service.IVacationGrantSer
 import com.melly.vacationmanager.domain.vacation.type.dto.VacationTypeDto;
 import com.melly.vacationmanager.domain.vacation.type.dto.VacationTypeListResponse;
 import com.melly.vacationmanager.domain.vacation.type.entity.VacationTypeEntity;
-import com.melly.vacationmanager.domain.vacation.type.repository.VacationTypeRepository;
 import com.melly.vacationmanager.domain.vacation.type.service.IVacationTypeService;
 import com.melly.vacationmanager.global.common.enums.ErrorCode;
 import com.melly.vacationmanager.global.common.enums.UserStatus;
@@ -19,8 +18,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor

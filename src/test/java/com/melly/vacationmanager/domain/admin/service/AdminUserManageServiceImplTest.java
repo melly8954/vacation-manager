@@ -1,6 +1,7 @@
 package com.melly.vacationmanager.domain.admin.service;
 
-import com.melly.vacationmanager.domain.admin.dto.request.ProcessStatusRequest;
+import com.melly.vacationmanager.domain.admin.user.dto.ProcessStatusRequest;
+import com.melly.vacationmanager.domain.admin.user.service.AdminUserManageServiceImpl;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.repository.UserRepository;
 import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanceService;

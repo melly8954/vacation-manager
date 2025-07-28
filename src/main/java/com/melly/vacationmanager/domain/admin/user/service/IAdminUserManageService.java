@@ -1,7 +1,7 @@
-package com.melly.vacationmanager.domain.admin.service;
+package com.melly.vacationmanager.domain.admin.user.service;
 
-import com.melly.vacationmanager.domain.admin.dto.request.ProcessStatusRequest;
-import com.melly.vacationmanager.domain.admin.dto.response.AdminUserManagePendingPageResponse;
+import com.melly.vacationmanager.domain.admin.user.dto.ProcessStatusRequest;
+import com.melly.vacationmanager.domain.admin.user.dto.AdminUserManagePendingPageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface IAdminUserManageService {
