@@ -10,12 +10,6 @@ $(document).ready(function () {
         fetchVacationList(getFilterParams());
     });
 
-    // 조회 버튼 클릭
-    $('#filter-form').on('submit', function (e) {
-        e.preventDefault();
-        fetchVacationList(getFilterParams());
-    });
-
     // 신청일 정렬 버튼 클릭 이벤트
     $('#sort-createdAt').on('click keypress', function(e) {
         // 키보드 접근성 위해 keypress 처리 (Enter or Space)

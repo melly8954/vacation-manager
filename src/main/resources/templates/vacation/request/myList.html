@@ -22,20 +22,36 @@
                 <!-- 필터 영역 -->
                 <div class="card mb-3">
                     <div class="card-body">
-                        <form id="filter-form" class="row gx-2 gy-1">
+                        <!-- 1행: 연도 + 월 필터링 -->
+                        <div class="row mb-3">
                             <div class="col-md-2">
                                 <select class="form-select" id="year-select">
-                                    <!-- 연도 동적 옵션 -->
+                                    <option value="ALL" selected>전체 연도</option>
+                                    <!-- 연도 옵션 동적 생성 -->
                                 </select>
                             </div>
                             <div class="col-md-2">
                                 <select class="form-select" id="month-select">
-                                    <!-- 월 동적 옵션 -->
+                                    <option value="ALL" selected>전체 월</option>
+                                    <!-- 월 옵션 동적 생성 -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 2행: 휴가 유형 + 상태 필터링 -->
+                        <div class="row">
+                            <div class="col-md-3">
+                                <select class="form-select" id="type-select">
+                                    <option value="ALL" selected>전체 휴가 유형</option>
+                                    <option value="ANNUAL">연차</option>
+                                    <option value="SICK">병가</option>
+                                    <option value="FAMILY_EVENT">경조사</option>
+                                    <option value="SPECIAL">특별휴가</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <select class="form-select" id="status-select">
-                                    <option value="">전체 상태</option>
+                                    <option value="ALL" selected>전체 상태</option>
                                     <option value="PENDING">승인대기</option>
                                     <option value="APPROVED">승인</option>
                                     <option value="REJECTED">반려</option>
@@ -43,19 +59,7 @@
                                     <option value="CANCELED">취소</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
-                                <select class="form-select" id="type-select">
-                                    <option value="">전체 종류</option>
-                                    <option value="ANNUAL">연차</option>
-                                    <option value="SICK">병가</option>
-                                    <option value="FAMILY_EVENT">경조사</option>
-                                    <option value="SPECIAL">특별휴가</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2 d-grid">
-                                <button type="submit" class="btn btn-primary">조회</button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
 

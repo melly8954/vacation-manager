@@ -29,4 +29,9 @@ public class AllController {
     public String pending() {
         return "admin/pending";
     }
+
+    @GetMapping("/admin/vacation-request/list")
+    public String list() {
+        return "admin/vacation/request/list";
+    }
 }

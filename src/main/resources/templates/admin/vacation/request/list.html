@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>휴가 신청 관리 - Vacation Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/css/common/common.css" rel="stylesheet" />
+</head>
+<body>
+<div class="wrapper">
+    {{> common/header }}
+    <div class="content-wrapper">
+        {{> common/sidebar }}
+        <main class="content">
+            <div class="container-fluid mt-5">
+                <h2>휴가 신청 관리</h2>
+                <p>사용자들의 휴가 신청내역을 확인할 수 있습니다.</p>
+                <!-- 필터 영역 -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <!-- 첫 번째 행: 신청자 이름 -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="name-input" class="form-label">신청자 이름</label>
+                                <input type="text" id="name-input" class="form-control" placeholder="이름 검색" />
+                            </div>
+                        </div>
+
+                        <!-- 두 번째 행: 연도, 월 필터 -->
+                        <div class="row mb-3 gx-3">
+                            <div class="col-md-2">
+                                <label for="year-select" class="form-label">신청 연도</label>
+                                <select id="year-select" class="form-select">
+                                    <option value="ALL" selected>전체</option>
+                                    <!-- 연도 옵션 JS에서 동적 생성 -->
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="month-select" class="form-label">신청 월</label>
+                                <select id="month-select" class="form-select">
+                                    <option value="ALL" selected>전체</option>
+                                    <!-- 월 옵션 JS에서 동적 생성 -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 세 번째 행: 휴가 유형, 승인 상태, 조회 버튼 -->
+                        <div class="row gx-3 align-items-end">
+                            <div class="col-md-3">
+                                <label for="type-select" class="form-label">휴가 유형</label>
+                                <select id="type-select" class="form-select">
+                                    <option value="ALL" selected>전체</option>
+                                    <option value="ANNUAL">연차</option>
+                                    <option value="SICK">병가</option>
+                                    <option value="FAMILY_EVENT">경조사</option>
+                                    <option value="SPECIAL">특별휴가</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="status-select" class="form-label">승인 상태</label>
+                                <select id="status-select" class="form-select">
+                                    <option value="ALL" selected>전체</option>
+                                    <option value="PENDING">승인대기</option>
+                                    <option value="APPROVED">승인</option>
+                                    <option value="REJECTED">반려</option>
+                                    <option value="ON_HOLD">보류</option>
+                                    <option value="CANCELED">취소</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 리스트 제목행 -->
+                <div class="row fw-bold border-bottom py-2 text-center">
+                    <div class="col-md-2 text-center">
+                        <div class="sortable" id="sort-createdAt" data-order="desc" role="button" tabindex="0" aria-label="신청일 정렬">
+                            신청일 <span class="sort-icon">▼</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">신청자 이름</div>
+                    <div class="col-md-2">휴가 기간</div>
+                    <div class="col-md-1">휴가 유형</div>
+                    <div class="col-md-1">휴가 일수</div>
+                    <div class="col-md-1">승인 상태</div>
+                    <div class="col-md-2">신청 사유</div>
+                    <div class="col-md-1">비고</div>
+                </div>
+
+                <!-- 리스트 내용 영역 -->
+                <div id="vacation-list" class="list-group">
+                    <!-- JS로 동적 생성 -->
+                </div>
+
+                <!-- 페이지네이션 -->
+                <nav>
+                    <ul class="pagination justify-content-center mt-4" id="pagination">
+                        <!-- JS로 페이지 버튼 생성 -->
+                    </ul>
+                </nav>
+
+                <!-- 신청 사유 모달 -->
+                <div class="modal fade" id="reasonModal" tabindex="-1" aria-labelledby="reasonModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="reasonModalLabel">신청 사유</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+                            </div>
+                            <div class="modal-body" id="reasonModalBody">
+                                <!-- 내용 삽입 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 처리 모달 (승인/보류/반려 선택) -->
+                <div class="modal fade" id="processModal" tabindex="-1" aria-labelledby="processModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form id="process-form">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="processModalLabel">휴가 신청 처리</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" id="process-requestId" />
+                                    <div class="mb-3">
+                                        <label for="process-status" class="form-label">상태 선택</label>
+                                        <select id="process-status" class="form-select" required>
+                                            <option value="">선택하세요</option>
+                                            <option value="APPROVED">승인</option>
+                                            <option value="ON_HOLD">보류</option>
+                                            <option value="REJECTED">반려</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="process-comment" class="form-label">처리 코멘트 (선택)</label>
+                                        <textarea id="process-comment" class="form-control" rows="3"></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">처리 완료</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="/js/user/logout.js"></script>
+<script src="/js/admin/list.js"></script>
+</body>
+</html>
