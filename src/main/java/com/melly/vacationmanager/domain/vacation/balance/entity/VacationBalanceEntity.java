@@ -3,10 +3,7 @@ package com.melly.vacationmanager.domain.vacation.balance.entity;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.vacation.type.entity.VacationTypeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,6 +28,7 @@ public class VacationBalanceEntity {
     @JoinColumn(name = "type_code", nullable = false)
     private VacationTypeEntity type;
 
+    @Setter
     @Column(name = "remaining_days")
     private BigDecimal remainingDays;
 

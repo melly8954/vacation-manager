@@ -7,6 +7,9 @@ import com.melly.vacationmanager.domain.admin.dto.response.AdminVacationRequestP
 import com.melly.vacationmanager.domain.admin.dto.response.VacationRequestStatusUpdateResponse;
 import com.melly.vacationmanager.domain.vacation.auditlog.entity.VacationAuditLogEntity;
 import com.melly.vacationmanager.domain.vacation.auditlog.repository.VacationAuditLogRepository;
+import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceEntity;
+import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceId;
+import com.melly.vacationmanager.domain.vacation.balance.repository.VacationBalanceRepository;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
 import com.melly.vacationmanager.domain.vacation.request.entity.VacationRequestEntity;
 import com.melly.vacationmanager.domain.vacation.request.repository.VacationRequestRepository;
@@ -22,6 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -30,6 +34,7 @@ public class AdminVacationRequestServiceImpl implements IAdminVacationRequestSer
 
     private final VacationRequestRepository vacationRequestRepository;
     private final VacationAuditLogRepository vacationAuditLogRepository;
+    private final VacationBalanceRepository vacationBalanceRepository;
 
     @Override
     public AdminVacationRequestPageResponse getVacationRequests(AdminVacationRequestSearchCond cond) {
@@ -54,6 +59,10 @@ public class AdminVacationRequestServiceImpl implements IAdminVacationRequestSer
         VacationRequestStatus newStatus = VacationRequestStatus.valueOf(request.getStatus());
         VacationRequestStatus oldStatus = findEntity.getStatus();
 
+        if (newStatus == VacationRequestStatus.APPROVED) {
+            deductVacationDays(findEntity);
+        }
+
         findEntity.updateStatus(newStatus);
 
         vacationAuditLogRepository.save(VacationAuditLogEntity.builder()
@@ -70,5 +79,21 @@ public class AdminVacationRequestServiceImpl implements IAdminVacationRequestSer
                 findEntity.getRequestId(),
                 newStatus.name()
         );
+    }
+
+    private void deductVacationDays(VacationRequestEntity request) {
+        VacationBalanceId balanceId = new VacationBalanceId(request.getUser().getUserId(), request.getVacationType().getTypeCode());
+        VacationBalanceEntity balance = vacationBalanceRepository.findById(balanceId)
+                .orElseThrow(() -> new CustomException(ErrorCode.VACATION_BALANCE_NOT_FOUND));
+
+        BigDecimal remainingDays = balance.getRemainingDays();
+        BigDecimal daysToDeduct = request.getDaysCount();
+
+        if (remainingDays.compareTo(daysToDeduct) < 0) {
+            throw new CustomException(ErrorCode.INSUFFICIENT_BALANCE);
+        }
+
+        balance.setRemainingDays(remainingDays.subtract(daysToDeduct));
+        vacationBalanceRepository.save(balance);
     }
 }
