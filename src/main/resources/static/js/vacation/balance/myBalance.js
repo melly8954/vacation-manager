@@ -112,6 +112,7 @@ function renderVacationHistory(data) {
         }
 
         const $item = $(`
+            <div>${item.createdAt.slice(0, 10)}</div>
             <div>${getVacationTypeText(item.typeCode)}</div>
             <div>${period}</div>
             <div>${item.daysCount}일</div>
