@@ -179,7 +179,7 @@ public class VacationRequestRepositoryImplTest {
                     .daysCount(BigDecimal.valueOf(days))
                     .status(status)
                     .reason("테스트용")
-                    .createdAt(LocalDateTime.now().minusDays((long) (Math.random() * 100)))
+                    .createdAt(LocalDateTime.of(2025, 7, 15, 10, 0))
                     .build());
         }
 
@@ -212,6 +212,8 @@ public class VacationRequestRepositoryImplTest {
                     .year("ALL")
                     .month("ALL")
                     .order("desc")
+                    .page(0)
+                    .size(10)
                     .build();
 
             Page<VacationRequestListResponse> result = vacationRequestRepositoryImpl.findMyVacationRequests(cond, PageRequest.of(0, 10));
@@ -232,6 +234,8 @@ public class VacationRequestRepositoryImplTest {
                     .year("ALL")
                     .month("ALL")
                     .order("desc")
+                    .page(0)
+                    .size(10)
                     .build();
 
             Page<VacationRequestListResponse> result = vacationRequestRepositoryImpl.findMyVacationRequests(cond, PageRequest.of(0, 10));
@@ -252,13 +256,15 @@ public class VacationRequestRepositoryImplTest {
                     .year("2025")
                     .month("ALL")
                     .order("desc")
+                    .page(0)
+                    .size(10)
                     .build();
 
             Page<VacationRequestListResponse> result = vacationRequestRepositoryImpl.findMyVacationRequests(cond, PageRequest.of(0, 10));
 
             assertThat(result).isNotNull();
             assertThat(result.getContent()).isNotEmpty();
-            assertThat(result.getContent()).allMatch(v -> v.getStartDate().getYear() == 2025);
+            assertThat(result.getContent()).allMatch(v -> v.getCreatedAt().getYear() == 2025);
             assertThat(result.getTotalElements()).isEqualTo(4);
         }
 
@@ -272,14 +278,16 @@ public class VacationRequestRepositoryImplTest {
                     .year("ALL")
                     .month("7")
                     .order("desc")
+                    .page(0)
+                    .size(10)
                     .build();
 
             Page<VacationRequestListResponse> result = vacationRequestRepositoryImpl.findMyVacationRequests(cond, PageRequest.of(0, 10));
 
             assertThat(result).isNotNull();
             assertThat(result.getContent()).isNotEmpty();
-            assertThat(result.getContent()).allMatch(v -> v.getStartDate().getMonthValue() == 7);
-            assertThat(result.getTotalElements()).isEqualTo(1);
+            assertThat(result.getContent()).allMatch(v -> v.getCreatedAt().getMonthValue() == 7);
+            assertThat(result.getTotalElements()).isEqualTo(4);
         }
 
         @Test
@@ -292,19 +300,20 @@ public class VacationRequestRepositoryImplTest {
                     .year("2025")
                     .month("6")
                     .order("desc")
+                    .page(0)
+                    .size(10)
                     .build();
 
             Page<VacationRequestListResponse> result = vacationRequestRepositoryImpl.findMyVacationRequests(cond, PageRequest.of(0, 10));
 
             assertThat(result).isNotNull();
-            assertThat(result.getContent()).isNotEmpty();
             assertThat(result.getContent()).allMatch(v ->
                     v.getTypeCode().equals("ANNUAL") &&
                             v.getStatus() == VacationRequestStatus.REJECTED &&
-                            v.getStartDate().getYear() == 2025 &&
-                            v.getStartDate().getMonthValue() == 6
+                            v.getCreatedAt().getYear() == 2025 &&
+                            v.getCreatedAt().getMonthValue() == 6
             );
-            assertThat(result.getTotalElements()).isEqualTo(1);
+            assertThat(result.getTotalElements()).isEqualTo(0);
         }
 
         @Test
@@ -317,6 +326,8 @@ public class VacationRequestRepositoryImplTest {
                     .year("ALL")
                     .month("ALL")
                     .order("desc")
+                    .page(0)
+                    .size(10)
                     .build();
 
             Pageable pageable = PageRequest.of(0, 10);
@@ -339,6 +350,8 @@ public class VacationRequestRepositoryImplTest {
                     .year("ALL")
                     .month("ALL")
                     .order("asc")
+                    .page(0)
+                    .size(10)
                     .build();
 
             Pageable pageable = PageRequest.of(0, 10);
@@ -390,6 +403,56 @@ public class VacationRequestRepositoryImplTest {
             assertThat(result).isNotNull();
             assertThat(result.getContent()).hasSizeLessThanOrEqualTo(3);
             assertThat(result.getTotalElements()).isEqualTo(4);  // 전체 데이터 개수는 4건
+        }
+
+        @Test
+        @DisplayName("휴가기간 기준 (vacationPeriod) 필터 - 2025년 6월")
+        void testVacationPeriodFilterByYearAndMonth() {
+            VacationRequestSearchCond cond = VacationRequestSearchCond.builder()
+                    .userId(user.getUserId())
+                    .typeCode("ALL")
+                    .status("ALL")
+                    .year("2025")
+                    .month("6")
+                    .order("desc")
+                    .dateFilterType("vacationPeriod")
+                    .page(0)
+                    .size(10)
+                    .build();
+
+            Page<VacationRequestListResponse> result = vacationRequestRepositoryImpl
+                    .findMyVacationRequests(cond, PageRequest.of(cond.getPage(), cond.getSize()));
+
+            assertThat(result).isNotNull();
+            assertThat(result.getTotalElements()).isEqualTo(1);
+            assertThat(result.getContent().get(0).getStartDate().getMonthValue()).isEqualTo(6);
+        }
+
+        @Test
+        @DisplayName("휴가기간 기준 (vacationPeriod) - 현재 연도 7월")
+        void testVacationPeriodFilterByMonthOnly() {
+            VacationRequestSearchCond cond = VacationRequestSearchCond.builder()
+                    .userId(user.getUserId())
+                    .typeCode("ALL")
+                    .status("ALL")
+                    .year("ALL")
+                    .month("7")
+                    .order("desc")
+                    .dateFilterType("vacationPeriod")
+                    .page(0)
+                    .size(10)
+                    .build();
+
+            Page<VacationRequestListResponse> result = vacationRequestRepositoryImpl
+                    .findMyVacationRequests(cond, PageRequest.of(cond.getPage(), cond.getSize()));
+
+            assertThat(result).isNotNull();
+            assertThat(result.getContent())
+                    .allMatch(v -> {
+                        LocalDate start = v.getStartDate();
+                        LocalDate end = v.getEndDate();
+                        return start.getMonthValue() <= 7 && end.getMonthValue() >= 7;
+                    });
         }
     }
 
