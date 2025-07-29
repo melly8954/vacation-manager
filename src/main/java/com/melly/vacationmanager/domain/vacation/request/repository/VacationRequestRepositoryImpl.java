@@ -64,12 +64,12 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
 
         // year "ALL"이 아닐 때만 조건 추가 (문자열->정수 변환 포함)
         if (!"ALL".equals(cond.getYear())) {
-            builder.and(q.startDate.year().eq(Integer.parseInt(cond.getYear())));
+            builder.and(q.createdAt.year().eq(Integer.parseInt(cond.getYear())));
         }
 
         // month "ALL"이 아닐 때만 조건 추가 (문자열->정수 변환 포함)
         if (!"ALL".equals(cond.getMonth())) {
-            builder.and(q.startDate.month().eq(Integer.parseInt(cond.getMonth())));
+            builder.and(q.createdAt.month().eq(Integer.parseInt(cond.getMonth())));
         }
 
         List<VacationRequestListResponse> content = queryFactory
