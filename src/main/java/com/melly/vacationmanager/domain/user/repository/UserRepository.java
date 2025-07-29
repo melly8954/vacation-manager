@@ -2,10 +2,12 @@ package com.melly.vacationmanager.domain.user.repository;
 
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.global.common.enums.UserRole;
+import com.melly.vacationmanager.global.common.enums.UserStatus;
 import org.apache.catalina.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,4 +18,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, UserRep
     Optional<UserEntity> findByEmail(String value);
 
     Optional<UserEntity> findByUserId(Long userId);
+
+    List<UserEntity> findAllByStatus(UserStatus userStatus);
+
 }
