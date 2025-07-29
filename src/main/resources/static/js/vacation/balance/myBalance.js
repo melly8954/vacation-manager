@@ -1,5 +1,15 @@
 $(document).ready(function () {
     fetchVacationBalances();
+
+    populateYearOptions();
+    populateMonthOptions();
+
+    // 필터 변경 시
+    $('#year-select, #month-select').on('change', function () {
+        fetchVacationHistory(getFilterParams());
+    });
+
+    fetchVacationHistory(getFilterParams());
 });
 
 // 휴가 잔여일 데이터 요청
@@ -47,4 +57,76 @@ function renderVacationBalanceCards(data) {
 
         $list.append($card);
     });
+}
+
+function populateYearOptions() {
+    const yearSelect = $('#year-select');
+    const thisYear = new Date().getFullYear();
+    for (let y = thisYear; y >= 2000; y--) {
+        yearSelect.append(`<option value="${y}">${y}</option>`);
+    }
+}
+
+function populateMonthOptions() {
+    const monthSelect = $('#month-select');
+    for (let m = 1; m <= 12; m++) {
+        monthSelect.append(`<option value="${m}">${m}월</option>`);
+    }
+}
+
+function getFilterParams() {
+    return {
+        status: 'APPROVED',  // 고정값
+        year: $('#year-select').val(),
+        month: $('#month-select').val(),
+    };
+}
+
+function fetchVacationHistory(params) {
+    $.ajax({
+        url: '/api/v1/vacation-requests/me',
+        method: 'GET',
+        data: params
+    })
+        .done(function (response) {
+            renderVacationHistory(response.data);
+        })
+        .fail(function () {
+            alert('휴가 사용 이력을 가져오지 못했습니다.');
+        });
+}
+
+function renderVacationHistory(data) {
+    const $list = $('#vacation-history-list');
+    $list.empty();
+
+    if (data.content.length === 0) {
+        $list.append('<p>조회된 휴가 사용 이력이 없습니다.</p>');
+        return;
+    }
+
+    data.content.forEach(item => {
+        let period = item.startDate;
+        if (item.endDate && item.endDate !== item.startDate) {
+            period += ` ~ ${item.endDate}`;
+        }
+
+        const $item = $(`
+            <div>${getVacationTypeText(item.typeCode)}</div>
+            <div>${period}</div>
+            <div>${item.daysCount}일</div>
+        `);
+
+        $list.append($item);
+    });
+}
+
+function getVacationTypeText(code) {
+    switch (code) {
+        case 'ANNUAL': return '연차';
+        case 'SICK': return '병가';
+        case 'FAMILY_EVENT': return '경조사';
+        case 'SPECIAL': return '특별휴가';
+        default: return code;
+    }
 }
