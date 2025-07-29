@@ -25,12 +25,14 @@
                         <!-- 1행: 연도 + 월 필터링 -->
                         <div class="row mb-3">
                             <div class="col-md-2">
+                                <label for="year-select">신청 연도</label>
                                 <select class="form-select" id="year-select">
                                     <option value="ALL" selected>전체 연도</option>
                                     <!-- 연도 옵션 동적 생성 -->
                                 </select>
                             </div>
                             <div class="col-md-2">
+                                <label for="month-select">신청 월</label>
                                 <select class="form-select" id="month-select">
                                     <option value="ALL" selected>전체 월</option>
                                     <!-- 월 옵션 동적 생성 -->
@@ -41,6 +43,7 @@
                         <!-- 2행: 휴가 유형 + 상태 필터링 -->
                         <div class="row">
                             <div class="col-md-3">
+                                <label for="type-select">휴가 유형</label>
                                 <select class="form-select" id="type-select">
                                     <option value="ALL" selected>전체 휴가 유형</option>
                                     <option value="ANNUAL">연차</option>
@@ -50,6 +53,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
+                                <label for="status-select">승인 상태</label>
                                 <select class="form-select" id="status-select">
                                     <option value="ALL" selected>전체 상태</option>
                                     <option value="PENDING">승인대기</option>

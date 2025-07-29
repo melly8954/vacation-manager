@@ -31,12 +31,14 @@
                     <!-- 월 필터 -->
                     <div class="row mb-3">
                         <div class="col-md-2">
+                            <label for="year-select">신청 연도</label>
                             <select class="form-select" id="year-select">
                                 <option value="ALL" selected>전체 연도</option>
                                 <!-- 연도 옵션 동적 생성 -->
                             </select>
                         </div>
                         <div class="col-md-2">
+                            <label for="month-select">신청 월</label>
                             <select class="form-select" id="month-select">
                                 <option value="ALL" selected>전체 월</option>
                                 <!-- 월 옵션 동적 생성 -->
@@ -45,7 +47,8 @@
                     </div>
 
                     <!-- 이력 리스트 -->
-                    <div class="vacation-history-grid-header d-grid" style="grid-template-columns: 2fr 3fr 1fr;">
+                    <div class="vacation-history-grid-header d-grid">
+                        <div><strong>휴가 신청일</strong></div>
                         <div><strong>휴가 유형</strong></div>
                         <div><strong>기간</strong></div>
                         <div><strong>일수</strong></div>
