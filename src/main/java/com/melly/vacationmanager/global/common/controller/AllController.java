@@ -25,6 +25,11 @@ public class AllController {
         return "vacation/request/myList";
     }
 
+    @GetMapping("/vacation-balance/me")
+    public String showVacationMyBalance() {
+        return "vacation/balance/myBalance";
+    }
+
     @GetMapping("/admin/pending")
     public String pending() {
         return "admin/pending";

@@ -1,0 +1,25 @@
+.vacation-balance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.vacation-card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 16px;
+    background-color: #fff;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
+    font-family: 'Pretendard', 'Segoe UI', sans-serif;
+}
+
+.vacation-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.vacation-card .meta span {
+    display: block;
+    margin-bottom: 4px;
+}

@@ -1,14 +1,21 @@
 package com.melly.vacationmanager.domain.vacation.balance.service;
 
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
+import com.melly.vacationmanager.domain.vacation.balance.dto.VacationBalanceResponse;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceEntity;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceId;
 import com.melly.vacationmanager.domain.vacation.balance.repository.VacationBalanceRepository;
+import com.melly.vacationmanager.domain.vacation.grant.repository.VacationGrantRepository;
+import com.melly.vacationmanager.domain.vacation.request.repository.VacationRequestRepository;
 import com.melly.vacationmanager.domain.vacation.type.entity.VacationTypeEntity;
+import com.melly.vacationmanager.domain.vacation.type.repository.VacationTypeRepository;
+import com.melly.vacationmanager.global.common.enums.VacationRequestStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,6 +23,8 @@ import java.util.Optional;
 public class VacationBalanceServiceImpl implements IVacationBalanceService {
 
     private final VacationBalanceRepository vacationBalanceRepository;
+    private final VacationGrantRepository vacationGrantRepository;
+    private final VacationRequestRepository vacationRequestRepository;
 
     @Override
     public Optional<VacationBalanceEntity> findById(VacationBalanceId id) {
@@ -38,5 +47,29 @@ public class VacationBalanceServiceImpl implements IVacationBalanceService {
                     .build();
             vacationBalanceRepository.save(balance);
         }
+    }
+
+    @Override
+    public List<VacationBalanceResponse> getVacationBalancesByUserId(Long userId) {
+        List<VacationBalanceEntity> entities = vacationBalanceRepository.findByUser_UserId(userId);
+
+        List<VacationBalanceResponse> result = new ArrayList<>();
+
+        for (VacationBalanceEntity entity : entities) {
+            String typeCode = entity.getId().getTypeCode();
+
+            BigDecimal grantedDays = vacationGrantRepository.sumGrantedDays(userId, typeCode);
+            BigDecimal usedDays = vacationRequestRepository.sumUsedDays(userId, typeCode, VacationRequestStatus.APPROVED);
+
+            result.add(VacationBalanceResponse.builder()
+                    .typeCode(entity.getId().getTypeCode())
+                    .typeName(entity.getType().getTypeName())
+                    .grantedDays(grantedDays)
+                    .usedDays(usedDays)
+                    .remainingDays(entity.getRemainingDays())
+                    .build());
+        }
+
+        return result;
     }
 }
