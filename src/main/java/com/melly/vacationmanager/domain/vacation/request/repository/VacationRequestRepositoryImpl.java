@@ -62,14 +62,53 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
             builder.and(q.status.eq(VacationRequestStatus.valueOf(cond.getStatus())));
         }
 
-        // year "ALL"이 아닐 때만 조건 추가 (문자열->정수 변환 포함)
-        if (!"ALL".equals(cond.getYear())) {
-            builder.and(q.createdAt.year().eq(Integer.parseInt(cond.getYear())));
-        }
+        // 연도/월 필터
+        if ("vacationPeriod".equals(cond.getDateFilterType())) {
+            // startDate ~ endDate 기준 기간 겹침 조건 적용
+            // year, month 둘 다 지정된 경우
+            if (!"ALL".equals(cond.getYear()) && !"ALL".equals(cond.getMonth())) {
+                int year = Integer.parseInt(cond.getYear());
+                int month = Integer.parseInt(cond.getMonth());
 
-        // month "ALL"이 아닐 때만 조건 추가 (문자열->정수 변환 포함)
-        if (!"ALL".equals(cond.getMonth())) {
-            builder.and(q.createdAt.month().eq(Integer.parseInt(cond.getMonth())));
+                // 필터 기간: 해당 연도의 해당 월 1일 ~ 말일
+                LocalDate filterStart = LocalDate.of(year, month, 1);
+                LocalDate filterEnd = filterStart.withDayOfMonth(filterStart.lengthOfMonth());
+
+                // 휴가 기간이 필터 기간과 겹치는 경우만 조회
+                builder.and(q.endDate.goe(filterStart)
+                        .and(q.startDate.loe(filterEnd)));
+
+            } else if (!"ALL".equals(cond.getYear())) {     // year만 지정된 경우
+                int year = Integer.parseInt(cond.getYear());
+
+                // 필터 기간: 해당 연도의 1월 1일 ~ 12월 31일
+                LocalDate yearStart = LocalDate.of(year, 1, 1);
+                LocalDate yearEnd = LocalDate.of(year, 12, 31);
+
+                // 휴가 기간이 필터 기간과 겹치는 경우만 조회
+                builder.and(q.endDate.goe(yearStart)
+                        .and(q.startDate.loe(yearEnd)));
+
+            } else if (!"ALL".equals(cond.getMonth())) {    // month만 지정된 경우 (year는 ALL)
+                int month = Integer.parseInt(cond.getMonth());
+                int currentYear = LocalDate.now().getYear(); // 현재 연도 기준 필터링
+
+                // 필터 기간: 현재 연도의 해당 월 1일 ~ 말일
+                LocalDate monthStart = LocalDate.of(currentYear, month, 1);
+                LocalDate monthEnd = monthStart.withDayOfMonth(monthStart.lengthOfMonth());
+
+                // 휴가 기간이 필터 기간과 겹치는 경우만 조회
+                builder.and(q.endDate.goe(monthStart)
+                        .and(q.startDate.loe(monthEnd)));
+            }
+        } else {
+            // 기본 createdAt 기준 필터링
+            if (!"ALL".equals(cond.getYear())) {
+                builder.and(q.createdAt.year().eq(Integer.parseInt(cond.getYear())));
+            }
+            if (!"ALL".equals(cond.getMonth())) {
+                builder.and(q.createdAt.month().eq(Integer.parseInt(cond.getMonth())));
+            }
         }
 
         List<VacationRequestListResponse> content = queryFactory

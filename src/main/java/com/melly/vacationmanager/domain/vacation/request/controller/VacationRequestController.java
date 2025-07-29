@@ -43,11 +43,12 @@ public class VacationRequestController implements ResponseController {
                                                               @RequestParam(defaultValue = "ALL") String year,
                                                               @RequestParam(defaultValue = "ALL") String month,
                                                               @RequestParam(defaultValue = "desc") String order,
+                                                              @RequestParam(defaultValue = "createdAt") String dateFilterType,
                                                               @AuthenticationPrincipal PrincipalDetails principal) {
         Long userId = principal.getUserEntity().getUserId(); // 인증 사용자 ID
 
         VacationRequestSearchCond cond = new VacationRequestSearchCond(
-                userId, typeCode, status, year, month, order, page, size
+                userId, typeCode, status, year, month, order, dateFilterType, page, size
         );
 
         VacationRequestPageResponse result = vacationRequestService.getMyRequests(cond);

@@ -15,6 +15,7 @@ public class VacationRequestSearchCond {
     private String year;        // 신청 연도 (예: "2025", "ALL")
     private String month;       // 신청 월 (예: "7", "ALL")
     private String order;       // 정렬 방향 ("asc", "desc")
+    private String dateFilterType;
 
     private int page;           // 페이지 번호 (0-based 처리 예정)
     private int size;           // 페이지 크기

@@ -79,6 +79,7 @@ function getFilterParams() {
         status: 'APPROVED',  // 고정값
         year: $('#year-select').val(),
         month: $('#month-select').val(),
+        dateFilterType: 'vacationPeriod'
     };
 }
 

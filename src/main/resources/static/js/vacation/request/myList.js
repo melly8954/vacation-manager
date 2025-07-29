@@ -99,7 +99,8 @@ function getFilterParams() {
         'type-code': $('#type-select').val(),
         page: 1,
         size: 10,
-        order: $('#sort-createdAt').data('order')
+        order: $('#sort-createdAt').data('order'),
+        dateFilterType: 'createdAt'
     };
 }
 
