@@ -79,7 +79,6 @@ $(document).ready(function () {
 function populateYearOptions() {
     const yearSelect = $('#year-select');
     const thisYear = new Date().getFullYear();
-    yearSelect.append(`<option value="">전체</option>`);
     for (let y = thisYear; y >= 2000; y--) {
         yearSelect.append(`<option value="${y}">${y}</option>`);
     }
@@ -87,7 +86,6 @@ function populateYearOptions() {
 
 function populateMonthOptions() {
     const monthSelect = $('#month-select');
-    monthSelect.append(`<option value="">전체</option>`);
     for (let m = 1; m <= 12; m++) {
         monthSelect.append(`<option value="${m}">${m}월</option>`);
     }

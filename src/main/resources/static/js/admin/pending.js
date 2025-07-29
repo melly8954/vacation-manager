@@ -67,7 +67,6 @@ function populateYearOptions() {
     const currentYear = new Date().getFullYear();
     const startYear = 2000;
 
-    yearSelect.append(`<option value="">전체</option>`);
     for (let y = currentYear; y >= startYear; y--) {
         yearSelect.append(`<option value="${y}">${y}</option>`);
     }
@@ -76,7 +75,6 @@ function populateYearOptions() {
 // 월 필터링 동적 처리
 function populateMonthOptions() {
     const monthSelect = $('#month');
-    monthSelect.append(`<option value="">전체</option>`);
     for (let m = 1; m <= 12; m++) {
         monthSelect.append(`<option value="${m}">${m}월</option>`);
     }
