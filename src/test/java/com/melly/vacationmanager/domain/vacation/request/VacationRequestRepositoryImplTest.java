@@ -406,7 +406,7 @@ public class VacationRequestRepositoryImplTest {
         }
 
         @Test
-        @DisplayName("휴가기간 기준 (vacationPeriod) 필터 - 2025년 6월")
+        @DisplayName("[dateFilterType == vacationPeriod] 휴가기간 필터 적용 - 2025년 6월")
         void testVacationPeriodFilterByYearAndMonth() {
             VacationRequestSearchCond cond = VacationRequestSearchCond.builder()
                     .userId(user.getUserId())
@@ -429,7 +429,7 @@ public class VacationRequestRepositoryImplTest {
         }
 
         @Test
-        @DisplayName("휴가기간 기준 (vacationPeriod) - 현재 연도 7월")
+        @DisplayName("[dateFilterType == vacationPeriod] 휴가기간 필터 적용 - 모든 연도 7월")
         void testVacationPeriodFilterByMonthOnly() {
             VacationRequestSearchCond cond = VacationRequestSearchCond.builder()
                     .userId(user.getUserId())
