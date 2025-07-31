@@ -6,6 +6,7 @@ import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.Admi
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.repository.UserRepository;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationCalendarResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
 import com.melly.vacationmanager.domain.vacation.request.entity.VacationRequestEntity;
 import com.melly.vacationmanager.domain.vacation.request.repository.VacationRequestRepository;
@@ -30,6 +31,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -770,6 +772,167 @@ public class VacationRequestRepositoryImplTest {
             assertThat(result.getTotalElements()).isEqualTo(3);
             assertThat(result.getContent()).hasSizeLessThanOrEqualTo(2);
             assertThat(result.getContent()).hasSize(1);
+        }
+    }
+
+    @Nested
+    @DisplayName("findApprovedVacationsForCalendar 조건 필터 테스트")
+    class findApprovedVacationsForCalendarTest {
+        private UserEntity user;
+        private VacationTypeEntity annualVacationType;
+
+        @BeforeEach
+        void setUp() {
+            user = userRepository.save(UserEntity.builder()
+                    .username("user1")
+                    .name("선우")
+                    .status(UserStatus.ACTIVE)
+                    .build());
+
+            annualVacationType = vacationTypeRepository.save(VacationTypeEntity.builder()
+                    .typeCode("ANNUAL")
+                    .typeName("연차")
+                    .build());
+        }
+
+        @Test
+        @DisplayName("완전히 범위 내에 휴가가 속한 경우")
+        void testVacationCompletelyWithinRange() {
+            // given
+            LocalDate rangeStart = LocalDate.of(2025, 7, 1);
+            LocalDate rangeEnd = LocalDate.of(2025, 7, 31);
+
+            // 휴가 기간 : 범위 내 완전히 속함 (2025-07-10 ~ 2025-07-12)
+            VacationRequestEntity vacation = createVacation(LocalDate.of(2025, 7, 10), LocalDate.of(2025, 7, 12), BigDecimal.valueOf(3));
+
+            // when
+            List<VacationCalendarResponse> results = vacationRequestRepository.findApprovedVacationsForCalendar(user.getUserId(), rangeStart, rangeEnd);
+
+            // then
+            assertThat(results).hasSize(1);
+            assertThat(results)
+                    .extracting("requestId")
+                    .contains(vacation.getRequestId());
+        }
+
+        @Test
+        @DisplayName("휴가가 범위를 일부만 겹치는 경우 (앞부분)")
+        void testVacationOverlappingRangeAtStart() {
+            // given
+            LocalDate rangeStart = LocalDate.of(2025, 7, 1);
+            LocalDate rangeEnd = LocalDate.of(2025, 7, 31);
+
+            // 휴가 기간: 범위 앞부분과 겹침 (2025-06-29 ~ 2025-07-02)
+            VacationRequestEntity vacation = createVacation(LocalDate.of(2025, 6, 29), LocalDate.of(2025, 7, 2), BigDecimal.valueOf(3));
+
+            // when
+            List<VacationCalendarResponse> results = vacationRequestRepository.findApprovedVacationsForCalendar(user.getUserId(), rangeStart, rangeEnd);
+
+            // then
+            assertThat(results).hasSize(1);
+            assertThat(results)
+                    .extracting("requestId")
+                    .containsExactly(vacation.getRequestId());
+        }
+
+        @Test
+        @DisplayName("휴가가 범위를 일부만 겹치는 경우 (뒷부분)")
+        void testVacationOverlappingRangeAtEnd() {
+            // given
+            LocalDate rangeStart = LocalDate.of(2025, 7, 1);
+            LocalDate rangeEnd = LocalDate.of(2025, 7, 31);
+
+            // 휴가 기간: 범위 뒷부분과 겹침 (2025-07-30 ~ 2025-08-02)
+            VacationRequestEntity vacation = createVacation(LocalDate.of(2025, 7, 30), LocalDate.of(2025, 8, 2), BigDecimal.valueOf(4));
+
+            // when
+            List<VacationCalendarResponse> results = vacationRequestRepository.findApprovedVacationsForCalendar(user.getUserId(), rangeStart, rangeEnd);
+
+            // then
+            assertThat(results).hasSize(1);
+            assertThat(results)
+                    .extracting("requestId")
+                    .containsExactly(vacation.getRequestId());
+        }
+
+        @Test
+        @DisplayName("휴가가 범위 밖에 있는 경우 (시작·종료일 모두 이전)")
+        void testVacationBeforeRange() {
+            // given
+            LocalDate rangeStart = LocalDate.of(2025, 7, 1);
+            LocalDate rangeEnd = LocalDate.of(2025, 7, 31);
+
+            // 휴가 기간: 범위 이전 (2025-06-01 ~ 2025-06-15)
+            VacationRequestEntity vacation = createVacation(LocalDate.of(2025, 6, 1), LocalDate.of(2025, 6, 15), BigDecimal.valueOf(11));
+
+            // when
+            List<VacationCalendarResponse> results = vacationRequestRepository.findApprovedVacationsForCalendar(user.getUserId(), rangeStart, rangeEnd);
+
+            // then
+            // 이 휴가는 범위 밖이므로 결과에 포함되지 않아야 함
+            assertThat(results)
+                    .extracting("requestId")
+                    .doesNotContain(vacation.getRequestId());
+        }
+
+        @Test
+        @DisplayName("휴가가 범위 밖에 있는 경우 (시작·종료일 모두 이후)")
+        void testVacationAfterRange() {
+            // given
+            LocalDate rangeStart = LocalDate.of(2025, 7, 1);
+            LocalDate rangeEnd = LocalDate.of(2025, 7, 31);
+
+            // 휴가 기간: 범위 이후 (2025-08-01 ~ 2025-08-05)
+            VacationRequestEntity vacation = createVacation(LocalDate.of(2025, 8, 1), LocalDate.of(2025, 8, 5), BigDecimal.valueOf(5));
+
+            // when
+            List<VacationCalendarResponse> results = vacationRequestRepository.findApprovedVacationsForCalendar(user.getUserId(), rangeStart, rangeEnd);
+
+            // then
+            // 범위 밖이므로 결과에서 제외되어야 함
+            assertThat(results)
+                    .extracting("requestId")
+                    .doesNotContain(vacation.getRequestId());
+        }
+
+        @Test
+        @DisplayName("휴가 상태가 APPROVED가 아닌 경우")
+        void testVacationStatusNotApproved() {
+            // given
+            LocalDate rangeStart = LocalDate.of(2025, 7, 1);
+            LocalDate rangeEnd = LocalDate.of(2025, 7, 31);
+
+            // 휴가 엔티티를 직접 생성해서 status를 PENDING 으로 설정
+            VacationRequestEntity vacation = VacationRequestEntity.builder()
+                    .user(user)
+                    .vacationType(annualVacationType)
+                    .startDate(LocalDate.of(2025, 7, 10))
+                    .endDate(LocalDate.of(2025, 7, 12))
+                    .daysCount(BigDecimal.valueOf(3))
+                    .status(VacationRequestStatus.PENDING)  // APPROVED 아님
+                    .build();
+            vacationRequestRepository.save(vacation);
+
+            // when
+            List<VacationCalendarResponse> results = vacationRequestRepository.findApprovedVacationsForCalendar(user.getUserId(), rangeStart, rangeEnd);
+
+            // then
+            // 상태가 APPROVED가 아니므로 결과에 포함 안 됨
+            assertThat(results)
+                    .extracting("requestId")
+                    .doesNotContain(vacation.getRequestId());
+        }
+
+        private VacationRequestEntity createVacation(LocalDate start, LocalDate end, BigDecimal daysCount) {
+            VacationRequestEntity vacation = VacationRequestEntity.builder()
+                    .user(user)
+                    .vacationType(annualVacationType)
+                    .startDate(start)
+                    .endDate(end)
+                    .daysCount(daysCount)
+                    .status(VacationRequestStatus.APPROVED)
+                    .build();
+            return vacationRequestRepository.save(vacation);
         }
     }
 }
