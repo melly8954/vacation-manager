@@ -2,6 +2,7 @@ package com.melly.vacationmanager.domain.vacation.request.dto.response;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter
@@ -14,6 +15,6 @@ public class VacationCalendarResponse {
     private String typeName;
     private LocalDate startDate;
     private LocalDate endDate;
-    private int daysCount;
+    private BigDecimal daysCount;
     private String status;
 }

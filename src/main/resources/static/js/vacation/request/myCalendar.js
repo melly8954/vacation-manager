@@ -18,10 +18,9 @@ $(document).ready(function() {
                 },
                 success: function(response) {
                     // 백엔드에서 받은 response.data 배열을 FullCalendar 이벤트 포맷으로 변환
-                    console.log(response);
                     let events = response.data.map(item => ({
                         id: item.requestId,
-                        title: item.typeName,
+                        title: item.typeName + (item.daysCount === 0.5 ? ' [반차] ' : ''),
                         start: item.startDate,
                         end: addOneDay(item.endDate),
                         color: '#28a745',

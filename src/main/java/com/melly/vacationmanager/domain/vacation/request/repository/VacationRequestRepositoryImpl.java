@@ -222,7 +222,7 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
                         q.vacationType.typeName,
                         q.startDate,
                         q.endDate,
-                        q.daysCount.intValue(),
+                        q.daysCount,
                         q.status.stringValue()
                 ))
                 .from(q)
