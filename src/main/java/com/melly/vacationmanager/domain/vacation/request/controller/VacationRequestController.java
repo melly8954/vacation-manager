@@ -4,11 +4,13 @@ import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationReq
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VRCancelResponse;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationCalendarResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
 import com.melly.vacationmanager.domain.vacation.request.service.IVacationRequestService;
 import com.melly.vacationmanager.global.auth.PrincipalDetails;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
+import com.melly.vacationmanager.global.common.utils.CurrentUserUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,5 +69,15 @@ public class VacationRequestController implements ResponseController {
     public ResponseEntity<ResponseDto> cancelVacationRequest(@PathVariable Long requestId) {
         VRCancelResponse response = vacationRequestService.cancelVacationRequest(requestId);
         return makeResponseEntity(HttpStatus.OK,null,"휴가 신청이 취소되었습니다.", response);
+    }
+
+    @GetMapping("/me/calendar")
+    public ResponseEntity<ResponseDto> getApprovedVacationEventsForCalendar(@RequestParam String year,
+                                                                            @RequestParam String month) {
+        Long userId = CurrentUserUtils.getUserId();
+
+        List<VacationCalendarResponse> responses = vacationRequestService.findApprovedVacationsForCalendar(year, month, userId);
+
+        return makeResponseEntity(HttpStatus.OK, null, "휴가 일정 조회 성공", responses);
     }
 }

@@ -4,6 +4,7 @@ import com.melly.vacationmanager.domain.admin.vacation.request.dto.request.Admin
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.AdminVacationRequestListResponse;
 import com.melly.vacationmanager.domain.user.entity.QUserEntity;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationCalendarResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
 import com.melly.vacationmanager.domain.vacation.request.entity.QVacationRequestEntity;
 import com.melly.vacationmanager.global.common.enums.VacationRequestStatus;
@@ -207,5 +208,31 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
                         .fetchOne()
         ).orElse(0L);
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public List<VacationCalendarResponse> findApprovedVacationsForCalendar(Long userId, LocalDate start, LocalDate end) {
+        QVacationRequestEntity q = QVacationRequestEntity.vacationRequestEntity;
+
+        return queryFactory
+                .select(Projections.constructor(
+                        VacationCalendarResponse.class,
+                        q.requestId,
+                        q.vacationType.typeCode,
+                        q.vacationType.typeName,
+                        q.startDate,
+                        q.endDate,
+                        q.daysCount.intValue(),
+                        q.status.stringValue()
+                ))
+                .from(q)
+                .where(
+                        q.user.userId.eq(userId),
+                        q.status.eq(VacationRequestStatus.APPROVED),
+                        q.endDate.goe(start),
+                        q.startDate.loe(end)
+                )
+                .orderBy(q.startDate.asc())
+                .fetch();
     }
 }

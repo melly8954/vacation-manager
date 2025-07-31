@@ -4,6 +4,7 @@ import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationReq
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VRCancelResponse;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationCalendarResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,4 +17,7 @@ public interface IVacationRequestService {
     List<EvidenceFileResponse> getEvidenceFiles(Long requestId);
 
     VRCancelResponse cancelVacationRequest(Long requestId);
+
+    List<VacationCalendarResponse> findApprovedVacationsForCalendar(String year, String month, Long userId);
+
 }

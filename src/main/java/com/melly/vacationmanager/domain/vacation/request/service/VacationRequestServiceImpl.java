@@ -12,10 +12,7 @@ import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceI
 import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanceService;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.VRCancelResponse;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.*;
 import com.melly.vacationmanager.domain.vacation.request.entity.VacationRequestEntity;
 import com.melly.vacationmanager.domain.vacation.request.repository.VacationRequestRepository;
 import com.melly.vacationmanager.domain.vacation.type.entity.VacationTypeEntity;
@@ -180,5 +177,16 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
         vacationAuditLogRepository.save(log); // 함께 저장
 
         return VRCancelResponse.fromEntity(findEntity.getRequestId(), findEntity.getStatus());
+    }
+
+    @Override
+    public List<VacationCalendarResponse> findApprovedVacationsForCalendar(String yearStr, String monthStr, Long userId) {
+        int year = Integer.parseInt(yearStr);
+        int month = Integer.parseInt(monthStr);
+
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+
+        return vacationRequestRepository.findApprovedVacationsForCalendar(userId, start, end);
     }
 }
