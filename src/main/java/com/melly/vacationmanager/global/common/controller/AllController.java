@@ -25,6 +25,11 @@ public class AllController {
         return "vacation/request/myList";
     }
 
+    @GetMapping("/vacation-request/me/calendar")
+    public String showVacationMyCalendar() {
+        return "vacation/request/myCalendar";
+    }
+
     @GetMapping("/vacation-balance/me")
     public String showVacationMyBalance() {
         return "vacation/balance/myBalance";

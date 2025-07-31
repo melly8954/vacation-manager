@@ -180,12 +180,9 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
     }
 
     @Override
-    public List<VacationCalendarResponse> findApprovedVacationsForCalendar(String yearStr, String monthStr, Long userId) {
-        int year = Integer.parseInt(yearStr);
-        int month = Integer.parseInt(monthStr);
-
-        LocalDate start = LocalDate.of(year, month, 1);
-        LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+    public List<VacationCalendarResponse> findApprovedVacationsForCalendar(String startDateStr, String endDateStr, Long userId) {
+        LocalDate start = LocalDate.parse(startDateStr);  // "2025-06-29" 같은 날짜 형식으로 들어옴
+        LocalDate end = LocalDate.parse(endDateStr);      // "2025-08-02"
 
         return vacationRequestRepository.findApprovedVacationsForCalendar(userId, start, end);
     }

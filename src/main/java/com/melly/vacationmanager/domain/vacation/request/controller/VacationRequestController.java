@@ -72,11 +72,11 @@ public class VacationRequestController implements ResponseController {
     }
 
     @GetMapping("/me/calendar")
-    public ResponseEntity<ResponseDto> getApprovedVacationEventsForCalendar(@RequestParam String year,
-                                                                            @RequestParam String month) {
+    public ResponseEntity<ResponseDto> getApprovedVacationEventsForCalendar(@RequestParam String startDate,
+                                                                            @RequestParam String endDate) {
         Long userId = CurrentUserUtils.getUserId();
 
-        List<VacationCalendarResponse> responses = vacationRequestService.findApprovedVacationsForCalendar(year, month, userId);
+        List<VacationCalendarResponse> responses = vacationRequestService.findApprovedVacationsForCalendar(startDate, endDate, userId);
 
         return makeResponseEntity(HttpStatus.OK, null, "휴가 일정 조회 성공", responses);
     }

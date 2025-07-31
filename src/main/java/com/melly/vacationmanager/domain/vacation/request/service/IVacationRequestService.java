@@ -18,6 +18,6 @@ public interface IVacationRequestService {
 
     VRCancelResponse cancelVacationRequest(Long requestId);
 
-    List<VacationCalendarResponse> findApprovedVacationsForCalendar(String year, String month, Long userId);
+    List<VacationCalendarResponse> findApprovedVacationsForCalendar(String startDate, String endDate, Long userId);
 
 }
