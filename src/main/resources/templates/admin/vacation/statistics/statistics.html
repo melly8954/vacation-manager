@@ -36,13 +36,19 @@
                     </div>
                 </div>
 
-                <div class="row" id="grant-stats-cards">
+                <div class="row mt-5" id="grant-stats-cards">
                     <!-- 휴가 지급 통계 카드들 여기 렌더링 -->
                 </div>
                 <hr />
 
-                <div class="row" id="usage-stats-cards">
+                <div class="row mt-5" id="usage-stats-cards">
                     <!-- 휴가 사용 통계 카드들 여기 렌더링 -->
+                </div>
+                <hr />
+
+                <div class="mt-5">
+                    <p class="section-label">월별 휴가 사용 통계</p>
+                    <canvas id="usage-bar-chart" height="100"></canvas>
                 </div>
                 <hr />
             </div>
@@ -51,6 +57,7 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/js/user/logout.js"></script>
 <script src="/js/admin/statistics.js"></script>
 </body>
