@@ -1,7 +1,9 @@
 package com.melly.vacationmanager.domain.admin.vacation.statistic.service;
 
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationGrantStatisticsResponse;
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsResponse;
 import com.melly.vacationmanager.domain.vacation.grant.repository.VacationGrantRepository;
+import com.melly.vacationmanager.domain.vacation.request.repository.VacationRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ import java.util.List;
 public class StatisticServiceImpl implements IStatisticService {
 
     private final VacationGrantRepository vacationGrantRepository;
+    private final VacationRequestRepository vacationRequestRepository;
 
     @Override
     public List<VacationGrantStatisticsResponse> getVacationGrantStatistics(String year) {
@@ -23,6 +26,18 @@ public class StatisticServiceImpl implements IStatisticService {
         LocalDate end = LocalDate.of(y, 12, 31);
 
         return vacationGrantRepository.findGrantStatisticsBetween(start, end);
+    }
+
+    @Override
+    public List<VacationUsageStatisticsResponse> getUsageStatistics(String year, String month) {
+        LocalDate today = LocalDate.now();
+        int y = parseYear(year, today);
+        int m = parseMonth(month, today);
+
+        LocalDate start = LocalDate.of(y, m, 1);
+        LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+
+        return vacationRequestRepository.findUsageStatisticsBetween(start, end);
     }
 
     private int parseYear(String year, LocalDate today) {

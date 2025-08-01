@@ -2,6 +2,7 @@ package com.melly.vacationmanager.domain.vacation.request.repository;
 
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.request.AdminVacationRequestSearchCond;
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.AdminVacationRequestListResponse;
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsResponse;
 import com.melly.vacationmanager.domain.user.entity.QUserEntity;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationCalendarResponse;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -233,6 +235,26 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
                         q.startDate.loe(end)
                 )
                 .orderBy(q.startDate.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<VacationUsageStatisticsResponse> findUsageStatisticsBetween(LocalDate start, LocalDate end) {
+        QVacationRequestEntity q = QVacationRequestEntity.vacationRequestEntity;
+
+        return queryFactory
+                .select(Projections.constructor(
+                        VacationUsageStatisticsResponse.class,
+                        q.vacationType.typeCode,
+                        q.vacationType.typeName,
+                        q.daysCount.sum()
+                ))
+                .from(q)
+                .where(
+                        q.status.eq(VacationRequestStatus.APPROVED)
+                                .and(q.startDate.between(start, end))
+                )
+                .groupBy(q.vacationType.typeCode, q.vacationType.typeName)
                 .fetch();
     }
 }

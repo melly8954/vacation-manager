@@ -2,6 +2,7 @@ package com.melly.vacationmanager.domain.vacation.request.repository;
 
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.request.AdminVacationRequestSearchCond;
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.AdminVacationRequestListResponse;
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationCalendarResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
@@ -17,4 +18,6 @@ public interface VacationRequestRepositoryCustom {
     Page<AdminVacationRequestListResponse> findAllVacationRequestsForAdmin(AdminVacationRequestSearchCond cond, Pageable pageable);
 
     List<VacationCalendarResponse> findApprovedVacationsForCalendar(Long userId, LocalDate start, LocalDate end);
+
+    List<VacationUsageStatisticsResponse> findUsageStatisticsBetween(LocalDate start, LocalDate end);
 }

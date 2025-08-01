@@ -1,6 +1,7 @@
 package com.melly.vacationmanager.domain.admin.vacation.statistic.controller;
 
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationGrantStatisticsResponse;
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsResponse;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.service.IStatisticService;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
@@ -24,6 +25,14 @@ public class VacationStatisticsController implements ResponseController {
     @GetMapping("/grants")
     public ResponseEntity<ResponseDto> getVacationGrantStatistics(@RequestParam String year) {
         List<VacationGrantStatisticsResponse> response = statisticService.getVacationGrantStatistics(year);
+
+        return makeResponseEntity(HttpStatus.OK, null, "휴가 지급 통계 조회 성공", response);
+    }
+
+    @GetMapping("/usages")
+    public ResponseEntity<ResponseDto> getVacationUsageStatistics(@RequestParam String year,
+                                                                  @RequestParam String month) {
+        List<VacationUsageStatisticsResponse> response = statisticService.getUsageStatistics(year,month);
 
         return makeResponseEntity(HttpStatus.OK, null, "휴가 지급 통계 조회 성공", response);
     }
