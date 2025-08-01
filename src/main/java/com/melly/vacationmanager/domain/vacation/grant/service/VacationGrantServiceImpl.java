@@ -82,7 +82,7 @@ public class VacationGrantServiceImpl implements IVacationGrantService{
         }
     }
 
-    private int calculateDaysToGrant(UserEntity user, VacationTypeEntity type) {
+    int calculateDaysToGrant(UserEntity user, VacationTypeEntity type) {
         if (!type.getTypeCode().equals("ANNUAL")) {
             // 기타 휴가 유형은 기본 지급
             return type.getDefaultDays();
@@ -101,14 +101,14 @@ public class VacationGrantServiceImpl implements IVacationGrantService{
         }
     }
 
-    private int calculateAnnualBonusDays(long years) {
+    int calculateAnnualBonusDays(long years) {
         if (years >= 7) return 3;
         if (years >= 5) return 2;
         if (years >= 3) return 1;
         return 0;
     }
 
-    private Integer calculateProRatedAnnual(LocalDate joinDate) {
+    Integer calculateProRatedAnnual(LocalDate joinDate) {
         // 입사월: 1월부터 12월까지
         int joinMonth = joinDate.getMonthValue();
 
