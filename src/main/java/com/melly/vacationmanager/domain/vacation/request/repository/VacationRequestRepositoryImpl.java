@@ -2,6 +2,7 @@ package com.melly.vacationmanager.domain.vacation.request.repository;
 
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.request.AdminVacationRequestSearchCond;
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.AdminVacationRequestListResponse;
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationStatusChangeStatisticsResponse;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsResponse;
 import com.melly.vacationmanager.domain.user.entity.QUserEntity;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
@@ -260,6 +261,25 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
                         q.vacationType.typeName,
                         q.startDate.month()
                 )
+                .fetch();
+    }
+
+    @Override
+    public List<VacationStatusChangeStatisticsResponse> findMonthlyStatusChangeCounts(int year, int month) {
+        QVacationRequestEntity q = QVacationRequestEntity.vacationRequestEntity;
+
+        return queryFactory
+                .select(Projections.constructor(
+                        VacationStatusChangeStatisticsResponse.class,
+                        q.status.stringValue(),  // String 타입으로 변환
+                        q.count()
+                ))
+                .from(q)
+                .where(
+                        q.startDate.year().eq(year)
+                                .and(q.startDate.month().eq(month))
+                )
+                .groupBy(q.status)
                 .fetch();
     }
 }

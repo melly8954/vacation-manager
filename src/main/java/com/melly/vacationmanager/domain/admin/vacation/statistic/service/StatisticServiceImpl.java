@@ -1,7 +1,9 @@
 package com.melly.vacationmanager.domain.admin.vacation.statistic.service;
 
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationGrantStatisticsResponse;
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationStatusChangeStatisticsResponse;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsResponse;
+import com.melly.vacationmanager.domain.vacation.auditlog.repository.VacationAuditLogRepository;
 import com.melly.vacationmanager.domain.vacation.grant.repository.VacationGrantRepository;
 import com.melly.vacationmanager.domain.vacation.request.repository.VacationRequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ public class StatisticServiceImpl implements IStatisticService {
 
     private final VacationGrantRepository vacationGrantRepository;
     private final VacationRequestRepository vacationRequestRepository;
+    private final VacationAuditLogRepository vacationAuditLogRepository;
 
     @Override
     public List<VacationGrantStatisticsResponse> getVacationGrantStatistics(String year) {
@@ -32,6 +35,14 @@ public class StatisticServiceImpl implements IStatisticService {
     public List<VacationUsageStatisticsResponse> getUsageStatistics(String year) {
         int y = parseYear(year, LocalDate.now());
         return vacationRequestRepository.findUsageStatisticsByYear(y);
+    }
+
+    @Override
+    public List<VacationStatusChangeStatisticsResponse> getStatusChangeStatistics(String year, String month) {
+        int y = parseYear(year, LocalDate.now());
+        int m = parseMonth(month, LocalDate.now());
+
+        return vacationRequestRepository.findMonthlyStatusChangeCounts(y, m);
     }
 
     private int parseYear(String year, LocalDate today) {

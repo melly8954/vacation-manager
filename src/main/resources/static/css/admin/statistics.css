@@ -80,3 +80,14 @@
     font-weight: bold;
     color: #0d6efd;
 }
+
+.pie-chart-wrapper {
+    max-width: 400px;   /* 최대 너비 제한 */
+    margin: 0 auto;     /* 가로 가운데 정렬 */
+}
+
+.pie-chart-wrapper canvas {
+    width: 100% !important;  /* 부모 너비에 맞게 꽉 채우기 */
+    height: auto !important; /* 비율 유지 */
+    display: block;
+}

@@ -12,20 +12,25 @@ $(document).ready(function () {
     $('#year-select').val(thisYear);
     $('#month-select').val(thisMonth);
 
+    // 오늘 날짜 기준으로 통계 조회 함수 호출
+    fetchGrantStatistics(thisYear);
+    fetchUsageStatistics(thisYear,thisMonth)
+    fetchStatusChangeStatistics(thisYear, thisMonth);
+    
+    // 필터링 변경 시 자동 요청
     $('#year-select, #month-select').on('change', function() {
         const year = $('#year-select').val();
         const month = $('#month-select').val();
         fetchGrantStatistics(year);
         fetchUsageStatistics(year, month)
+        fetchStatusChangeStatistics(year, month);
     });
-
-    // 오늘 날짜 기준으로 통계 조회 함수 호출
-    fetchGrantStatistics(thisYear);
-    fetchUsageStatistics(thisYear,thisMonth)
 
 });
 
 let usageBarChartInstance = null;
+let statusChangeChartInstance = null;
+
 const defaultVacationTypes = [
     '연차',
     '병가',
@@ -214,5 +219,98 @@ function renderUsageBarChart(data) {
                 }
             }
         }
+    });
+}
+
+function fetchStatusChangeStatistics(year, month) {
+    $.ajax({
+        url: '/api/v1/admin/vacation-statistics/status-changes',
+        method: 'GET',
+        data: { year, month }
+    })
+        .done(function(response) {
+            renderStatusChangePieChart(response.data);
+        })
+        .fail(function() {
+            alert('상태 변화 통계 조회 실패');
+        });
+}
+
+function renderStatusChangePieChart(data) {
+    const ctx = document.getElementById('status-change-pie-chart').getContext('2d');
+
+    const statusLabels = data.map(item => {
+        switch (item.newStatus) {
+            case 'APPROVED': return '승인';
+            case 'REJECTED': return '반려';
+            case 'ON_HOLD': return '보류';
+            default: return item.newStatus;
+        }
+    });
+
+    const statusCounts = data.map(item => item.totalCount);
+
+    const backgroundColors = ['#198754', '#0dcaf0', '#dc3545']; // green, red, yellow
+
+    // 기존 차트 제거
+    if (statusChangeChartInstance) {
+        statusChangeChartInstance.destroy();
+    }
+
+    statusChangeChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusCounts,
+                backgroundColor: backgroundColors
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            cutout: '50%',
+            radius: '80%',
+            layout: {
+                padding: {
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 2
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            return `${label}: ${value}건`;
+                        }
+                    }
+                },
+                datalabels: {
+                    color: '#fff',
+                    formatter: (value, ctx) => {
+                        const dataArr = ctx.chart.data.datasets[0].data;
+                        const sum = dataArr.reduce((a, b) => a + b, 0);
+                        const percent = ((value / sum) * 100).toFixed(1);
+                        const label = ctx.chart.data.labels[ctx.dataIndex];
+                        return `${label}\n${percent}%`;
+                    },
+                    font: {
+                        weight: 'bold',
+                        size: 14,
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
     });
 }
