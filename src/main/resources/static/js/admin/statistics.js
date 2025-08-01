@@ -109,7 +109,7 @@ function fetchUsageStatistics(year,month) {
     })
         .done(function(response) {
             renderUsageCards(response.data, Number(month));
-            renderUsageBarChart(response.data);
+            renderUsageBarChart(response.data, year);
         })
         .fail(function() {
             alert('휴가 사용 통계 데이터를 불러오는데 실패했습니다.');
@@ -148,7 +148,7 @@ function renderUsageCards(data, month) {
     });
 }
 
-function renderUsageBarChart(data) {
+function renderUsageBarChart(data, year) {
     const ctx = document.getElementById('usage-bar-chart').getContext('2d');
 
     // 월별 + 유형별로 데이터 재구성
@@ -190,7 +190,16 @@ function renderUsageBarChart(data) {
             responsive: true,
             plugins: {
                 title: {
-                    display: false
+                    display: true,
+                    text: `${year}년 월별 휴가 사용 통계`,
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 30
+                    }
                 },
                 tooltip: {
                     mode: 'index',
@@ -229,28 +238,48 @@ function fetchStatusChangeStatistics(year, month) {
         data: { year, month }
     })
         .done(function(response) {
-            renderStatusChangePieChart(response.data);
+            renderStatusChangePieChart(response.data, year, month);
         })
         .fail(function() {
             alert('상태 변화 통계 조회 실패');
         });
 }
 
-function renderStatusChangePieChart(data) {
+function renderStatusChangePieChart(data, year, month) {
     const ctx = document.getElementById('status-change-pie-chart').getContext('2d');
+
+    if (!data || data.length === 0) {
+        // 빈 데이터일 경우 기본 표시용 데이터 설정
+        data = [
+            {newStatus: 'NO_DATA', totalCount: 1}
+        ];
+    }
 
     const statusLabels = data.map(item => {
         switch (item.newStatus) {
-            case 'APPROVED': return '승인';
-            case 'REJECTED': return '반려';
-            case 'ON_HOLD': return '보류';
-            default: return item.newStatus;
+            case 'APPROVED':
+                return '승인';
+            case 'REJECTED':
+                return '반려';
+            case 'ON_HOLD':
+                return '보류';
+            case 'NO_DATA':
+                return '데이터 없음';
+            default:
+                return item.newStatus;
         }
     });
 
     const statusCounts = data.map(item => item.totalCount);
 
-    const backgroundColors = ['#198754', '#0dcaf0', '#dc3545']; // green, red, yellow
+    const backgroundColorsMap = {
+        '승인': '#198754',
+        '반려': '#dc3545',
+        '보류': '#0dcaf0',
+        '데이터 없음': '#6c757d'  // 회색톤
+    };
+
+    const backgroundColors = statusLabels.map(label => backgroundColorsMap[label]);
 
     // 기존 차트 제거
     if (statusChangeChartInstance) {
@@ -281,14 +310,26 @@ function renderStatusChangePieChart(data) {
             },
             plugins: {
                 legend: {
-                    position: 'bottom',
+                    position: 'top',
                     labels: {
                         padding: 2
                     }
                 },
+                title: {
+                    display: true,
+                    text: `${year}년 ${month}월 휴가 신청 처리 비율`,
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 30
+                    }
+                },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             const label = context.label || '';
                             const value = context.raw || 0;
                             return `${label}: ${value}건`;
@@ -297,6 +338,15 @@ function renderStatusChangePieChart(data) {
                 },
                 datalabels: {
                     color: '#fff',
+                    display: function (context) {
+                        // 데이터가 '데이터 없음' 하나만 있을 때 레이블 숨김
+                        const data = context.chart.data.datasets[0].data;
+                        const labels = context.chart.data.labels;
+                        if (labels.length === 1 && labels[0] === '데이터 없음') {
+                            return false; // 레이블 숨김
+                        }
+                        return true; // 그 외엔 표시
+                    },
                     formatter: (value, ctx) => {
                         const dataArr = ctx.chart.data.datasets[0].data;
                         const sum = dataArr.reduce((a, b) => a + b, 0);
