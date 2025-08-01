@@ -19,5 +19,5 @@ public interface VacationRequestRepositoryCustom {
 
     List<VacationCalendarResponse> findApprovedVacationsForCalendar(Long userId, LocalDate start, LocalDate end);
 
-    List<VacationUsageStatisticsResponse> findUsageStatisticsBetween(LocalDate start, LocalDate end);
+    List<VacationUsageStatisticsResponse> findUsageStatisticsByYear(int year);
 }

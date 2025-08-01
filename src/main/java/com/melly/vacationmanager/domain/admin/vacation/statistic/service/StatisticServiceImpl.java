@@ -29,15 +29,9 @@ public class StatisticServiceImpl implements IStatisticService {
     }
 
     @Override
-    public List<VacationUsageStatisticsResponse> getUsageStatistics(String year, String month) {
-        LocalDate today = LocalDate.now();
-        int y = parseYear(year, today);
-        int m = parseMonth(month, today);
-
-        LocalDate start = LocalDate.of(y, m, 1);
-        LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
-
-        return vacationRequestRepository.findUsageStatisticsBetween(start, end);
+    public List<VacationUsageStatisticsResponse> getUsageStatistics(String year) {
+        int y = parseYear(year, LocalDate.now());
+        return vacationRequestRepository.findUsageStatisticsByYear(y);
     }
 
     private int parseYear(String year, LocalDate today) {

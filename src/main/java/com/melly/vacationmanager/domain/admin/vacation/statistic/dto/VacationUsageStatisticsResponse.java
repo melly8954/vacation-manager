@@ -10,5 +10,6 @@ import java.math.BigDecimal;
 public class VacationUsageStatisticsResponse {
     private String typeCode;
     private String typeName;
+    private int month;
     private BigDecimal totalUsedDays;
 }

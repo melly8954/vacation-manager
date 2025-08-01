@@ -30,9 +30,8 @@ public class VacationStatisticsController implements ResponseController {
     }
 
     @GetMapping("/usages")
-    public ResponseEntity<ResponseDto> getVacationUsageStatistics(@RequestParam String year,
-                                                                  @RequestParam String month) {
-        List<VacationUsageStatisticsResponse> response = statisticService.getUsageStatistics(year,month);
+    public ResponseEntity<ResponseDto> getVacationUsageStatistics(@RequestParam String year) {
+        List<VacationUsageStatisticsResponse> response = statisticService.getUsageStatistics(year);
 
         return makeResponseEntity(HttpStatus.OK, null, "휴가 지급 통계 조회 성공", response);
     }

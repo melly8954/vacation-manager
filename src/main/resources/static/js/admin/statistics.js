@@ -16,12 +16,12 @@ $(document).ready(function () {
         const year = $('#year-select').val();
         const month = $('#month-select').val();
         fetchGrantStatistics(year);
-        fetchUsageStatistics(thisYear,month)
+        fetchUsageStatistics(year)
     });
 
     // 오늘 날짜 기준으로 통계 조회 함수 호출
     fetchGrantStatistics(thisYear);
-    fetchUsageStatistics(thisYear,thisMonth)
+    fetchUsageStatistics(thisYear)
 
 });
 
@@ -56,7 +56,6 @@ function fetchGrantStatistics(year) {
         }
     })
         .done(function(response) {
-            console.log(response);
             renderGrantCards(response.data);
         })
         .fail(function() {
@@ -96,22 +95,23 @@ function renderGrantCards(data) {
     });
 }
 
-function fetchUsageStatistics(year, month) {
+function fetchUsageStatistics(year) {
     $.ajax({
         url: '/api/v1/admin/vacation-statistics/usages',
         method: 'GET',
-        data: { year: year, month: month }
+        data: { year: year }
     })
         .done(function(response) {
-            console.log('사용 통계:', response);
-            renderUsageCards(response.data);
+            console.log(response);
+            const month = $('#month-select').val();
+            renderUsageCards(response.data, Number(month));
         })
         .fail(function() {
             alert('휴가 사용 통계 데이터를 불러오는데 실패했습니다.');
         });
 }
 
-function renderUsageCards(data) {
+function renderUsageCards(data, selectedMonth) {
     const container = $('#usage-stats-cards');
     container.empty();
     container.append(`
@@ -122,24 +122,23 @@ function renderUsageCards(data) {
           </p>
     `);
 
-    // 응답 데이터를 Map 형태로 변환 (typeName → totalUsedDays)
+    const filtered = data.filter(item => item.month === selectedMonth);
     const usageMap = new Map();
-    if (Array.isArray(data)) {
-        data.forEach(item => {
-            usageMap.set(item.typeName, item.totalUsedDays);
-        });
-    }
+
+    filtered.forEach(item => {
+        usageMap.set(item.typeName, item.totalUsedDays);
+    });
 
     defaultVacationTypes.forEach(typeName => {
         const usedDays = usageMap.get(typeName) || 0;
 
         container.append(`
-          <div class="col-md-3 col-sm-6 mb-4">
-            <div class="stat-card--usage">
-              <div class="stat-title--usage">${typeName}</div>
-              <div class="stat-value--usage">${usedDays} 일</div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-card--usage">
+                    <div class="stat-title--usage">${typeName}</div>
+                    <div class="stat-value--usage">${usedDays} 일</div>
+                </div>
             </div>
-          </div>
         `);
     });
 }

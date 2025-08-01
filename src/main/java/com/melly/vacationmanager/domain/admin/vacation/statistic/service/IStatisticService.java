@@ -9,6 +9,6 @@ public interface IStatisticService {
 
     List<VacationGrantStatisticsResponse> getVacationGrantStatistics(String year);
 
-    List<VacationUsageStatisticsResponse> getUsageStatistics(String year, String month);
+    List<VacationUsageStatisticsResponse> getUsageStatistics(String year);
 
 }

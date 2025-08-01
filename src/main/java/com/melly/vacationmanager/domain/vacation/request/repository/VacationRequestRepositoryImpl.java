@@ -239,7 +239,7 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
     }
 
     @Override
-    public List<VacationUsageStatisticsResponse> findUsageStatisticsBetween(LocalDate start, LocalDate end) {
+    public List<VacationUsageStatisticsResponse> findUsageStatisticsByYear(int year) {
         QVacationRequestEntity q = QVacationRequestEntity.vacationRequestEntity;
 
         return queryFactory
@@ -247,14 +247,19 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
                         VacationUsageStatisticsResponse.class,
                         q.vacationType.typeCode,
                         q.vacationType.typeName,
-                        q.daysCount.sum()
+                        q.startDate.month(),                // ← 월 추출
+                        q.daysCount.sum().coalesce(BigDecimal.ZERO)
                 ))
                 .from(q)
                 .where(
-                        q.status.eq(VacationRequestStatus.APPROVED)
-                                .and(q.startDate.between(start, end))
+                        q.status.eq(VacationRequestStatus.APPROVED),
+                        q.startDate.year().eq(year)         // ← 연도 조건
                 )
-                .groupBy(q.vacationType.typeCode, q.vacationType.typeName)
+                .groupBy(
+                        q.vacationType.typeCode,
+                        q.vacationType.typeName,
+                        q.startDate.month()
+                )
                 .fetch();
     }
 }
