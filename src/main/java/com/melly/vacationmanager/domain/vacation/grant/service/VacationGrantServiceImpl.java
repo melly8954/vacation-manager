@@ -82,21 +82,30 @@ public class VacationGrantServiceImpl implements IVacationGrantService{
         }
     }
 
-    private Integer calculateDaysToGrant(UserEntity user, VacationTypeEntity type) {
-        if (type.getTypeCode().equals("ANNUAL")) {
-            int years = (int) ChronoUnit.YEARS.between(user.getHireDate(), LocalDate.now());
-
-            if (years == 0) {
-                return calculateProRatedAnnual(user.getHireDate()); // BigDecimal 반환 가정
-            } else {
-                int baseDays = 15;
-                int extraDays = (years >= 15) ? 10 : (years - 1); // 최대 25일까지
-                return baseDays + extraDays;
-            }
+    private int calculateDaysToGrant(UserEntity user, VacationTypeEntity type) {
+        if (!type.getTypeCode().equals("ANNUAL")) {
+            // 기타 휴가 유형은 기본 지급
+            return type.getDefaultDays();
         }
 
-        // 기타 휴가 유형은 기본 일수(BigDecimal) 반환
-        return type.getDefaultDays();
+        LocalDate hireDate = user.getHireDate();
+        long years = ChronoUnit.YEARS.between(hireDate, LocalDate.now());
+
+        if (years < 1) {
+            // 입사 첫 해: 월 비례 지급
+            return calculateProRatedAnnual(hireDate);
+        } else {
+            int baseDays = 15;
+            int extra = calculateAnnualBonusDays(years); // 명세 기반 가산
+            return baseDays + extra;
+        }
+    }
+
+    private int calculateAnnualBonusDays(long years) {
+        if (years >= 7) return 3;
+        if (years >= 5) return 2;
+        if (years >= 3) return 1;
+        return 0;
     }
 
     private Integer calculateProRatedAnnual(LocalDate joinDate) {
