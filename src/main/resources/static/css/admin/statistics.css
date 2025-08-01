@@ -1,0 +1,51 @@
+.filter-box {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.75rem;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 768px) {
+    .filter-box .row > div {
+        margin-bottom: 10px;
+    }
+}
+
+.stat-card--grant {
+    background-color: #f8f9fa;
+    border-radius: 1rem;
+    padding: 20px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: 1px solid #dee2e6;
+}
+
+.stat-card--grant:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.stat-title--grant {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #495057;
+}
+
+.stat-value--grant {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0d6efd;
+}
+
+.section-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 10px 0 20px;
+    color: #343a40; /* 다크그레이 */
+}

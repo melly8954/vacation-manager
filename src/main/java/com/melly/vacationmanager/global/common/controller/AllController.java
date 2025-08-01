@@ -44,4 +44,9 @@ public class AllController {
     public String list() {
         return "admin/vacation/request/list";
     }
+
+    @GetMapping("/admin/vacation-statistics")
+    public String statistics() {
+        return "admin/vacation/statistics/statistics";
+    }
 }

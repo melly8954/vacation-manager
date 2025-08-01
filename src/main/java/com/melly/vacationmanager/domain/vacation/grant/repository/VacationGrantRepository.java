@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 
 @Repository
-public interface VacationGrantRepository extends JpaRepository<VacationGrantEntity, Long> {
+public interface VacationGrantRepository extends JpaRepository<VacationGrantEntity, Long>, VacationGrantRepositoryCustom {
     @Query("SELECT COALESCE(SUM(g.grantedDays), 0) " +
             "FROM VacationGrantEntity g " +
             "WHERE g.user.userId = :userId AND g.type.typeCode = :typeCode")
