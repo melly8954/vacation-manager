@@ -12,10 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResponseDto {
     private int code;
-
-    @JsonProperty("error_code")
     private String errorCode;
-
     private String message;
     private Object data;
 }
