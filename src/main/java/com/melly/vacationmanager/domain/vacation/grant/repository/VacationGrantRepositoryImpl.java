@@ -2,7 +2,6 @@ package com.melly.vacationmanager.domain.vacation.grant.repository;
 
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationGrantStatisticsResponse;
 import com.melly.vacationmanager.domain.vacation.grant.entity.QVacationGrantEntity;
-import com.melly.vacationmanager.domain.vacation.type.entity.QVacationTypeEntity;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -10,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 
 @RequiredArgsConstructor
