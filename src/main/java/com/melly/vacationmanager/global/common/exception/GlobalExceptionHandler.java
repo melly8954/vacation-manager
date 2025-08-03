@@ -34,7 +34,7 @@ public class GlobalExceptionHandler implements ResponseController {
         // 응답 생성
         return makeResponseEntity(
                 HttpStatus.BAD_REQUEST,
-                ErrorCode.DEFAULT_BAD_REQUEST.getErrorCode(),
+                ErrorCode.BAD_REQUEST.getErrorCode(),
                 errorMessage,
                 null
         );

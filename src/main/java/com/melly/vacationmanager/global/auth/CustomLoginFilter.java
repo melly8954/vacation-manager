@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.global.auth.dto.request.LoginRequest;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
+import com.melly.vacationmanager.global.common.enums.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -93,23 +94,26 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setContentType("application/json;charset=UTF-8");
 
         int status = HttpServletResponse.SC_UNAUTHORIZED;
-        String errorCode = "auth_failed";
+        String errorCode = "UNAUTHORIZED";
         String message = "로그인에 실패하였습니다.";
 
         if (failed instanceof BadCredentialsException) {
-            errorCode = "bad_credentials";
-            message = "비밀번호가 일치하지 않습니다.";
+            ErrorCode ec = ErrorCode.BAD_CREDENTIALS;
+            status = ec.getStatus().value();
+            errorCode = ec.getErrorCode();
+            message = ec.getMessage();
 
         } else if (failed instanceof DisabledException) {
-            // isEnabled() == false 에서 발생하므로, 여기서 상태값 구분해야 함
             if (failed.getMessage().contains("PENDING")) {
-                status = HttpServletResponse.SC_FORBIDDEN;
-                errorCode = "user_pending";
-                message = "관리자 승인 대기 중입니다.";
+                ErrorCode ec = ErrorCode.USER_PENDING;
+                status = ec.getStatus().value();
+                errorCode = ec.getErrorCode();
+                message = ec.getMessage();
             } else {
-                status = HttpServletResponse.SC_FORBIDDEN;
-                errorCode = "user_rejected";
-                message = "승인이 거절된 사용자입니다.";
+                ErrorCode ec = ErrorCode.USER_REJECTED;
+                status = ec.getStatus().value();
+                errorCode = ec.getErrorCode();
+                message = ec.getMessage();
             }
         }
 
