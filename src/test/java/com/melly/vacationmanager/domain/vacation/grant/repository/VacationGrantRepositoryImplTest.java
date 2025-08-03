@@ -4,7 +4,7 @@ import com.melly.vacationmanager.config.QueryDslTestConfig;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationGrantStatisticsResponse;
 import com.melly.vacationmanager.domain.vacation.grant.entity.VacationGrantEntity;
 import com.melly.vacationmanager.domain.vacation.type.entity.VacationTypeEntity;
-import jakarta.persistence.EntityManager;
+import com.melly.vacationmanager.domain.vacation.type.repository.VacationTypeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -28,7 +28,7 @@ public class VacationGrantRepositoryImplTest {
     private VacationGrantRepository vacationGrantRepository;
 
     @Autowired
-    private EntityManager em;
+    private VacationTypeRepository vacationTypeRepository;
 
     @Nested
     @DisplayName("findGrantStatisticsBetween 쿼리 테스트")
@@ -48,28 +48,28 @@ public class VacationGrantRepositoryImplTest {
                     .typeName("병가")
                     .build();
 
-            em.persist(annualType);
-            em.persist(sickType);
+            vacationTypeRepository.save(annualType);
+            vacationTypeRepository.save(sickType);
 
-            em.persist(VacationGrantEntity.builder()
+            vacationGrantRepository.save(VacationGrantEntity.builder()
                     .type(annualType)
                     .grantDate(LocalDate.of(2025, 1, 10))
                     .grantedDays(5)
                     .build());
 
-            em.persist(VacationGrantEntity.builder()
+            vacationGrantRepository.save(VacationGrantEntity.builder()
                     .type(annualType)
                     .grantDate(LocalDate.of(2025, 1, 20))
                     .grantedDays(3)
                     .build());
 
-            em.persist(VacationGrantEntity.builder()
+            vacationGrantRepository.save(VacationGrantEntity.builder()
                     .type(sickType)
                     .grantDate(LocalDate.of(2025, 1, 15))
                     .grantedDays(2)
                     .build());
 
-            em.persist(VacationGrantEntity.builder()
+            vacationGrantRepository.save(VacationGrantEntity.builder()
                     .type(annualType)
                     .grantDate(LocalDate.of(2024, 12, 31))
                     .grantedDays(7)

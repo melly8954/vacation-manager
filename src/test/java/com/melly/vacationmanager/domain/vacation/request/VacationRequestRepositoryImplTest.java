@@ -3,6 +3,8 @@ package com.melly.vacationmanager.domain.vacation.request;
 import com.melly.vacationmanager.config.QueryDslTestConfig;
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.request.AdminVacationRequestSearchCond;
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.AdminVacationRequestListResponse;
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationStatusChangeStatisticsResponse;
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsResponse;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.repository.UserRepository;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
@@ -38,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @Import(QueryDslTestConfig.class)
 @ActiveProfiles("test") // application-test.yml 설정을 적용
-@DisplayName("VacationRequestRepositoryImpl 기능 테스트")
+@DisplayName("VacationRequestRepositoryImpl 쿼리 테스트")
 public class VacationRequestRepositoryImplTest {
     @Autowired
     private VacationRequestRepositoryImpl vacationRequestRepositoryImpl;
@@ -53,7 +55,7 @@ public class VacationRequestRepositoryImplTest {
     private VacationTypeRepository vacationTypeRepository;
 
     @Nested
-    @DisplayName("existsApprovedOverlap 메서드 테스트")
+    @DisplayName("existsApprovedOverlap 쿼리 테스트")
     class ExistsApprovedOverlapTest {
         @Test
         @DisplayName("승인된 휴가가 존재할 경우 -  true 반환")
@@ -139,12 +141,10 @@ public class VacationRequestRepositoryImplTest {
     }
 
     @Nested
-    @DisplayName("findMyVacationRequests 조건 필터 테스트")
+    @DisplayName("findMyVacationRequests 쿼리 테스트")
     class FindMyVacationRequestsTest {
         // 공통 테스트 데이터 세팅
         private UserEntity user;
-        private VacationTypeEntity annual;
-        private VacationTypeEntity sick;
 
         @BeforeEach
         void setUp() {
@@ -154,12 +154,12 @@ public class VacationRequestRepositoryImplTest {
                     .status(UserStatus.ACTIVE)
                     .role(UserRole.USER)
                     .build());
-            annual = vacationTypeRepository.save(VacationTypeEntity.builder()
+            VacationTypeEntity annual = vacationTypeRepository.save(VacationTypeEntity.builder()
                     .typeCode("ANNUAL")
                     .typeName("연차")
                     .defaultDays(15)
                     .build());
-            sick = vacationTypeRepository.save(VacationTypeEntity.builder()
+            VacationTypeEntity sick = vacationTypeRepository.save(VacationTypeEntity.builder()
                     .typeCode("SICK")
                     .typeName("병가")
                     .defaultDays(10)
@@ -459,7 +459,7 @@ public class VacationRequestRepositoryImplTest {
     }
 
     @Nested
-    @DisplayName("findAllVacationRequestsForAdmin 조건 필터 테스트")
+    @DisplayName("findAllVacationRequestsForAdmin 쿼리 테스트")
     class findAllVacationRequestsForAdminTest {
         // 공통 테스트 데이터 세팅
         UserEntity user1;
@@ -776,7 +776,7 @@ public class VacationRequestRepositoryImplTest {
     }
 
     @Nested
-    @DisplayName("findApprovedVacationsForCalendar 조건 필터 테스트")
+    @DisplayName("findApprovedVacationsForCalendar 쿼리 테스트")
     class findApprovedVacationsForCalendarTest {
         private UserEntity user;
         private VacationTypeEntity annualVacationType;
@@ -933,6 +933,146 @@ public class VacationRequestRepositoryImplTest {
                     .status(VacationRequestStatus.APPROVED)
                     .build();
             return vacationRequestRepository.save(vacation);
+        }
+    }
+
+    @Nested
+    @DisplayName("findUsageStatisticsByYear 쿼리 테스트")
+    class findUsageStatisticsByYearTest {
+
+        @BeforeEach
+        void setUp() {
+            VacationTypeEntity annualType = vacationTypeRepository.save(
+                    VacationTypeEntity.builder()
+                            .typeCode("ANNUAL")
+                            .typeName("연차")
+                            .build()
+            );
+
+            VacationTypeEntity sickType = vacationTypeRepository.save(
+                    VacationTypeEntity.builder()
+                            .typeCode("SICK")
+                            .typeName("병가")
+                            .build()
+            );
+
+            vacationRequestRepository.save(VacationRequestEntity.builder()
+                    .vacationType(annualType)
+                    .startDate(LocalDate.of(2025, 1, 10))
+                    .daysCount(new BigDecimal("1"))
+                    .status(VacationRequestStatus.APPROVED)
+                    .build());
+
+            vacationRequestRepository.save(VacationRequestEntity.builder()
+                    .vacationType(annualType)
+                    .startDate(LocalDate.of(2025, 1, 20))
+                    .daysCount(new BigDecimal("2"))
+                    .status(VacationRequestStatus.APPROVED)
+                    .build());
+
+            vacationRequestRepository.save(VacationRequestEntity.builder()
+                    .vacationType(sickType)
+                    .startDate(LocalDate.of(2025, 2, 5))
+                    .daysCount(new BigDecimal("1.5"))
+                    .status(VacationRequestStatus.APPROVED)
+                    .build());
+
+            vacationRequestRepository.save(VacationRequestEntity.builder()
+                    .vacationType(annualType)
+                    .startDate(LocalDate.of(2025, 3, 10))
+                    .daysCount(new BigDecimal("4"))
+                    .status(VacationRequestStatus.REJECTED)
+                    .build());
+
+            vacationRequestRepository.save(VacationRequestEntity.builder()
+                    .vacationType(annualType)
+                    .startDate(LocalDate.of(2024, 12, 25))
+                    .daysCount(new BigDecimal("1"))
+                    .status(VacationRequestStatus.APPROVED)
+                    .build());
+        }
+
+        @Test
+        @DisplayName("2025년 월별 휴가 사용 통계 조회")
+        void testFindUsageStatisticsByYear() {
+            List<VacationUsageStatisticsResponse> results =
+                    vacationRequestRepository.findUsageStatisticsByYear(2025);
+
+            assertThat(results).hasSize(2);
+
+            VacationUsageStatisticsResponse janAnnual = results.stream()
+                    .filter(r -> r.getTypeCode().equals("ANNUAL") && r.getMonth() == 1)
+                    .findFirst().orElseThrow();
+
+            assertThat(janAnnual.getTotalUsedDays()).isEqualByComparingTo(new BigDecimal("3"));
+
+            VacationUsageStatisticsResponse febSick = results.stream()
+                    .filter(r -> r.getTypeCode().equals("SICK") && r.getMonth() == 2)
+                    .findFirst().orElseThrow();
+
+            assertThat(febSick.getTotalUsedDays()).isEqualByComparingTo(new BigDecimal("1.5"));
+        }
+    }
+
+    @Nested
+    @DisplayName("findMonthlyStatusChangeCounts 쿼리 테스트")
+    class findMonthlyStatusChangeCounts {
+
+        @BeforeEach
+        void setUp() {
+            UserEntity user = userRepository.save(UserEntity.builder()
+                    .username("user1")
+                    .name("선우")
+                    .status(UserStatus.ACTIVE)
+                    .build());
+
+            VacationTypeEntity annualType = vacationTypeRepository.save(VacationTypeEntity.builder()
+                    .typeCode("ANNUAL")
+                    .typeName("연차")
+                    .build());
+
+            vacationRequestRepository.save(VacationRequestEntity.builder()
+                    .user(user)
+                    .vacationType(annualType)
+                    .startDate(LocalDate.of(2025, 8, 15))
+                    .status(VacationRequestStatus.APPROVED)
+                    .daysCount(new BigDecimal("2"))
+                    .build());
+
+            vacationRequestRepository.save(VacationRequestEntity.builder()
+                    .user(user)
+                    .vacationType(annualType)
+                    .startDate(LocalDate.of(2025, 8, 20))
+                    .status(VacationRequestStatus.PENDING)
+                    .daysCount(new BigDecimal("1"))
+                    .build());
+
+            vacationRequestRepository.save(VacationRequestEntity.builder()
+                    .user(user)
+                    .vacationType(annualType)
+                    .startDate(LocalDate.of(2025, 7, 10))
+                    .status(VacationRequestStatus.REJECTED)
+                    .daysCount(new BigDecimal("3"))
+                    .build());
+        }
+
+        @Test
+        @DisplayName("2025년 8월 상태별 휴가 통계 조회")
+        void testFindMonthlyStatusChangeCounts() {
+            List<VacationStatusChangeStatisticsResponse> results =
+                    vacationRequestRepositoryImpl.findMonthlyStatusChangeCounts(2025, 8);
+
+            // 상태별 건수 확인 (APPROVED, PENDING 두 개 있어야 함)
+            assertThat(results).hasSize(2);
+
+            // APPROVED 건수 1
+            assertThat(results).anyMatch(r -> r.getNewStatus().equals("APPROVED") && r.getTotalCount() == 1L);
+
+            // PENDING 건수 1
+            assertThat(results).anyMatch(r -> r.getNewStatus().equals("PENDING") && r.getTotalCount() == 1L);
+
+            // REJECTED 상태는 7월에 있으므로 포함 안 됨
+            assertThat(results).noneMatch(r -> r.getNewStatus().equals("REJECTED"));
         }
     }
 }
