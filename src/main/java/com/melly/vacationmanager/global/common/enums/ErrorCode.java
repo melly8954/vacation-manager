@@ -51,6 +51,13 @@ public enum ErrorCode {
     // 기타
     POSITION_MISSING("missing_position", "직급은 필수 선택 항목입니다.", HttpStatus.BAD_REQUEST),
 
+    // 연도 파싱 실패
+    INVALID_YEAR_FORMAT("invalid_year_format", "연도는 숫자 형식이어야 합니다.", HttpStatus.BAD_REQUEST),
+
+    // 월 파싱 실패
+    INVALID_MONTH_FORMAT("invalid_month_format", "월은 숫자 형식이어야 합니다.", HttpStatus.BAD_REQUEST),
+    MONTH_OUT_OF_RANGE("month_out_of_range", "월은 1부터 12 사이여야 합니다.", HttpStatus.BAD_REQUEST),
+
     // 파일 관련
     FILE_NOT_FOUND("file_not_found", "파일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     FILE_UPLOAD_FAILED("file_upload_failed", "파일 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
