@@ -24,8 +24,8 @@ $(document).ready(function() {
     $('#reset-btn').on('click', function () {
         // 입력값 초기화
         $('#name').val('');
-        $('#year').val('');
-        $('#month').val('');
+        $('#year').val('ALL');
+        $('#month').val('ALL');
         // 정렬 순서 초기화 (필요 시)
         currentOrder = 'desc'; // 전역 정렬 변수 초기화
         $('#sort-userId .sort-icon').text('▼');
@@ -98,8 +98,8 @@ function fetchPendingUsers(params = {}) {
     const queryParams = {
         page: params.page || 1,
         size: params.size || 10,
-        year: params.year || '',
-        month: params.month || '',
+        year: params.year || 'ALL',
+        month: params.month || 'ALL',
         name: params.name || '',
         order: params.order || 'desc'
     };
