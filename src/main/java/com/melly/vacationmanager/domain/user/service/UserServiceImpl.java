@@ -38,7 +38,7 @@ public class UserServiceImpl implements IUserService {
 
         if (request.getHireDate().isAfter(LocalDate.now())) {
             log.error("입사일은 오늘 이후 날짜일 수 없습니다.");
-            throw new CustomException(ErrorCode.INVALID_FORMAT_HIREDATE);
+            throw new CustomException(ErrorCode.HIREDATE_CANNOT_BE_FUTURE);
         }
 
         UserEntity userEntity = UserEntity.builder()
@@ -60,14 +60,14 @@ public class UserServiceImpl implements IUserService {
         switch (type) {
             case "username" -> {
                 if (value.length() < 8 || value.length() > 20) {
-                    throw new CustomException(ErrorCode.INVALID_LENGTH_USERNAME);
+                    throw new CustomException(ErrorCode.USERNAME_LENGTH_INVALID);
                 }
                 userRepository.findByUsername(value)
                         .ifPresent(user -> { throw new CustomException(ErrorCode.DUPLICATE_USERNAME); });
             }
             case "email" -> {
                 if (!EMAIL_PATTERN.matcher(value).matches()) {
-                    throw new CustomException(ErrorCode.INVALID_FORMAT_EMAIL);
+                    throw new CustomException(ErrorCode.EMAIL_FORMAT_INVALID);
                 }
                 userRepository.findByEmail(value)
                         .ifPresent(user -> { throw new CustomException(ErrorCode.DUPLICATE_EMAIL); });
