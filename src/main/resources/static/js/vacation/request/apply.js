@@ -32,8 +32,8 @@ $(document).ready(function() {
                 vacationType.append(`<option value="${type.type_code}">${type.type_name}</option>`);
             });
         })
-        .fail(function() {
-            alert('휴가 유형 로딩 실패');
+        .fail(function(jqXHR) {
+            handleServerError(jqXHR);
         });
 
     // 연가 선택 시 반차 선택여부 추가
@@ -243,12 +243,4 @@ function applyVacationRequest() {
     }).fail(function (jqXHR) {
         handleServerError(jqXHR)
     })
-}
-
-function handleServerError(jqXHR) {
-    console.log(jqXHR);
-    // 서버에서 내려준 메시지 활용 (JSON 응답인 경우)
-    if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
-        alert(jqXHR.responseJSON.message);
-    }
 }

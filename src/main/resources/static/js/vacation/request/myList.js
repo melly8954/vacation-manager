@@ -62,15 +62,11 @@ $(document).ready(function () {
                 method: 'PATCH',
             })
                 .done(function(response) {
-                    // 성공 시
                     alert(response.message);
                     fetchVacationList(getFilterParams());
                 })
                 .fail(function(jqXHR) {
-                    // 실패 시
-                    console.error(jqXHR);
-                    const res = jqXHR.responseJSON;
-                    alert(res.message);
+                    handleServerError(jqXHR);
                 });
         }
     });
@@ -114,7 +110,7 @@ function fetchVacationList(params = {}) {
         renderVacationList(data.content);
         renderPagination(data);
     }).fail(function (jqXHR, textStatus, errorThrown) {
-        console.log("조회 실패", jqXHR);
+        handleServerError(jqXHR);
     });
 }
 

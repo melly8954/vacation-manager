@@ -65,7 +65,7 @@ function fetchGrantStatistics(year) {
             renderGrantCards(response.data);
         })
         .fail(function() {
-            alert('통계 데이터를 불러오는데 실패했습니다.');
+            handleServerError(jqXHR);
         });
 }
 
@@ -112,7 +112,7 @@ function fetchUsageStatistics(year,month) {
             renderUsageBarChart(response.data, year);
         })
         .fail(function() {
-            alert('휴가 사용 통계 데이터를 불러오는데 실패했습니다.');
+            handleServerError(jqXHR);
         });
 }
 
@@ -241,7 +241,7 @@ function fetchStatusChangeStatistics(year, month) {
             renderStatusChangePieChart(response.data, year, month);
         })
         .fail(function() {
-            alert('상태 변화 통계 조회 실패');
+            handleServerError(jqXHR);
         });
 }
 

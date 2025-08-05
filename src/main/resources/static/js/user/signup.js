@@ -104,14 +104,6 @@ function validateForm(username, password, confirmPassword, name, email, hireDate
     return true;
 }
 
-function handleServerError(jqXHR) {
-    console.log(jqXHR);
-    // 서버에서 내려준 메시지 활용 (JSON 응답인 경우)
-    if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
-        alert(jqXHR.responseJSON.message);
-    }
-}
-
 // 필드 중복 검사
 function duplicateCheck(e){   // 버튼 자신을 인자로 넘김
     const type = $(e).data("type");

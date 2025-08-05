@@ -90,13 +90,8 @@ $(document).ready(function () {
                 $('#processModal').modal('hide');
                 fetchVacationList(getFilterParams()); // 목록 갱신
             })
-            .fail(function(xhr) {
-                const err = xhr.responseJSON;
-                if (err && err.message) {
-                    alert(`오류: ${err.message}`);
-                } else {
-                    alert("처리 중 문제가 발생했습니다.");
-                }
+            .fail(function(jqXHR) {
+                handleServerError(jqXHR);
             });
     });
 
@@ -173,7 +168,7 @@ function fetchVacationList(params = {}) {
         renderVacationList(data.content);
         renderPagination(data);
     }).fail(function (jqXHR, textStatus, errorThrown) {
-        console.log("조회 실패", jqXHR);
+        handleServerError(jqXHR);
     });
 }
 

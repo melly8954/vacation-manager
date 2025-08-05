@@ -21,8 +21,8 @@ function fetchVacationBalances() {
         .done(function (response) {
             renderVacationBalanceCards(response.data);
         })
-        .fail(function () {
-            alert('휴가 잔여일 정보를 가져오지 못했습니다.');
+        .fail(function (jqXHR) {
+            handleServerError(jqXHR);
         });
 }
 
@@ -92,8 +92,8 @@ function fetchVacationHistory(params) {
         .done(function (response) {
             renderVacationHistory(response.data);
         })
-        .fail(function () {
-            alert('휴가 사용 이력을 가져오지 못했습니다.');
+        .fail(function (jqXHR) {
+            handleServerError(jqXHR);
         });
 }
 

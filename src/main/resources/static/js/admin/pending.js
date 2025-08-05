@@ -113,7 +113,7 @@ function fetchPendingUsers(params = {}) {
        renderPendingUsers(response.data.content);
        renderPagination(response.data);
     }).fail(function (jqXHR, textStatus, errorThrown) {
-
+        handleServerError(jqXHR);
     });
 }
 
@@ -174,7 +174,7 @@ function processUserStatus(button, status){
         alert("변경 완료");
         fetchPendingUsers(getFilterParams());
     }).fail(function (jqXHR, textStatus, errorThrown) {
-        console.log(jqXHR, textStatus, errorThrown);
+        handleServerError(jqXHR);
     });
 }
 
