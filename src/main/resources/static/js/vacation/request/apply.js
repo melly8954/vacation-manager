@@ -29,7 +29,7 @@ $(document).ready(function() {
         .done(function(response) {
             vacationType.append('<option value="">-- 선택 --</option>');
             response.data.types.forEach(function(type) {
-                vacationType.append(`<option value="${type.type_code}">${type.type_name}</option>`);
+                vacationType.append(`<option value="${type.typeCode}">${type.typeName}</option>`);
             });
         })
         .fail(function(jqXHR) {

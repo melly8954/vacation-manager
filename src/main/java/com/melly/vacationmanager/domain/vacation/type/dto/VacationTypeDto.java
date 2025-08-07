@@ -7,8 +7,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class VacationTypeDto {
-    @JsonProperty("type_code")
     private String typeCode;
-    @JsonProperty("type_name")
     private String typeName;
 }
