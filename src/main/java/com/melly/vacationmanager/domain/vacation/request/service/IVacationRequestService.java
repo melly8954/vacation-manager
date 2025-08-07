@@ -15,6 +15,6 @@ public interface IVacationRequestService {
 
     VRCancelResponse cancelVacationRequest(Long requestId);
 
-    List<VacationCalendarResponse> findApprovedVacationsForCalendar(String startDate, String endDate, Long userId);
+    VacationCalendarListResponse findApprovedVacationsForCalendar(String startDate, String endDate, Long userId);
 
 }

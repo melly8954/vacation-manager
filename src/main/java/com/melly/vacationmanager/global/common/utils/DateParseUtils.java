@@ -4,6 +4,7 @@ import com.melly.vacationmanager.global.common.enums.ErrorCode;
 import com.melly.vacationmanager.global.common.exception.CustomException;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class DateParseUtils {
     public static int parseYear(String year, LocalDate today) {
@@ -31,6 +32,17 @@ public class DateParseUtils {
             return m;
         } catch (NumberFormatException e) {
             throw new CustomException(ErrorCode.INVALID_MONTH_FORMAT);
+        }
+    }
+
+    public static LocalDate parseLocalDate(String dateStr) {
+        if (dateStr == null || dateStr.isBlank()) {
+            throw new CustomException(ErrorCode.INVALID_DATE_FORMAT); // 예: 날짜 형식 오류 커스텀 예외
+        }
+        try {
+            return LocalDate.parse(dateStr);
+        } catch (DateTimeParseException e) {
+            throw new CustomException(ErrorCode.INVALID_DATE_FORMAT);
         }
     }
 }

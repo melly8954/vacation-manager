@@ -71,7 +71,7 @@ public class VacationRequestController implements ResponseController {
                                                                             @RequestParam String endDate) {
         Long userId = CurrentUserUtils.getUserId();
 
-        List<VacationCalendarResponse> responses = vacationRequestService.findApprovedVacationsForCalendar(startDate, endDate, userId);
+        VacationCalendarListResponse responses = vacationRequestService.findApprovedVacationsForCalendar(startDate, endDate, userId);
 
         return makeResponseEntity(HttpStatus.OK, null, "휴가 일정 조회 성공", responses);
     }

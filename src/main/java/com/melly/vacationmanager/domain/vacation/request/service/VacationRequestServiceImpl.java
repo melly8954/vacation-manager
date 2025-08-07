@@ -21,6 +21,7 @@ import com.melly.vacationmanager.global.common.enums.ErrorCode;
 import com.melly.vacationmanager.global.common.enums.VacationRequestStatus;
 import com.melly.vacationmanager.global.common.exception.CustomException;
 import com.melly.vacationmanager.global.common.utils.CurrentUserUtils;
+import com.melly.vacationmanager.global.common.utils.DateParseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -192,10 +193,14 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
     }
 
     @Override
-    public List<VacationCalendarResponse> findApprovedVacationsForCalendar(String startDateStr, String endDateStr, Long userId) {
-        LocalDate start = LocalDate.parse(startDateStr);  // "2025-06-29" 같은 날짜 형식으로 들어옴
-        LocalDate end = LocalDate.parse(endDateStr);      // "2025-08-02"
+    public VacationCalendarListResponse findApprovedVacationsForCalendar(String startDateStr, String endDateStr, Long userId) {
+        LocalDate start = DateParseUtils.parseLocalDate(startDateStr);
+        LocalDate end = DateParseUtils.parseLocalDate(endDateStr);
 
-        return vacationRequestRepository.findApprovedVacationsForCalendar(userId, start, end);
+        List<VacationCalendarResponse> responses  = vacationRequestRepository.findApprovedVacationsForCalendar(userId, start, end);
+
+        return VacationCalendarListResponse.builder()
+                .vacationEvents(responses)
+                .build();
     }
 }
