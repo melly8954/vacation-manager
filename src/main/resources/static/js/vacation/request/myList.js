@@ -191,7 +191,7 @@ function fetchEvidenceFiles(requestId, containerSelector) {
         url: `/api/v1/vacation-requests/${requestId}/evidence-files`,
         method: 'GET',
         success: function(response) {
-            const files = response.data;
+            const files = response.data.evidenceFiles;
             if (!files || files.length === 0) {
                 $(containerSelector).append('<p>증빙자료가 없습니다.</p>');
             } else {

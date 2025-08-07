@@ -57,9 +57,9 @@ public class VacationRequestController implements ResponseController {
 
     @GetMapping("/{requestId}/evidence-files")
     public ResponseEntity<ResponseDto> getEvidenceFiles(@PathVariable Long requestId) {
-        List<EvidenceFileResponse> evidenceFiles = vacationRequestService.getEvidenceFiles(requestId);
-        String message = evidenceFiles.isEmpty() ? "증빙자료가 존재하지 않습니다." : "성공적으로 증빙자료를 조회했습니다.";
-        return makeResponseEntity(HttpStatus.OK, null, message, evidenceFiles);
+        EvidenceFileListResponse response = vacationRequestService.getEvidenceFiles(requestId);
+        String message = response.getEvidenceFiles().isEmpty() ? "증빙자료가 존재하지 않습니다." : "성공적으로 증빙자료를 조회했습니다.";
+        return makeResponseEntity(HttpStatus.OK, null, message, response);
     }
 
     @PatchMapping("/{requestId}/status")

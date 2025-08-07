@@ -11,7 +11,7 @@ public interface IVacationRequestService {
     VacationRequestCreateResponse requestVacation(VacationRequestDto requestDto, List<MultipartFile> evidenceFiles, Long userId);
     VacationRequestPageResponse getMyRequests(VacationRequestSearchCond cond);
 
-    List<EvidenceFileResponse> getEvidenceFiles(Long requestId);
+    EvidenceFileListResponse getEvidenceFiles(Long requestId);
 
     VRCancelResponse cancelVacationRequest(Long requestId);
 
