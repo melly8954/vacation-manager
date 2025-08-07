@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +52,7 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
     private final VacationAuditLogRepository vacationAuditLogRepository;
 
     @Override
-    public void requestVacation(VacationRequestDto requestDto, List<MultipartFile> evidenceFiles, Long userId) {
+    public VacationRequestCreateResponse requestVacation(VacationRequestDto requestDto, List<MultipartFile> evidenceFiles, Long userId) {
         String typeCode = requestDto.getTypeCode();
         LocalDate startDate = requestDto.getStartDate();
         LocalDate endDate = requestDto.getEndDate();
@@ -97,6 +98,8 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
         vacationRequestRepository.save(vrEntity);
 
         // 증빙 자료 저장
+        List<EvidenceFileEntity> savedEvidenceFiles = new ArrayList<>();
+
         if (evidenceFiles != null && !evidenceFiles.isEmpty()) {
             int fileOrder = 0;
             for (MultipartFile file : evidenceFiles) {
@@ -116,12 +119,21 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
                                 .fileOrder(fileOrder++)
                                 .build();
                         evidenceFileRepository.save(evidence);
+                        savedEvidenceFiles.add(evidence);
                     } catch (IOException e) {
                         throw new CustomException(ErrorCode.FILE_UPLOAD_FAILED);
                     }
                 }
             }
         }
+
+        List<EvidenceFileResponse> evidenceFileResponses = savedEvidenceFiles.isEmpty()
+                ? Collections.emptyList()
+                : savedEvidenceFiles.stream()
+                .map(EvidenceFileResponse::from)
+                .collect(Collectors.toList());
+
+        return VacationRequestCreateResponse.from(vrEntity, evidenceFileResponses);
     }
 
     @Override

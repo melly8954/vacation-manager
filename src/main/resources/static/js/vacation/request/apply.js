@@ -221,11 +221,11 @@ function applyVacationRequest() {
 
     // JSON을 Blob으로 변환하여 추가
     const requestBlob = new Blob([JSON.stringify(requestForm)], { type: "application/json" });
-    formData.append("request_data", requestBlob);
+    formData.append("requestData", requestBlob);
 
     // 파일 첨부
     selectedFiles.forEach(file => {
-        formData.append("evidence_files", file);
+        formData.append("evidenceFiles", file);
     });
 
     // Ajax 요청
@@ -237,7 +237,6 @@ function applyVacationRequest() {
         contentType: false,  // FormData 전송 시 필수
         enctype: "multipart/form-data",
     }).done(function (response) {
-        console.log(response);
         alert("휴가 신청 성공");
         window.location.href = "/";
     }).fail(function (jqXHR) {

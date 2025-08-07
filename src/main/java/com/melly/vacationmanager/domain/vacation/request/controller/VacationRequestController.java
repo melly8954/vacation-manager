@@ -2,10 +2,7 @@ package com.melly.vacationmanager.domain.vacation.request.controller;
 
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.VRCancelResponse;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationCalendarResponse;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.*;
 import com.melly.vacationmanager.domain.vacation.request.service.IVacationRequestService;
 import com.melly.vacationmanager.global.auth.PrincipalDetails;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
@@ -29,12 +26,12 @@ public class VacationRequestController implements ResponseController {
     private final IVacationRequestService vacationRequestService;
 
     @PostMapping("")
-    public ResponseEntity<ResponseDto> requestVacation(@RequestPart(value = "request_data") @Validated VacationRequestDto request,
-                                                       @RequestPart(value = "evidence_files", required = false) List<MultipartFile> evidenceFiles,
+    public ResponseEntity<ResponseDto> requestVacation(@RequestPart(value = "requestData") @Validated VacationRequestDto request,
+                                                       @RequestPart(value = "evidenceFiles", required = false) List<MultipartFile> evidenceFiles,
                                                        @AuthenticationPrincipal PrincipalDetails userDetails) {
         Long userId = userDetails.getUserEntity().getUserId();
-        vacationRequestService.requestVacation(request, evidenceFiles, userId);
-        return makeResponseEntity(HttpStatus.OK,null,"휴가 신청이 완료되었습니다.",null);
+        VacationRequestCreateResponse response = vacationRequestService.requestVacation(request, evidenceFiles, userId);
+        return makeResponseEntity(HttpStatus.OK,null,"휴가 신청이 완료되었습니다.",response);
     }
 
     @GetMapping("/me")
