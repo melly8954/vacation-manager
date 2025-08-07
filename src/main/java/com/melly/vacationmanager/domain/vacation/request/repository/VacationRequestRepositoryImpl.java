@@ -161,13 +161,17 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
             builder.and(user.name.containsIgnoreCase(cond.getName()));
         }
 
+        LocalDate today = LocalDate.now();
+
         // 신청일(createdAt) 연도/월 필터링 (LocalDateTime)
         if (cond.getYear() != null && !"ALL".equalsIgnoreCase(cond.getYear())) {
-            builder.and(request.createdAt.year().eq(Integer.parseInt(cond.getYear())));
+            int year = DateParseUtils.parseYear(cond.getYear(),today);
+            builder.and(request.createdAt.year().eq(year));
         }
 
         if (cond.getMonth() != null && !"ALL".equalsIgnoreCase(cond.getMonth())) {
-            builder.and(request.createdAt.month().eq(Integer.parseInt(cond.getMonth())));
+            int month = DateParseUtils.parseMonth(cond.getMonth(),today);
+            builder.and(request.createdAt.month().eq(month));
         }
 
         OrderSpecifier<?> orderSpecifier = "asc".equalsIgnoreCase(cond.getOrder())

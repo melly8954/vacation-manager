@@ -182,7 +182,7 @@ function fetchVacationList(params = {}) {
         data: params
     }).done(function (response) {
         const data = response.data;
-        renderVacationList(data.content);
+        renderVacationList(data.vacationRequests);
         renderPagination(data);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         handleServerError(jqXHR);

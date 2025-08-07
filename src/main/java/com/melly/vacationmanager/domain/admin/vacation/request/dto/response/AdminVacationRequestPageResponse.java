@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AdminVacationRequestPageResponse {
 
-    private List<AdminVacationRequestListResponse> content;
+    private List<AdminVacationRequestListResponse> vacationRequests;
     private int page;
     private int size;
     private long totalElements;
