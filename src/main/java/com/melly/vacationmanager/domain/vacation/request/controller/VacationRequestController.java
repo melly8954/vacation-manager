@@ -27,9 +27,8 @@ public class VacationRequestController implements ResponseController {
 
     @PostMapping("")
     public ResponseEntity<ResponseDto> requestVacation(@RequestPart(value = "requestData") @Validated VacationRequestDto request,
-                                                       @RequestPart(value = "evidenceFiles", required = false) List<MultipartFile> evidenceFiles,
-                                                       @AuthenticationPrincipal PrincipalDetails userDetails) {
-        Long userId = userDetails.getUserEntity().getUserId();
+                                                       @RequestPart(value = "evidenceFiles", required = false) List<MultipartFile> evidenceFiles) {
+        Long userId = CurrentUserUtils.getUserId();
         VacationRequestCreateResponse response = vacationRequestService.requestVacation(request, evidenceFiles, userId);
         return makeResponseEntity(HttpStatus.OK,null,"휴가 신청이 완료되었습니다.",response);
     }
@@ -42,9 +41,8 @@ public class VacationRequestController implements ResponseController {
                                                               @RequestParam(defaultValue = "ALL") String year,
                                                               @RequestParam(defaultValue = "ALL") String month,
                                                               @RequestParam(defaultValue = "desc") String order,
-                                                              @RequestParam(defaultValue = "createdAt") String dateFilterType,
-                                                              @AuthenticationPrincipal PrincipalDetails principal) {
-        Long userId = principal.getUserEntity().getUserId(); // 인증 사용자 ID
+                                                              @RequestParam(defaultValue = "createdAt") String dateFilterType) {
+        Long userId = CurrentUserUtils.getUserId();
 
         VacationRequestSearchCond cond = new VacationRequestSearchCond(
                 userId, typeCode, status, year, month, order, dateFilterType, page, size
