@@ -19,7 +19,7 @@ function fetchVacationBalances() {
         method: 'GET'
     })
         .done(function (response) {
-            renderVacationBalanceCards(response.data);
+            renderVacationBalanceCards(response.data.vacationBalances);
         })
         .fail(function (jqXHR) {
             handleServerError(jqXHR);

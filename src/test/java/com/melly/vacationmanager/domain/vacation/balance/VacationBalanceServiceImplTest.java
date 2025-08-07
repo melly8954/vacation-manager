@@ -1,6 +1,7 @@
 package com.melly.vacationmanager.domain.vacation.balance;
 
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
+import com.melly.vacationmanager.domain.vacation.balance.dto.VacationBalanceListResponse;
 import com.melly.vacationmanager.domain.vacation.balance.dto.VacationBalanceResponse;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceEntity;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceId;
@@ -97,7 +98,8 @@ public class VacationBalanceServiceImplTest {
             when(vacationRequestRepository.sumUsedDays(userId, "SPECIAL", VacationRequestStatus.APPROVED)).thenReturn(BigDecimal.valueOf(2));
 
             // when
-            List<VacationBalanceResponse> result = vacationBalanceService.getVacationBalancesByUserId(userId);
+            VacationBalanceListResponse response = vacationBalanceService.getVacationBalancesByUserId(userId);
+            List<VacationBalanceResponse> result = response.getVacationBalances();
 
             // then
             assertThat(result).hasSize(4);
@@ -159,7 +161,8 @@ public class VacationBalanceServiceImplTest {
                     .thenReturn(Collections.emptyList());
 
             // when
-            List<VacationBalanceResponse> result = vacationBalanceService.getVacationBalancesByUserId(userId);
+            VacationBalanceListResponse response = vacationBalanceService.getVacationBalancesByUserId(userId);
+            List<VacationBalanceResponse> result = response.getVacationBalances();
 
             // then
             assertThat(result).isEmpty();

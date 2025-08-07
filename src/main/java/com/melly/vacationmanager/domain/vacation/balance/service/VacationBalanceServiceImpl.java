@@ -1,6 +1,7 @@
 package com.melly.vacationmanager.domain.vacation.balance.service;
 
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
+import com.melly.vacationmanager.domain.vacation.balance.dto.VacationBalanceListResponse;
 import com.melly.vacationmanager.domain.vacation.balance.dto.VacationBalanceResponse;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceEntity;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceId;
@@ -50,7 +51,7 @@ public class VacationBalanceServiceImpl implements IVacationBalanceService {
     }
 
     @Override
-    public List<VacationBalanceResponse> getVacationBalancesByUserId(Long userId) {
+    public VacationBalanceListResponse getVacationBalancesByUserId(Long userId) {
         List<VacationBalanceEntity> entities = vacationBalanceRepository.findByUser_UserId(userId);
 
         List<VacationBalanceResponse> result = new ArrayList<>();
@@ -70,6 +71,8 @@ public class VacationBalanceServiceImpl implements IVacationBalanceService {
                     .build());
         }
 
-        return result;
+        return VacationBalanceListResponse.builder()
+                .vacationBalances(result)
+                .build();
     }
 }

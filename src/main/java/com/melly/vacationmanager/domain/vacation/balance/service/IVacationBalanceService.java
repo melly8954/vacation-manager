@@ -1,6 +1,7 @@
 package com.melly.vacationmanager.domain.vacation.balance.service;
 
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
+import com.melly.vacationmanager.domain.vacation.balance.dto.VacationBalanceListResponse;
 import com.melly.vacationmanager.domain.vacation.balance.dto.VacationBalanceResponse;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceEntity;
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceId;
@@ -13,6 +14,6 @@ public interface IVacationBalanceService {
     Optional<VacationBalanceEntity> findById(VacationBalanceId id);
     void initializeVacationBalance(UserEntity user, VacationTypeEntity type, Integer days);
 
-    List<VacationBalanceResponse> getVacationBalancesByUserId(Long userId);
+    VacationBalanceListResponse getVacationBalancesByUserId(Long userId);
 
 }
