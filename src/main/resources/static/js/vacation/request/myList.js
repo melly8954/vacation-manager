@@ -1,6 +1,7 @@
 $(document).ready(function () {
     populateYearOptions();
     populateMonthOptions();
+    populateVacationTypeOptions();
 
     // 최초 목록 조회
     fetchVacationList();
@@ -85,6 +86,22 @@ function populateMonthOptions() {
     for (let m = 1; m <= 12; m++) {
         monthSelect.append(`<option value="${m}">${m}월</option>`);
     }
+}
+
+function populateVacationTypeOptions() {
+    const vacationType = $('#type-select');
+    vacationType.empty(); // 기존 옵션 제거
+
+    $.getJSON('/api/v1/vacation-types')
+        .done(function(response) {
+            vacationType.append('<option value="ALL" selected>전체 휴가 유형</option>');
+            response.data.types.forEach(function(type) {
+                vacationType.append(`<option value="${type.typeCode}">${type.typeName}</option>`);
+            });
+        })
+        .fail(function(jqXHR) {
+            handleServerError(jqXHR);
+        });
 }
 
 function getFilterParams() {
