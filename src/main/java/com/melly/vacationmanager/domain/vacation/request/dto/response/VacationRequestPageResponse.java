@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 public class VacationRequestPageResponse {
 
-    private List<VacationRequestListResponse> content;
+    private List<VacationRequestListResponse> vacationRequests;
     private int page;
     private int size;
     private long totalElements;
@@ -23,7 +23,7 @@ public class VacationRequestPageResponse {
 
     public static VacationRequestPageResponse from(Page<VacationRequestListResponse> page) {
         return VacationRequestPageResponse.builder()
-                .content(page.getContent())
+                .vacationRequests(page.getContent())
                 .page(page.getNumber() + 1)
                 .size(page.getSize())
                 .totalElements(page.getTotalElements())

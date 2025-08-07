@@ -50,9 +50,9 @@ public class VacationRequestController implements ResponseController {
                 userId, typeCode, status, year, month, order, dateFilterType, page, size
         );
 
-        VacationRequestPageResponse result = vacationRequestService.getMyRequests(cond);
+        VacationRequestPageResponse response = vacationRequestService.getMyRequests(cond);
 
-        return makeResponseEntity(HttpStatus.OK,null,"내 휴가 신청 내역을 성공적으로 조회했습니다.", result);
+        return makeResponseEntity(HttpStatus.OK,null,"내 휴가 신청 내역을 성공적으로 조회했습니다.", response);
     }
 
     @GetMapping("/{requestId}/evidence-files")
