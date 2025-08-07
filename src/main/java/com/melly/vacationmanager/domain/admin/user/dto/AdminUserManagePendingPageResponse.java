@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class AdminUserManagePendingPageResponse {
-    private List<PendingUserDto> content; // 사용자 목록
+    private List<PendingUserDto> pendingUsers; // 사용자 목록
     private int page;                     // 현재 페이지 번호 (1-based)
     private int size;                     // 페이지 크기
     private long totalElements;           // 전체 데이터 개수

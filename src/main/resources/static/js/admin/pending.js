@@ -110,7 +110,7 @@ function fetchPendingUsers(params = {}) {
         data: queryParams
     }).done(function (response) {
        console.log(response);
-       renderPendingUsers(response.data.content);
+       renderPendingUsers(response.data.pendingUsers);
        renderPagination(response.data);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         handleServerError(jqXHR);

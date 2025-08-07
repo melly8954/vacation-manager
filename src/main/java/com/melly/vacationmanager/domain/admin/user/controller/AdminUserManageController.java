@@ -2,6 +2,7 @@ package com.melly.vacationmanager.domain.admin.user.controller;
 
 import com.melly.vacationmanager.domain.admin.user.dto.ProcessStatusRequest;
 import com.melly.vacationmanager.domain.admin.user.dto.AdminUserManagePendingPageResponse;
+import com.melly.vacationmanager.domain.admin.user.dto.UserStatusChangeResponse;
 import com.melly.vacationmanager.domain.admin.user.service.IAdminUserManageService;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
@@ -47,7 +48,7 @@ public class AdminUserManageController implements ResponseController {
     @PatchMapping("{userId}/status")
     public ResponseEntity<ResponseDto> processPendingUsers(@PathVariable Long userId,
                                                            @RequestBody ProcessStatusRequest request){
-        adminUserManageService.processPendingUsers(userId,request);
-        return makeResponseEntity(HttpStatus.OK, null, "사용자 상태가 성공적으로 변경되었습니다.", null);
+        UserStatusChangeResponse response = adminUserManageService.processPendingUsers(userId, request);
+        return makeResponseEntity(HttpStatus.OK, null, "사용자 상태가 성공적으로 변경되었습니다.", response);
     }
 }
