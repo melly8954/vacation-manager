@@ -3,7 +3,9 @@ package com.melly.vacationmanager.domain.vacation.request;
 import com.melly.vacationmanager.config.QueryDslTestConfig;
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.request.AdminVacationRequestSearchCond;
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.AdminVacationRequestListResponse;
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.MonthlyVacationUsageResponse;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationStatusChangeStatisticsResponse;
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsRaw;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsResponse;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.repository.UserRepository;
@@ -995,18 +997,17 @@ public class VacationRequestRepositoryImplTest {
         @Test
         @DisplayName("2025년 월별 휴가 사용 통계 조회")
         void testFindUsageStatisticsByYear() {
-            List<VacationUsageStatisticsResponse> results =
-                    vacationRequestRepository.findUsageStatisticsByYear(2025);
+            List<VacationUsageStatisticsRaw> results = vacationRequestRepository.findUsageStatisticsByYear(2025);
 
-            assertThat(results).hasSize(2);
+            assertThat(results).hasSize(2);  // 예: 1월 연차 + 2월 병가만 있다고 가정
 
-            VacationUsageStatisticsResponse janAnnual = results.stream()
+            VacationUsageStatisticsRaw janAnnual = results.stream()
                     .filter(r -> r.getTypeCode().equals("ANNUAL") && r.getMonth() == 1)
                     .findFirst().orElseThrow();
 
             assertThat(janAnnual.getTotalUsedDays()).isEqualByComparingTo(new BigDecimal("3"));
 
-            VacationUsageStatisticsResponse febSick = results.stream()
+            VacationUsageStatisticsRaw febSick = results.stream()
                     .filter(r -> r.getTypeCode().equals("SICK") && r.getMonth() == 2)
                     .findFirst().orElseThrow();
 
@@ -1043,7 +1044,7 @@ public class VacationRequestRepositoryImplTest {
                     .user(user)
                     .vacationType(annualType)
                     .startDate(LocalDate.of(2025, 8, 20))
-                    .status(VacationRequestStatus.PENDING)
+                    .status(VacationRequestStatus.ON_HOLD)
                     .daysCount(new BigDecimal("1"))
                     .build());
 
@@ -1069,7 +1070,7 @@ public class VacationRequestRepositoryImplTest {
             assertThat(results).anyMatch(r -> r.getNewStatus().equals("APPROVED") && r.getTotalCount() == 1L);
 
             // PENDING 건수 1
-            assertThat(results).anyMatch(r -> r.getNewStatus().equals("PENDING") && r.getTotalCount() == 1L);
+            assertThat(results).anyMatch(r -> r.getNewStatus().equals("ON_HOLD") && r.getTotalCount() == 1L);
 
             // REJECTED 상태는 7월에 있으므로 포함 안 됨
             assertThat(results).noneMatch(r -> r.getNewStatus().equals("REJECTED"));
