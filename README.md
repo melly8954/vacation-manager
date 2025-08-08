@@ -40,6 +40,7 @@
 - ERD 기반 데이터베이스 설계 ([ERD 설계서](https://northern-mongoose-47b.notion.site/ERD-21ed351413c0804e82f4f34b148ccfac))
 - Spring Security를 활용한 세션 기반 인증 및 권한 관리
 - QueryDSL을 사용해 안전하고 확장 가능한 동적 쿼리 구현
+  <img width="987" height="605" alt="Image" src="https://github.com/user-attachments/assets/9aa17e34-5a18-452d-bc9d-a11f03d9d842" /><br><br>
 - 파일 저장 경로 분리  
 - 예외 처리와 일관된 오류 응답 체계 구축<br><br><br>
 
