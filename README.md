@@ -39,9 +39,9 @@
 - RESTful API 설계 및 표준 응답 포맷 적용 ([API 설계서](https://northern-mongoose-47b.notion.site/API-220d351413c0802cbf21fd91cd480324))  
 - ERD 기반 데이터베이스 설계 ([ERD 설계서](https://northern-mongoose-47b.notion.site/ERD-21ed351413c0804e82f4f34b148ccfac))
 - Spring Security를 활용한 세션 기반 인증 및 권한 관리
+- 파일 저장 경로 분리
 - QueryDSL을 사용해 안전하고 확장 가능한 동적 쿼리 구현
-  <img width="987" height="605" alt="Image" src="https://github.com/user-attachments/assets/9aa17e34-5a18-452d-bc9d-a11f03d9d842" /><br><br>
-- 파일 저장 경로 분리  
+  <img width="987" height="605" alt="Image" src="https://github.com/user-attachments/assets/9aa17e34-5a18-452d-bc9d-a11f03d9d842" /><br><br>  
 - 예외 처리와 일관된 오류 응답 체계 구축<br>
   **1. `ErrorCode Enum` — 에러 코드, 메시지, HTTP 상태를 정의**
   <img width="1173" height="442" alt="Image" src="https://github.com/user-attachments/assets/ebc4f3be-5da2-4755-a261-335ebdb2b1ed" /><br><br>
