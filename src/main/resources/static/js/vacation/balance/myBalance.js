@@ -101,12 +101,12 @@ function renderVacationHistory(data) {
     const $list = $('#vacation-history-list');
     $list.empty();
 
-    if (data.content.length === 0) {
+    if (data.vacationRequests.length === 0) {
         $list.append('<p>조회된 휴가 사용 이력이 없습니다.</p>');
         return;
     }
 
-    data.content.forEach(item => {
+    data.vacationRequests.forEach(item => {
         let period = item.startDate;
         if (item.endDate && item.endDate !== item.startDate) {
             period += ` ~ ${item.endDate}`;
