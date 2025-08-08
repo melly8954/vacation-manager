@@ -4,6 +4,8 @@ import com.melly.vacationmanager.domain.filestorage.entity.EvidenceFileEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @AllArgsConstructor
 public class EvidenceFileResponse {
@@ -11,7 +13,7 @@ public class EvidenceFileResponse {
     private String originalName;
     private String fileType;
     private long fileSize;
-    private String uploadedAt;
+    private LocalDateTime uploadedAt;
     private String downloadUrl;
 
     public static EvidenceFileResponse from(EvidenceFileEntity entity) {
@@ -20,7 +22,7 @@ public class EvidenceFileResponse {
                 entity.getOriginalName(),
                 entity.getFileType(),
                 entity.getFileSize(),
-                entity.getUploadedAt().toString(),  // LocalDateTime → String 변환 필요
+                entity.getUploadedAt(),  // LocalDateTime → String 변환 필요
                 "/api/v1/files/evidence/" + entity.getFileId() + "/download"
         );
     }

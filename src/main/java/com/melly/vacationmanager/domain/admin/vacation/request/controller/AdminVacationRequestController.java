@@ -25,8 +25,8 @@ public class AdminVacationRequestController implements ResponseController {
                                                                @RequestParam(required = false) String name,
                                                                @RequestParam(defaultValue = "ALL") String typeCode,
                                                                @RequestParam(defaultValue = "ALL") String status,
-                                                               @RequestParam(required = false) String year,
-                                                               @RequestParam(required = false) String month,
+                                                               @RequestParam(defaultValue = "ALL") String year,
+                                                               @RequestParam(defaultValue = "ALL") String month,
                                                                @RequestParam(defaultValue = "desc") String order) {
         AdminVacationRequestSearchCond cond = AdminVacationRequestSearchCond.builder()
                 .page(page)

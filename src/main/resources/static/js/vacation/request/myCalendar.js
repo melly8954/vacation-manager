@@ -18,7 +18,7 @@ $(document).ready(function() {
                 },
                 success: function(response) {
                     // 백엔드에서 받은 response.data 배열을 FullCalendar 이벤트 포맷으로 변환
-                    let events = response.data.map(item => ({
+                    let events = response.data.vacationEvents.map(item => ({
                         id: item.requestId,
                         title: item.typeName + (item.daysCount === 0.5 ? ' [반차] ' : ''),
                         start: item.startDate,

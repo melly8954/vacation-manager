@@ -2,10 +2,7 @@ package com.melly.vacationmanager.domain.vacation.request.controller;
 
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.VRCancelResponse;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationCalendarResponse;
-import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestPageResponse;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.*;
 import com.melly.vacationmanager.domain.vacation.request.service.IVacationRequestService;
 import com.melly.vacationmanager.global.auth.PrincipalDetails;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
@@ -29,12 +26,11 @@ public class VacationRequestController implements ResponseController {
     private final IVacationRequestService vacationRequestService;
 
     @PostMapping("")
-    public ResponseEntity<ResponseDto> requestVacation(@RequestPart(value = "request_data") @Validated VacationRequestDto request,
-                                                       @RequestPart(value = "evidence_files", required = false) List<MultipartFile> evidenceFiles,
-                                                       @AuthenticationPrincipal PrincipalDetails userDetails) {
-        Long userId = userDetails.getUserEntity().getUserId();
-        vacationRequestService.requestVacation(request, evidenceFiles, userId);
-        return makeResponseEntity(HttpStatus.OK,null,"휴가 신청이 완료되었습니다.",null);
+    public ResponseEntity<ResponseDto> requestVacation(@RequestPart(value = "requestData") @Validated VacationRequestDto request,
+                                                       @RequestPart(value = "evidenceFiles", required = false) List<MultipartFile> evidenceFiles) {
+        Long userId = CurrentUserUtils.getUserId();
+        VacationRequestCreateResponse response = vacationRequestService.requestVacation(request, evidenceFiles, userId);
+        return makeResponseEntity(HttpStatus.OK,null,"휴가 신청이 완료되었습니다.",response);
     }
 
     @GetMapping("/me")
@@ -45,24 +41,23 @@ public class VacationRequestController implements ResponseController {
                                                               @RequestParam(defaultValue = "ALL") String year,
                                                               @RequestParam(defaultValue = "ALL") String month,
                                                               @RequestParam(defaultValue = "desc") String order,
-                                                              @RequestParam(defaultValue = "createdAt") String dateFilterType,
-                                                              @AuthenticationPrincipal PrincipalDetails principal) {
-        Long userId = principal.getUserEntity().getUserId(); // 인증 사용자 ID
+                                                              @RequestParam(defaultValue = "createdAt") String dateFilterType) {
+        Long userId = CurrentUserUtils.getUserId();
 
         VacationRequestSearchCond cond = new VacationRequestSearchCond(
                 userId, typeCode, status, year, month, order, dateFilterType, page, size
         );
 
-        VacationRequestPageResponse result = vacationRequestService.getMyRequests(cond);
+        VacationRequestPageResponse response = vacationRequestService.getMyRequests(cond);
 
-        return makeResponseEntity(HttpStatus.OK,null,"내 휴가 신청 내역을 성공적으로 조회했습니다.", result);
+        return makeResponseEntity(HttpStatus.OK,null,"내 휴가 신청 내역을 성공적으로 조회했습니다.", response);
     }
 
     @GetMapping("/{requestId}/evidence-files")
     public ResponseEntity<ResponseDto> getEvidenceFiles(@PathVariable Long requestId) {
-        List<EvidenceFileResponse> evidenceFiles = vacationRequestService.getEvidenceFiles(requestId);
-        String message = evidenceFiles.isEmpty() ? "증빙자료가 존재하지 않습니다." : "성공적으로 증빙자료를 조회했습니다.";
-        return makeResponseEntity(HttpStatus.OK, null, message, evidenceFiles);
+        EvidenceFileListResponse response = vacationRequestService.getEvidenceFiles(requestId);
+        String message = response.getEvidenceFiles().isEmpty() ? "증빙자료가 존재하지 않습니다." : "성공적으로 증빙자료를 조회했습니다.";
+        return makeResponseEntity(HttpStatus.OK, null, message, response);
     }
 
     @PatchMapping("/{requestId}/status")
@@ -76,7 +71,7 @@ public class VacationRequestController implements ResponseController {
                                                                             @RequestParam String endDate) {
         Long userId = CurrentUserUtils.getUserId();
 
-        List<VacationCalendarResponse> responses = vacationRequestService.findApprovedVacationsForCalendar(startDate, endDate, userId);
+        VacationCalendarListResponse responses = vacationRequestService.findApprovedVacationsForCalendar(startDate, endDate, userId);
 
         return makeResponseEntity(HttpStatus.OK, null, "휴가 일정 조회 성공", responses);
     }

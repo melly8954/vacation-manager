@@ -95,7 +95,7 @@ class UserServiceImplTest {
             assertThatThrownBy(() -> userService.signUp(request))
                     .isInstanceOf(CustomException.class)
                     .extracting("errorCode")
-                    .isEqualTo(ErrorCode.INVALID_FORMAT_HIREDATE);
+                    .isEqualTo(ErrorCode.HIREDATE_CANNOT_BE_FUTURE);
         }
     }
 
@@ -186,7 +186,7 @@ class UserServiceImplTest {
             assertThatThrownBy(() -> userService.duplicateCheck(type, value))
                     .isInstanceOf(CustomException.class)
                     .extracting("errorCode")
-                    .isEqualTo(ErrorCode.INVALID_FORMAT_EMAIL);
+                    .isEqualTo(ErrorCode.EMAIL_FORMAT_INVALID);
         }
 
         @Test

@@ -1,5 +1,6 @@
 package com.melly.vacationmanager.domain.vacation.balance.controller;
 
+import com.melly.vacationmanager.domain.vacation.balance.dto.VacationBalanceListResponse;
 import com.melly.vacationmanager.domain.vacation.balance.dto.VacationBalanceResponse;
 import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanceService;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
@@ -23,7 +24,7 @@ public class VacationBalanceController implements ResponseController {
     @GetMapping("/me")
     public ResponseEntity<ResponseDto> getMyVacationBalance(){
         Long userId = CurrentUserUtils.getUserId();
-        List<VacationBalanceResponse> responses = vacationBalanceService.getVacationBalancesByUserId(userId);
+        VacationBalanceListResponse responses = vacationBalanceService.getVacationBalancesByUserId(userId);
         return makeResponseEntity(HttpStatus.OK,null,"휴가 잔여일 정보를 성공적으로 조회했습니다.",responses);
     }
 }

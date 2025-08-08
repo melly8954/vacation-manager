@@ -29,11 +29,11 @@ $(document).ready(function() {
         .done(function(response) {
             vacationType.append('<option value="">-- 선택 --</option>');
             response.data.types.forEach(function(type) {
-                vacationType.append(`<option value="${type.type_code}">${type.type_name}</option>`);
+                vacationType.append(`<option value="${type.typeCode}">${type.typeName}</option>`);
             });
         })
-        .fail(function() {
-            alert('휴가 유형 로딩 실패');
+        .fail(function(jqXHR) {
+            handleServerError(jqXHR);
         });
 
     // 연가 선택 시 반차 선택여부 추가
@@ -221,11 +221,11 @@ function applyVacationRequest() {
 
     // JSON을 Blob으로 변환하여 추가
     const requestBlob = new Blob([JSON.stringify(requestForm)], { type: "application/json" });
-    formData.append("request_data", requestBlob);
+    formData.append("requestData", requestBlob);
 
     // 파일 첨부
     selectedFiles.forEach(file => {
-        formData.append("evidence_files", file);
+        formData.append("evidenceFiles", file);
     });
 
     // Ajax 요청
@@ -237,18 +237,9 @@ function applyVacationRequest() {
         contentType: false,  // FormData 전송 시 필수
         enctype: "multipart/form-data",
     }).done(function (response) {
-        console.log(response);
         alert("휴가 신청 성공");
         window.location.href = "/";
     }).fail(function (jqXHR) {
         handleServerError(jqXHR)
     })
-}
-
-function handleServerError(jqXHR) {
-    console.log(jqXHR);
-    // 서버에서 내려준 메시지 활용 (JSON 응답인 경우)
-    if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
-        alert(jqXHR.responseJSON.message);
-    }
 }

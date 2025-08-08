@@ -1,9 +1,12 @@
 package com.melly.vacationmanager.domain.admin.service;
 
 import com.melly.vacationmanager.domain.admin.user.dto.ProcessStatusRequest;
+import com.melly.vacationmanager.domain.admin.user.dto.UserStatusChangeResponse;
 import com.melly.vacationmanager.domain.admin.user.service.AdminUserManageServiceImpl;
 import com.melly.vacationmanager.domain.user.entity.UserEntity;
 import com.melly.vacationmanager.domain.user.repository.UserRepository;
+import com.melly.vacationmanager.domain.vacation.balance.dto.VacationBalanceListResponse;
+import com.melly.vacationmanager.domain.vacation.balance.dto.VacationBalanceResponse;
 import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanceService;
 import com.melly.vacationmanager.domain.vacation.grant.service.IVacationGrantService;
 import com.melly.vacationmanager.domain.vacation.type.dto.VacationTypeDto;
@@ -21,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,6 +67,7 @@ public class AdminUserManageServiceImplTest {
                     new VacationTypeDto("FAMILY_EVENT", "경조사"),
                     new VacationTypeDto("SPECIAL", "특별휴가")
             );
+
             // grantVacation() 호출 시 예외처리를 반환하지 않고 Mock 정상 동작을 위한 stub
             when(vacationTypeService.getAllTypes())
                     .thenReturn(new VacationTypeListResponse(vacationTypeDtoList));
@@ -76,15 +81,31 @@ public class AdminUserManageServiceImplTest {
                         .thenReturn(Optional.of(entity));
             }
 
+            List<VacationBalanceResponse> balanceResponses = List.of(
+                    new VacationBalanceResponse("ANNUAL", "연차", BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO),
+                    new VacationBalanceResponse("SICK", "병가", BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN)
+            );
+            VacationBalanceListResponse balanceListResponse = new VacationBalanceListResponse(balanceResponses);
+
+            when(vacationBalanceService.getVacationBalancesByUserId(userId))
+                    .thenReturn(balanceListResponse);
+
             // when
-            adminUserManageService.processPendingUsers(userId, request);
+            UserStatusChangeResponse response = adminUserManageService.processPendingUsers(userId, request);
+
 
             // then
             assertThat(user.getStatus()).isEqualTo(UserStatus.ACTIVE);
 
-            verify(userRepository).save(user);  // 호출 확인
-            verify(vacationBalanceService, times(4)).initializeVacationBalance(eq(user), any(), any());     // eq(user)는 같은 객체가 들어가는지 정확히 검증
+            assertThat(response).isNotNull();
+            assertThat(response.getUserId()).isEqualTo(userId);
+            assertThat(response.getStatus()).isEqualTo(user.getStatus().name());
+            assertThat(response.getVacationBalances()).hasSize(2);
+
+            verify(userRepository).save(user);
+            verify(vacationBalanceService, times(4)).initializeVacationBalance(eq(user), any(), any());
             verify(vacationGrantService, times(3)).recordGrant(eq(user), any(), anyInt());
+            verify(vacationBalanceService).getVacationBalancesByUserId(userId);
         }
 
         @Test

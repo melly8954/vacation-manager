@@ -20,7 +20,7 @@ public class UserController implements ResponseController {
     @PostMapping("")
     public ResponseEntity<ResponseDto> createUser(@Validated @RequestBody SignUpRequest request) {
         userService.signUp(request);
-        return makeResponseEntity(HttpStatus.CREATED,null,"사용자 가입에 성공했습니다.",null);
+        return makeResponseEntity(HttpStatus.OK,null,"사용자 가입에 성공했습니다.",null);
     }
 
     // 필드 중복 검사 API

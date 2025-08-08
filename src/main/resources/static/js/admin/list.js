@@ -2,6 +2,7 @@ $(document).ready(function () {
     // 초기 필터 옵션 채우기
     populateYearOptions();
     populateMonthOptions();
+    populateVacationTypeOptions();
 
     fetchVacationList();
 
@@ -90,13 +91,8 @@ $(document).ready(function () {
                 $('#processModal').modal('hide');
                 fetchVacationList(getFilterParams()); // 목록 갱신
             })
-            .fail(function(xhr) {
-                const err = xhr.responseJSON;
-                if (err && err.message) {
-                    alert(`오류: ${err.message}`);
-                } else {
-                    alert("처리 중 문제가 발생했습니다.");
-                }
+            .fail(function(jqXHR) {
+                handleServerError(jqXHR);
             });
     });
 
@@ -125,6 +121,22 @@ function populateMonthOptions() {
     for(let m=1; m<=12; m++) {
         monthSelect.append(`<option value="${m}">${m}월</option>`);
     }
+}
+
+function populateVacationTypeOptions() {
+    const vacationType = $('#type-select');
+    vacationType.empty(); // 기존 옵션 제거
+
+    $.getJSON('/api/v1/vacation-types')
+        .done(function(response) {
+            vacationType.append('<option value="ALL" selected>전체 휴가 유형</option>');
+            response.data.types.forEach(function(type) {
+                vacationType.append(`<option value="${type.typeCode}">${type.typeName}</option>`);
+            });
+        })
+        .fail(function(jqXHR) {
+            handleServerError(jqXHR);
+        });
 }
 
 function getFilterParams() {
@@ -170,10 +182,10 @@ function fetchVacationList(params = {}) {
         data: params
     }).done(function (response) {
         const data = response.data;
-        renderVacationList(data.content);
+        renderVacationList(data.vacationRequests);
         renderPagination(data);
     }).fail(function (jqXHR, textStatus, errorThrown) {
-        console.log("조회 실패", jqXHR);
+        handleServerError(jqXHR);
     });
 }
 

@@ -2,6 +2,7 @@ package com.melly.vacationmanager.domain.admin.user.controller;
 
 import com.melly.vacationmanager.domain.admin.user.dto.ProcessStatusRequest;
 import com.melly.vacationmanager.domain.admin.user.dto.AdminUserManagePendingPageResponse;
+import com.melly.vacationmanager.domain.admin.user.dto.UserStatusChangeResponse;
 import com.melly.vacationmanager.domain.admin.user.service.IAdminUserManageService;
 import com.melly.vacationmanager.global.common.controller.ResponseController;
 import com.melly.vacationmanager.global.common.dto.ResponseDto;
@@ -24,8 +25,8 @@ public class AdminUserManageController implements ResponseController {
     @GetMapping("/pending")
     public ResponseEntity<ResponseDto> findPendingUsers(@RequestParam(defaultValue = "1") int page,
                                                         @RequestParam(defaultValue = "10") int size,
-                                                        @RequestParam(required = false) Integer year,
-                                                        @RequestParam(required = false) Integer month,
+                                                        @RequestParam(defaultValue = "ALL") String  year,
+                                                        @RequestParam(defaultValue = "ALL") String  month,
                                                         @RequestParam(defaultValue = "") String name,
                                                         @RequestParam(defaultValue = "desc") String order){
         // 음수 혹은 0 페이지 방지 (최소 1 페이지부터 시작, 음수를 넣어도 1부터 시작)
@@ -47,7 +48,7 @@ public class AdminUserManageController implements ResponseController {
     @PatchMapping("{userId}/status")
     public ResponseEntity<ResponseDto> processPendingUsers(@PathVariable Long userId,
                                                            @RequestBody ProcessStatusRequest request){
-        adminUserManageService.processPendingUsers(userId,request);
-        return makeResponseEntity(HttpStatus.OK, null, "사용자 상태가 성공적으로 변경되었습니다.", null);
+        UserStatusChangeResponse response = adminUserManageService.processPendingUsers(userId, request);
+        return makeResponseEntity(HttpStatus.OK, null, "사용자 상태가 성공적으로 변경되었습니다.", response);
     }
 }

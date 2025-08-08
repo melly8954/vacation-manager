@@ -11,6 +11,7 @@ import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceE
 import com.melly.vacationmanager.domain.vacation.balance.entity.VacationBalanceId;
 import com.melly.vacationmanager.domain.vacation.balance.service.IVacationBalanceService;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestDto;
+import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileListResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.EvidenceFileResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VRCancelResponse;
 import com.melly.vacationmanager.domain.vacation.request.entity.VacationRequestEntity;
@@ -336,12 +337,13 @@ public class VacationRequestServiceImplTest {
                     .thenReturn(List.of(file1, file2));
 
             // when
-            List<EvidenceFileResponse> result = vacationRequestService.getEvidenceFiles(requestId);
+            EvidenceFileListResponse result = vacationRequestService.getEvidenceFiles(requestId);
+
 
             // then
-            assertThat(result).hasSize(2);
-            assertThat(result.get(0).getOriginalName()).isEqualTo("file1.pdf");
-            assertThat(result.get(1).getOriginalName()).isEqualTo("file2.png");
+            assertThat(result.getEvidenceFiles()).hasSize(2);
+            assertThat(result.getEvidenceFiles().get(0).getOriginalName()).isEqualTo("file1.pdf");
+            assertThat(result.getEvidenceFiles().get(1).getOriginalName()).isEqualTo("file2.png");
         }
 
         @Test
@@ -354,10 +356,10 @@ public class VacationRequestServiceImplTest {
                     .thenReturn(Collections.emptyList());
 
             // when
-            List<EvidenceFileResponse> result = vacationRequestService.getEvidenceFiles(requestId);
+            EvidenceFileListResponse result = vacationRequestService.getEvidenceFiles(requestId);
 
             // then
-            assertThat(result).isEmpty();
+            assertThat(result.getEvidenceFiles()).isEmpty();
         }
 
         @Test

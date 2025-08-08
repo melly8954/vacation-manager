@@ -19,7 +19,7 @@ public enum UserPosition {
 
     public static UserPosition fromString(String value) {
         if (value == null || value.isEmpty()) {
-            throw new CustomException(ErrorCode.MISSING_POSITION);
+            throw new CustomException(ErrorCode.POSITION_MISSING);
         }
 
         // 1) 먼저 이름 기준 변환 시도 (대소문자 무시)

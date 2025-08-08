@@ -21,6 +21,7 @@ import com.melly.vacationmanager.global.common.enums.ErrorCode;
 import com.melly.vacationmanager.global.common.enums.VacationRequestStatus;
 import com.melly.vacationmanager.global.common.exception.CustomException;
 import com.melly.vacationmanager.global.common.utils.CurrentUserUtils;
+import com.melly.vacationmanager.global.common.utils.DateParseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +53,7 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
     private final VacationAuditLogRepository vacationAuditLogRepository;
 
     @Override
-    public void requestVacation(VacationRequestDto requestDto, List<MultipartFile> evidenceFiles, Long userId) {
+    public VacationRequestCreateResponse requestVacation(VacationRequestDto requestDto, List<MultipartFile> evidenceFiles, Long userId) {
         String typeCode = requestDto.getTypeCode();
         LocalDate startDate = requestDto.getStartDate();
         LocalDate endDate = requestDto.getEndDate();
@@ -97,6 +99,8 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
         vacationRequestRepository.save(vrEntity);
 
         // 증빙 자료 저장
+        List<EvidenceFileEntity> savedEvidenceFiles = new ArrayList<>();
+
         if (evidenceFiles != null && !evidenceFiles.isEmpty()) {
             int fileOrder = 0;
             for (MultipartFile file : evidenceFiles) {
@@ -116,12 +120,21 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
                                 .fileOrder(fileOrder++)
                                 .build();
                         evidenceFileRepository.save(evidence);
+                        savedEvidenceFiles.add(evidence);
                     } catch (IOException e) {
                         throw new CustomException(ErrorCode.FILE_UPLOAD_FAILED);
                     }
                 }
             }
         }
+
+        List<EvidenceFileResponse> evidenceFileResponses = savedEvidenceFiles.isEmpty()
+                ? Collections.emptyList()
+                : savedEvidenceFiles.stream()
+                .map(EvidenceFileResponse::from)
+                .collect(Collectors.toList());
+
+        return VacationRequestCreateResponse.from(vrEntity, evidenceFileResponses);
     }
 
     @Override
@@ -139,20 +152,20 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
     }
 
     @Override
-    public List<EvidenceFileResponse> getEvidenceFiles(Long requestId) {
-        if(!vacationRequestRepository.existsByRequestId(requestId)){
+    public EvidenceFileListResponse getEvidenceFiles(Long requestId) {
+        if (!vacationRequestRepository.existsByRequestId(requestId)) {
             throw new CustomException(ErrorCode.VACATION_REQUEST_NOT_FOUND);
         }
 
         List<EvidenceFileEntity> files = evidenceFileRepository.findAllByVacationRequest_RequestId(requestId);
-        if (files.isEmpty()) {
-            // 필요하다면 빈 리스트 반환하거나 별도 처리
-            return Collections.emptyList();
-        }
 
-        return files.stream()
+        List<EvidenceFileResponse> responseList = files.stream()
                 .map(EvidenceFileResponse::from)
                 .collect(Collectors.toList());
+
+        return EvidenceFileListResponse.builder()
+                .evidenceFiles(responseList)
+                .build();
     }
 
     @Override
@@ -180,10 +193,14 @@ public class VacationRequestServiceImpl implements IVacationRequestService {
     }
 
     @Override
-    public List<VacationCalendarResponse> findApprovedVacationsForCalendar(String startDateStr, String endDateStr, Long userId) {
-        LocalDate start = LocalDate.parse(startDateStr);  // "2025-06-29" 같은 날짜 형식으로 들어옴
-        LocalDate end = LocalDate.parse(endDateStr);      // "2025-08-02"
+    public VacationCalendarListResponse findApprovedVacationsForCalendar(String startDateStr, String endDateStr, Long userId) {
+        LocalDate start = DateParseUtils.parseLocalDate(startDateStr);
+        LocalDate end = DateParseUtils.parseLocalDate(endDateStr);
 
-        return vacationRequestRepository.findApprovedVacationsForCalendar(userId, start, end);
+        List<VacationCalendarResponse> responses  = vacationRequestRepository.findApprovedVacationsForCalendar(userId, start, end);
+
+        return VacationCalendarListResponse.builder()
+                .vacationEvents(responses)
+                .build();
     }
 }

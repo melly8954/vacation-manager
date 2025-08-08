@@ -3,6 +3,7 @@ package com.melly.vacationmanager.domain.vacation.request.repository;
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.request.AdminVacationRequestSearchCond;
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.AdminVacationRequestListResponse;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationStatusChangeStatisticsResponse;
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsRaw;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsResponse;
 import com.melly.vacationmanager.domain.user.entity.QUserEntity;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
@@ -10,6 +11,7 @@ import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationCa
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationRequestListResponse;
 import com.melly.vacationmanager.domain.vacation.request.entity.QVacationRequestEntity;
 import com.melly.vacationmanager.global.common.enums.VacationRequestStatus;
+import com.melly.vacationmanager.global.common.utils.DateParseUtils;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -67,41 +69,34 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
         }
 
         // 연도/월 필터
-        if ("vacationPeriod".equals(cond.getDateFilterType())) {
-            // startDate ~ endDate 기준 기간 겹침 조건 적용
-            // year, month 둘 다 지정된 경우
-            if (!"ALL".equals(cond.getYear()) && !"ALL".equals(cond.getMonth())) {
-                int year = Integer.parseInt(cond.getYear());
-                int month = Integer.parseInt(cond.getMonth());
+        LocalDate today = LocalDate.now();
 
-                // 필터 기간: 해당 연도의 해당 월 1일 ~ 말일
+        if ("vacationPeriod".equals(cond.getDateFilterType())) {
+            if (!"ALL".equals(cond.getYear()) && !"ALL".equals(cond.getMonth())) {
+                int year = DateParseUtils.parseYear(cond.getYear(), today);
+                int month = DateParseUtils.parseMonth(cond.getMonth(), today);
+
                 LocalDate filterStart = LocalDate.of(year, month, 1);
                 LocalDate filterEnd = filterStart.withDayOfMonth(filterStart.lengthOfMonth());
 
-                // 휴가 기간이 필터 기간과 겹치는 경우만 조회
                 builder.and(q.endDate.goe(filterStart)
                         .and(q.startDate.loe(filterEnd)));
 
-            } else if (!"ALL".equals(cond.getYear())) {     // year만 지정된 경우
-                int year = Integer.parseInt(cond.getYear());
+            } else if (!"ALL".equals(cond.getYear())) {
+                int year = DateParseUtils.parseYear(cond.getYear(), today);
 
-                // 필터 기간: 해당 연도의 1월 1일 ~ 12월 31일
                 LocalDate yearStart = LocalDate.of(year, 1, 1);
                 LocalDate yearEnd = LocalDate.of(year, 12, 31);
 
-                // 휴가 기간이 필터 기간과 겹치는 경우만 조회
                 builder.and(q.endDate.goe(yearStart)
                         .and(q.startDate.loe(yearEnd)));
 
-            } else if (!"ALL".equals(cond.getMonth())) {    // month만 지정된 경우 (year는 ALL)
-                int month = Integer.parseInt(cond.getMonth());
-                int currentYear = LocalDate.now().getYear(); // 현재 연도 기준 필터링
+            } else if (!"ALL".equals(cond.getMonth())) {
+                int month = DateParseUtils.parseMonth(cond.getMonth(), today);
 
-                // 필터 기간: 현재 연도의 해당 월 1일 ~ 말일
-                LocalDate monthStart = LocalDate.of(currentYear, month, 1);
+                LocalDate monthStart = LocalDate.of(today.getYear(), month, 1);
                 LocalDate monthEnd = monthStart.withDayOfMonth(monthStart.lengthOfMonth());
 
-                // 휴가 기간이 필터 기간과 겹치는 경우만 조회
                 builder.and(q.endDate.goe(monthStart)
                         .and(q.startDate.loe(monthEnd)));
             }
@@ -167,13 +162,17 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
             builder.and(user.name.containsIgnoreCase(cond.getName()));
         }
 
+        LocalDate today = LocalDate.now();
+
         // 신청일(createdAt) 연도/월 필터링 (LocalDateTime)
         if (cond.getYear() != null && !"ALL".equalsIgnoreCase(cond.getYear())) {
-            builder.and(request.createdAt.year().eq(Integer.parseInt(cond.getYear())));
+            int year = DateParseUtils.parseYear(cond.getYear(),today);
+            builder.and(request.createdAt.year().eq(year));
         }
 
         if (cond.getMonth() != null && !"ALL".equalsIgnoreCase(cond.getMonth())) {
-            builder.and(request.createdAt.month().eq(Integer.parseInt(cond.getMonth())));
+            int month = DateParseUtils.parseMonth(cond.getMonth(),today);
+            builder.and(request.createdAt.month().eq(month));
         }
 
         OrderSpecifier<?> orderSpecifier = "asc".equalsIgnoreCase(cond.getOrder())
@@ -240,12 +239,12 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
     }
 
     @Override
-    public List<VacationUsageStatisticsResponse> findUsageStatisticsByYear(int year) {
+    public List<VacationUsageStatisticsRaw> findUsageStatisticsByYear(int year) {
         QVacationRequestEntity q = QVacationRequestEntity.vacationRequestEntity;
 
         return queryFactory
                 .select(Projections.constructor(
-                        VacationUsageStatisticsResponse.class,
+                        VacationUsageStatisticsRaw.class,
                         q.vacationType.typeCode,
                         q.vacationType.typeName,
                         q.startDate.month(),                // ← 월 추출
@@ -278,6 +277,7 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
                 .where(
                         q.startDate.year().eq(year)
                                 .and(q.startDate.month().eq(month))
+                                .and(q.status.notIn(VacationRequestStatus.PENDING, VacationRequestStatus.CANCELED))
                 )
                 .groupBy(q.status)
                 .fetch();

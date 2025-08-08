@@ -24,8 +24,8 @@ $(document).ready(function() {
     $('#reset-btn').on('click', function () {
         // 입력값 초기화
         $('#name').val('');
-        $('#year').val('');
-        $('#month').val('');
+        $('#year').val('ALL');
+        $('#month').val('ALL');
         // 정렬 순서 초기화 (필요 시)
         currentOrder = 'desc'; // 전역 정렬 변수 초기화
         $('#sort-userId .sort-icon').text('▼');
@@ -98,8 +98,8 @@ function fetchPendingUsers(params = {}) {
     const queryParams = {
         page: params.page || 1,
         size: params.size || 10,
-        year: params.year || '',
-        month: params.month || '',
+        year: params.year || 'ALL',
+        month: params.month || 'ALL',
         name: params.name || '',
         order: params.order || 'desc'
     };
@@ -110,10 +110,10 @@ function fetchPendingUsers(params = {}) {
         data: queryParams
     }).done(function (response) {
        console.log(response);
-       renderPendingUsers(response.data.content);
+       renderPendingUsers(response.data.pendingUsers);
        renderPagination(response.data);
     }).fail(function (jqXHR, textStatus, errorThrown) {
-
+        handleServerError(jqXHR);
     });
 }
 
@@ -174,7 +174,7 @@ function processUserStatus(button, status){
         alert("변경 완료");
         fetchPendingUsers(getFilterParams());
     }).fail(function (jqXHR, textStatus, errorThrown) {
-        console.log(jqXHR, textStatus, errorThrown);
+        handleServerError(jqXHR);
     });
 }
 

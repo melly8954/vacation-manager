@@ -3,6 +3,7 @@ package com.melly.vacationmanager.domain.vacation.request.repository;
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.request.AdminVacationRequestSearchCond;
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.AdminVacationRequestListResponse;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationStatusChangeStatisticsResponse;
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsRaw;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsResponse;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
 import com.melly.vacationmanager.domain.vacation.request.dto.response.VacationCalendarResponse;
@@ -20,7 +21,7 @@ public interface VacationRequestRepositoryCustom {
 
     List<VacationCalendarResponse> findApprovedVacationsForCalendar(Long userId, LocalDate start, LocalDate end);
 
-    List<VacationUsageStatisticsResponse> findUsageStatisticsByYear(int year);
+    List<VacationUsageStatisticsRaw> findUsageStatisticsByYear(int year);
     List<VacationStatusChangeStatisticsResponse> findMonthlyStatusChangeCounts(int year, int month);
 
 }

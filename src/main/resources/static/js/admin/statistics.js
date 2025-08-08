@@ -65,7 +65,7 @@ function fetchGrantStatistics(year) {
             renderGrantCards(response.data);
         })
         .fail(function() {
-            alert('통계 데이터를 불러오는데 실패했습니다.');
+            handleServerError(jqXHR);
         });
 }
 
@@ -112,7 +112,7 @@ function fetchUsageStatistics(year,month) {
             renderUsageBarChart(response.data, year);
         })
         .fail(function() {
-            alert('휴가 사용 통계 데이터를 불러오는데 실패했습니다.');
+            handleServerError(jqXHR);
         });
 }
 
@@ -126,13 +126,17 @@ function renderUsageCards(data, month) {
             예: 1/31 ~ 2/2 → 1월로 포함
           </p>
     `);
+    // 월별 데이터 찾기
+    const monthData = data.find(item => item.month === month);
 
-    const filtered = data.filter(item => item.month === month);
+    // 해당 월 데이터가 없으면 빈 배열 처리
+    const vacationRequests = monthData ? monthData.vacationRequests : [];
+
     const usageMap = new Map();
-
-    filtered.forEach(item => {
+    vacationRequests.forEach(item => {
         usageMap.set(item.typeName, item.totalUsedDays);
     });
+
 
     defaultVacationTypes.forEach(typeName => {
         const usedDays = usageMap.get(typeName) || 0;
@@ -154,12 +158,14 @@ function renderUsageBarChart(data, year) {
     // 월별 + 유형별로 데이터 재구성
     const chartData = {};
     defaultVacationTypes.forEach(type => {
-        chartData[type] = Array(12).fill(0); // 1~12월
+        chartData[type] = Array(12).fill(0);
     });
 
-    data.forEach(item => {
-        const monthIdx = item.month - 1; // 0~11
-        chartData[item.typeName][monthIdx] = item.totalUsedDays;
+    data.forEach(monthEntry => {
+        const monthIdx = monthEntry.month - 1; // 0-based index
+        monthEntry.vacationRequests.forEach(vac => {
+            chartData[vac.typeName][monthIdx] = vac.totalUsedDays;
+        });
     });
 
     const backgroundColors = {
@@ -241,7 +247,7 @@ function fetchStatusChangeStatistics(year, month) {
             renderStatusChangePieChart(response.data, year, month);
         })
         .fail(function() {
-            alert('상태 변화 통계 조회 실패');
+            handleServerError(jqXHR);
         });
 }
 
