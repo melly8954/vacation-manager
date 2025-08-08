@@ -1,7 +1,7 @@
 # Vacation Manager
 
 ## 프로젝트 개요  
-사내 휴가 신청부터 승인, 잔여일 관리, 통계 기능까지 구현한 풀스택 휴가 관리 시스템입니다.
+**Vacation Manager**는 개인 학습 목적으로 JPA, QueryDSL, 공통 모듈 설계 등 백엔드 핵심 기술을 익히고 실무에 적용하기 위해 개발한 휴가 관리 시스템입니다. 실제 업무 프로세스를 모방하여 회원 관리, 휴가 신청, 승인, 잔여일 관리, 통계 등 주요 기능을 구현함으로써 기술 숙련도와 설계 역량을 향상하는 데 중점을 두었습니다.
 
 ## 사용 기술 스택  
 - **Frontend:** HTML/CSS/JavaScript, jQuery, Bootstrap, FullCalendar.js, Mustache  
