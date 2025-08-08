@@ -5,7 +5,7 @@
 
 ## 사용 기술 스택  
 - **Frontend:** HTML/CSS/JavaScript, jQuery, Bootstrap, FullCalendar.js, Mustache  
-- **Backend:** Java 17, Spring Boot, Spring Data JPA, Spring Security, Hibernate Validator, Apache POI  
+- **Backend:** Java 17, Spring Boot, Spring Data JPA, Spring Security, Hibernate Validator
 - **Database:** MySQL  
 - **기타:** Gradle, Postman, Git, IntelliJ IDEA
 
