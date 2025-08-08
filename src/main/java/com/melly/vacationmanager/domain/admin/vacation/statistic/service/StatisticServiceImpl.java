@@ -1,5 +1,6 @@
 package com.melly.vacationmanager.domain.admin.vacation.statistic.service;
 
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.MonthlyVacationUsageResponse;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationGrantStatisticsResponse;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationStatusChangeStatisticsResponse;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsResponse;
@@ -10,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -32,9 +35,19 @@ public class StatisticServiceImpl implements IStatisticService {
     }
 
     @Override
-    public List<VacationUsageStatisticsResponse> getUsageStatistics(String year) {
+    public List<MonthlyVacationUsageResponse> getUsageStatistics(String year) {
         int y = DateParseUtils.parseYear(year, LocalDate.now());
-        return vacationRequestRepository.findUsageStatisticsByYear(y);
+        List<VacationUsageStatisticsResponse> flatList = vacationRequestRepository.findUsageStatisticsByYear(y);
+
+        return flatList.stream()
+                .collect(Collectors.groupingBy(VacationUsageStatisticsResponse::getMonth))
+                .entrySet().stream()
+                .map(entry -> new MonthlyVacationUsageResponse(
+                        entry.getKey(),
+                        entry.getValue()
+                ))
+                .sorted(Comparator.comparing(MonthlyVacationUsageResponse::getMonth))
+                .toList();
     }
 
     @Override
