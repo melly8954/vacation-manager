@@ -42,7 +42,14 @@
 - QueryDSL을 사용해 안전하고 확장 가능한 동적 쿼리 구현
   <img width="987" height="605" alt="Image" src="https://github.com/user-attachments/assets/9aa17e34-5a18-452d-bc9d-a11f03d9d842" /><br><br>
 - 파일 저장 경로 분리  
-- 예외 처리와 일관된 오류 응답 체계 구축<br><br><br>
+- 예외 처리와 일관된 오류 응답 체계 구축<br>
+  **1. `ErrorCode Enum` — 에러 코드, 메시지, HTTP 상태를 정의**
+  <img width="1173" height="442" alt="Image" src="https://github.com/user-attachments/assets/ebc4f3be-5da2-4755-a261-335ebdb2b1ed" /><br><br>
+  **2. `CustomException` — `ErrorCode`를 포함하는 비즈니스 예외 클래스**
+  <img width="710" height="279" alt="Image" src="https://github.com/user-attachments/assets/b163b4ad-0506-47a4-b6fb-720293bd4681" /><br><br>
+  **3. `GlobalExceptionHandler` — `@ExceptionHandler`로 예외를 가로채 공통 응답 포맷으로 변환**
+  <img width="960" height="291" alt="Image" src="https://github.com/user-attachments/assets/6fa4497b-fb01-4d60-a3f7-f91943c4bea8" />  
+<br><br><br>
 
 ## 확장성 및 자동화
 - `@Scheduled` 기반의 배치 작업으로 매년 자동 휴가 지급 기능을 구현하여 운영 효율성을 높였습니다.
