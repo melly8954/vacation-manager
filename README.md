@@ -11,6 +11,22 @@
 - **Database:** MySQL  
 - **기타:** Gradle, Postman, Git, IntelliJ IDEA <br><br><br>
 
+## 설계 및 아키텍처  
+- RESTful API 설계 및 표준 응답 포맷 적용 ([API 설계서](https://northern-mongoose-47b.notion.site/API-220d351413c0802cbf21fd91cd480324))  
+- ERD 기반 데이터베이스 설계 ([ERD 설계서](https://northern-mongoose-47b.notion.site/ERD-21ed351413c0804e82f4f34b148ccfac))
+- Spring Security를 활용한 세션 기반 인증 및 권한 관리
+- 파일 저장 경로 분리
+- QueryDSL을 사용해 안전하고 확장 가능한 동적 쿼리 구현
+  <img width="987" height="605" alt="Image" src="https://github.com/user-attachments/assets/9aa17e34-5a18-452d-bc9d-a11f03d9d842" /><br><br>  
+- 예외 처리와 일관된 오류 응답 체계 구축<br>
+  **1. `ErrorCode Enum` — 에러 코드, 메시지, HTTP 상태를 정의**
+  <img width="1173" height="442" alt="Image" src="https://github.com/user-attachments/assets/ebc4f3be-5da2-4755-a261-335ebdb2b1ed" /><br><br>
+  **2. `CustomException` — `ErrorCode`를 포함하는 비즈니스 예외 클래스**
+  <img width="710" height="279" alt="Image" src="https://github.com/user-attachments/assets/b163b4ad-0506-47a4-b6fb-720293bd4681" /><br><br>
+  **3. `GlobalExceptionHandler` — `@ExceptionHandler`로 예외를 가로채 공통 응답 포맷으로 변환**
+  <img width="960" height="291" alt="Image" src="https://github.com/user-attachments/assets/6fa4497b-fb01-4d60-a3f7-f91943c4bea8" />  
+<br><br><br>
+
 ## 주요 기능  
 ### 사용자
 - 사용자 가입 및 로그인 프로세스
@@ -33,23 +49,7 @@
 - 휴가 사용 통계 조회 및 분석
   <img width="1903" height="861" alt="Image" src="https://github.com/user-attachments/assets/2374765b-106a-4d24-a2f3-7ed6bdef68bf" />
   <img width="1911" height="756" alt="Image" src="https://github.com/user-attachments/assets/f953bdd0-f3c6-4afc-8b6b-14d7143f220a" />
-  <img width="1236" height="529" alt="Image" src="https://github.com/user-attachments/assets/aa72f8c5-1319-4ae0-be3b-55b8a217c81e" /><br><br><br><br><br>  
-
-## 설계 및 아키텍처  
-- RESTful API 설계 및 표준 응답 포맷 적용 ([API 설계서](https://northern-mongoose-47b.notion.site/API-220d351413c0802cbf21fd91cd480324))  
-- ERD 기반 데이터베이스 설계 ([ERD 설계서](https://northern-mongoose-47b.notion.site/ERD-21ed351413c0804e82f4f34b148ccfac))
-- Spring Security를 활용한 세션 기반 인증 및 권한 관리
-- 파일 저장 경로 분리
-- QueryDSL을 사용해 안전하고 확장 가능한 동적 쿼리 구현
-  <img width="987" height="605" alt="Image" src="https://github.com/user-attachments/assets/9aa17e34-5a18-452d-bc9d-a11f03d9d842" /><br><br>  
-- 예외 처리와 일관된 오류 응답 체계 구축<br>
-  **1. `ErrorCode Enum` — 에러 코드, 메시지, HTTP 상태를 정의**
-  <img width="1173" height="442" alt="Image" src="https://github.com/user-attachments/assets/ebc4f3be-5da2-4755-a261-335ebdb2b1ed" /><br><br>
-  **2. `CustomException` — `ErrorCode`를 포함하는 비즈니스 예외 클래스**
-  <img width="710" height="279" alt="Image" src="https://github.com/user-attachments/assets/b163b4ad-0506-47a4-b6fb-720293bd4681" /><br><br>
-  **3. `GlobalExceptionHandler` — `@ExceptionHandler`로 예외를 가로채 공통 응답 포맷으로 변환**
-  <img width="960" height="291" alt="Image" src="https://github.com/user-attachments/assets/6fa4497b-fb01-4d60-a3f7-f91943c4bea8" />  
-<br><br><br>
+  <img width="1236" height="529" alt="Image" src="https://github.com/user-attachments/assets/aa72f8c5-1319-4ae0-be3b-55b8a217c81e" /><br><br><br>
 
 ## 확장성 및 자동화
 - `@Scheduled` 기반의 배치 작업으로 매년 자동 휴가 지급 기능을 구현하여 운영 효율성을 높였습니다.
