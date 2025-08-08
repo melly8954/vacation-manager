@@ -277,6 +277,7 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
                 .where(
                         q.startDate.year().eq(year)
                                 .and(q.startDate.month().eq(month))
+                                .and(q.status.notIn(VacationRequestStatus.PENDING, VacationRequestStatus.CANCELED))
                 )
                 .groupBy(q.status)
                 .fetch();
