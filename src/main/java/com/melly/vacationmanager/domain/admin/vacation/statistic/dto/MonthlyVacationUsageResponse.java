@@ -9,5 +9,5 @@ import java.util.List;
 @AllArgsConstructor
 public class MonthlyVacationUsageResponse {
     private int month;
-    private List<VacationUsageStatisticsResponse> vacations;
+    private List<VacationUsageStatisticsResponse> vacationRequests;
 }

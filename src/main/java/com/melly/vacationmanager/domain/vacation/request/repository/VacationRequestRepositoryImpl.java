@@ -3,6 +3,7 @@ package com.melly.vacationmanager.domain.vacation.request.repository;
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.request.AdminVacationRequestSearchCond;
 import com.melly.vacationmanager.domain.admin.vacation.request.dto.response.AdminVacationRequestListResponse;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationStatusChangeStatisticsResponse;
+import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsRaw;
 import com.melly.vacationmanager.domain.admin.vacation.statistic.dto.VacationUsageStatisticsResponse;
 import com.melly.vacationmanager.domain.user.entity.QUserEntity;
 import com.melly.vacationmanager.domain.vacation.request.dto.request.VacationRequestSearchCond;
@@ -238,12 +239,12 @@ public class VacationRequestRepositoryImpl implements VacationRequestRepositoryC
     }
 
     @Override
-    public List<VacationUsageStatisticsResponse> findUsageStatisticsByYear(int year) {
+    public List<VacationUsageStatisticsRaw> findUsageStatisticsByYear(int year) {
         QVacationRequestEntity q = QVacationRequestEntity.vacationRequestEntity;
 
         return queryFactory
                 .select(Projections.constructor(
-                        VacationUsageStatisticsResponse.class,
+                        VacationUsageStatisticsRaw.class,
                         q.vacationType.typeCode,
                         q.vacationType.typeName,
                         q.startDate.month(),                // ← 월 추출

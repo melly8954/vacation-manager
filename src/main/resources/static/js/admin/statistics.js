@@ -130,10 +130,10 @@ function renderUsageCards(data, month) {
     const monthData = data.find(item => item.month === month);
 
     // 해당 월 데이터가 없으면 빈 배열 처리
-    const vacations = monthData ? monthData.vacations : [];
+    const vacationRequests = monthData ? monthData.vacationRequests : [];
 
     const usageMap = new Map();
-    vacations.forEach(item => {
+    vacationRequests.forEach(item => {
         usageMap.set(item.typeName, item.totalUsedDays);
     });
 
@@ -163,7 +163,7 @@ function renderUsageBarChart(data, year) {
 
     data.forEach(monthEntry => {
         const monthIdx = monthEntry.month - 1; // 0-based index
-        monthEntry.vacations.forEach(vac => {
+        monthEntry.vacationRequests.forEach(vac => {
             chartData[vac.typeName][monthIdx] = vac.totalUsedDays;
         });
     });
