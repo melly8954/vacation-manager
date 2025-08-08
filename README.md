@@ -45,6 +45,7 @@
 
 ## 확장성 및 자동화
 - `@Scheduled` 기반의 배치 작업으로 매년 자동 휴가 지급 기능을 구현하여 운영 효율성을 높였습니다.
+  <img width="1127" height="567" alt="Image" src="https://github.com/user-attachments/assets/c4b1ae99-28d0-4780-a56d-c23327434f6a" /><br><br><br><br><br>
 - 휴가 신청 및 상태 변경 내역을 `VacationAuditLog`에 기록하여 변경 이력 추적 및 감사 기능 제공<br><br><br>
 
 ## 테스트 및 로깅
