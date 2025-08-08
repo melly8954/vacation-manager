@@ -45,12 +45,16 @@
 
 ## 확장성 및 자동화
 - `@Scheduled` 기반의 배치 작업으로 매년 자동 휴가 지급 기능을 구현하여 운영 효율성을 높였습니다.
-  <img width="1127" height="567" alt="Image" src="https://github.com/user-attachments/assets/c4b1ae99-28d0-4780-a56d-c23327434f6a" /><br><br><br><br><br>
+  <img width="1127" height="567" alt="Image" src="https://github.com/user-attachments/assets/c4b1ae99-28d0-4780-a56d-c23327434f6a" /><br><br>
 - 휴가 신청 및 상태 변경 내역을 `VacationAuditLog`에 기록하여 변경 이력 추적 및 감사 기능 제공<br><br><br>
 
 ## 테스트 및 로깅
-- JUnit 5 기반 단위 테스트 코드 작성으로 안정적인 기능 검증 수행
-- p6spy를 활용해 DB 쿼리 로깅을 구현하여 쿼리 성능 모니터링 및 문제점 파악<br><br><br>
+- JUnit 5 기반 단위 테스트 코드를 작성하여 안정적인 기능 검증을 수행하고, <br>
+  Mockito를 활용해 의존성 객체를 가짜(mock)로 대체함으로써 외부 영향 없이 독립적인 테스트가 가능하도록 구현하였습니다.
+  <img width="1150" height="555" alt="Image" src="https://github.com/user-attachments/assets/52db881d-2868-476d-8d3e-44d2718ee9e1" /><br><br>
+- p6spy를 활용해 DB 쿼리 로깅을 구현하여 쿼리 성능 모니터링 및 문제점 파악
+  <img width="1220" height="658" alt="Image" src="https://github.com/user-attachments/assets/33b5c6a8-18c7-4677-b55d-e67813309138" />
+  <img width="1245" height="572" alt="Image" src="https://github.com/user-attachments/assets/793c682c-d202-4bad-855d-bc7294cc0b64" /> <br><br><br>
 
 ## UI/UX  
 - FullCalendar.js를 활용한 휴가 일정 직관적 시각화  
